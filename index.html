@@ -652,8 +652,8 @@
         </div>
     </main>
 
-    <!-- Modal de Onboarding -->
-    <div id="onboardingModal" class="onboarding-overlay hidden">
+    <!-- Modal de Onboarding (Desativado) -->
+    <div id="onboardingModal" class="onboarding-overlay hidden" style="display: none;">
         <div class="onboarding-content">
             <h2 class="text-2xl font-display font-bold mb-4">Bem-vindo ao FinanceFlow Pro!</h2>
             <p class="text-slate-600 dark:text-slate-400 mb-6">Este é seu dashboard financeiro inteligente. Aqui você pode:</p>
@@ -734,20 +734,10 @@
         };
 
         // ========================================
-        // ONBOARDING
+        // ONBOARDING (Desativado - Sincronização Automática)
         // ========================================
-        function mostrarOnboarding() {
-            if (!localStorage.getItem('onboardingCompleto')) {
-                document.getElementById('onboardingModal').classList.remove('hidden');
-            }
-        }
-
-        document.getElementById('btnFecharOnboarding').addEventListener('click', () => {
-            document.getElementById('onboardingModal').classList.add('hidden');
-            localStorage.setItem('onboardingCompleto', 'true');
-        });
-
-        window.addEventListener('DOMContentLoaded', mostrarOnboarding);
+        // O onboarding foi removido para permitir sincronização automática
+        // ao carregar a página, oferecendo uma experiência mais fluida
 
         // ========================================
         // UTILITÁRIOS
@@ -1944,8 +1934,7 @@
 
         // Sincronizar automaticamente ao carregar
         window.addEventListener('DOMContentLoaded', () => {
-            // Comentado para não sincronizar automaticamente
-            // sincronizarComNuvem();
+            sincronizarComNuvem();
         });
     </script>
 </body>
