@@ -24,7 +24,6 @@
     
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -69,7 +68,6 @@
             background-color: var(--bg-primary); 
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
-            /* Suporte à barra de navegação inferior do iPhone */
             padding-bottom: env(safe-area-inset-bottom);
         }
 
@@ -112,32 +110,28 @@
         
         .chart-container { position: relative; height: 300px; width: 100%; }
 
-        .recurring-badge {
-            display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
-            font-weight: 700; padding: 4px 8px; border-radius: 6px;
-            background: #fef3c7; color: #92400e;
-        }
+        .budget-bar { height: 6px; background: var(--border-color); border-radius: 999px; overflow: hidden; }
+        .budget-bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s ease; }
+
+        .recurring-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #fef3c7; color: #92400e; }
         body.dark-mode .recurring-badge { background: #78350f; color: #fcd34d; }
 
-        .projection-badge {
-            display: inline-flex; align-items: center; gap: 4px; font-size: 11px;
-            font-weight: 700; padding: 4px 8px; border-radius: 6px;
-            background: #dbeafe; color: #1e40af;
-        }
-        body.dark-mode .projection-badge { background: #1e3a8a; color: #93c5fd; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-secondary); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
 
-        .tab-button {
-            padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px;
-            transition: all 0.3s; cursor: pointer; border: 1px solid transparent;
-        }
+        nav { background: var(--bg-secondary); border-bottom-color: var(--border-color); }
+        body.dark-mode nav { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+
+        .tab-button { padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: all 0.3s; cursor: pointer; border: 1px solid transparent; }
         .tab-button.active { background: #0c91eb; color: white; }
         .tab-button.inactive { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); }
         .tab-button.inactive:hover { border-color: #0c91eb; color: #0c91eb; }
 
-        /* Ajuste do Bottom Nav para iPhones */
-        .bottom-nav-safe {
-            padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-        }
+        .projection-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; }
+        body.dark-mode .projection-badge { background: #1e3a8a; color: #93c5fd; }
+        
+        .bottom-nav-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
     </style>
 </head>
 <body class="min-h-screen pb-24 sm:pb-12">
@@ -147,7 +141,7 @@
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold">F</div>
-                    <span class="font-display text-xl font-extrabold tracking-tight">Finance<span class="text-brand-600">Flow</span> <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 dark:text-slate-400 ml-1">PRO</span></span>
+                    <span class="font-display text-xl font-extrabold tracking-tight">Finance<span class="text-brand-600">Flow</span> <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 ml-1">PRO</span></span>
                 </div>
                 <div class="flex items-center gap-4">
                     <button id="btnExportarPDF" class="hidden md:flex cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all items-center gap-2">
@@ -191,23 +185,21 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h2 class="text-sm font-bold text-brand-600 uppercase tracking-widest mb-1">Visão Geral</h2>
-                <h1 class="text-3xl font-display font-extrabold">Seu Dashboard</h1>
+                <h1 class="text-3xl font-display font-extrabold">Seu Dashboard Financeiro</h1>
             </div>
             <div id="statusMessage" class="hidden px-4 py-2 rounded-lg text-sm font-medium animate-fade-in"></div>
         </div>
 
-        <div class="hidden sm:flex mb-8 gap-3 overflow-x-auto pb-2 custom-scrollbar">
+        <div class="hidden sm:flex mb-8 gap-3">
             <button id="tabReal" class="tab-button active whitespace-nowrap">📊 Dados Reais</button>
             <button id="tabProjetado" class="tab-button inactive whitespace-nowrap">🔮 Projeção Futura</button>
             <button id="tabConsolidado" class="tab-button inactive whitespace-nowrap">📈 Visão Consolidada</button>
         </div>
 
         <div id="secaoReal">
-
             <div id="containerFiltros" class="hidden mb-6 animate-fade-in">
                 <div class="flex items-center gap-3 mb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -229,7 +221,6 @@
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Recebido</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-entradas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
@@ -240,7 +231,6 @@
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Gasto</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-saidas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
@@ -258,18 +248,26 @@
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold" id="tituloGraficoSaldo">Evolução do Saldo</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="saldoChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="saldoChart"></canvas></div>
                 </div>
                 <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold" id="tituloGraficoDespesas">Distribuição de Gastos</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="despesasChart"></canvas>
+                    <div class="chart-container"><canvas id="despesasChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 sm:p-6 mb-8 min-w-0 w-full">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        </div>
+                        <h3 class="text-lg font-display font-bold">Entradas vs. Saídas</h3>
                     </div>
                 </div>
+                <div style="position: relative; height: 350px; width: 100%;"><canvas id="entradasSaidasChart"></canvas></div>
             </div>
 
             <div class="glass-card rounded-2xl overflow-hidden min-w-0 w-full mb-4">
@@ -293,7 +291,8 @@
                             </tr>
                         </thead>
                         <tbody id="topDespesasBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                            </tbody>
+                            <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Aguardando importação...</td></tr>
+                        </tbody>
                     </table>
                 </div>
 
@@ -303,7 +302,6 @@
         </div>
 
         <div id="secaoProjetado" class="hidden">
-
             <div id="containerFiltrosProjecao" class="hidden mb-6 animate-fade-in">
                 <div class="flex flex-wrap items-center gap-4 mb-4">
                     <div class="flex-1 min-w-[120px]">
@@ -330,7 +328,6 @@
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas Previstas</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-proj-receitas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
@@ -341,7 +338,6 @@
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas Previstas</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-proj-despesas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
@@ -359,18 +355,26 @@
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold">Evolução Projetada do Saldo</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="saldoProjecaoChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="saldoProjecaoChart"></canvas></div>
                 </div>
                 <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold">Distribuição de Despesas</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="despesasProjecaoChart"></canvas>
+                    <div class="chart-container"><canvas id="despesasProjecaoChart"></canvas></div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-5 sm:p-6 mb-8 min-w-0 w-full">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                        </div>
+                        <h3 class="text-lg font-display font-bold">Receitas vs. Despesas Mês a Mês</h3>
                     </div>
                 </div>
+                <div style="position: relative; height: 350px; width: 100%;"><canvas id="receitasDespesasProjecaoChart"></canvas></div>
             </div>
 
             <div class="glass-card rounded-2xl overflow-hidden min-w-0 w-full mb-4">
@@ -395,7 +399,8 @@
                             </tr>
                         </thead>
                         <tbody id="tabelaProjecaoBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                            </tbody>
+                            <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Aguardando importação...</td></tr>
+                        </tbody>
                     </table>
                 </div>
 
@@ -405,7 +410,6 @@
         </div>
 
         <div id="secaoConsolidado" class="hidden">
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
@@ -414,10 +418,9 @@
                         </div>
                         <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">Total</span>
                     </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas Totais</h3>
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas (Executado + Projetado)</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-cons-receitas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
@@ -425,10 +428,9 @@
                         </div>
                         <span class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-full">Total</span>
                     </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas Totais</h3>
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas (Executado + Projetado)</h3>
                     <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-cons-despesas">R$ 0,00</p>
                 </div>
-
                 <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
@@ -446,17 +448,13 @@
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold">Evolução Consolidada</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="saldoConsolidadoChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="saldoConsolidadoChart"></canvas></div>
                 </div>
                 <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-lg font-display font-bold">Despesas Totais</h3>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="despesasConsolidadoChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="despesasConsolidadoChart"></canvas></div>
                 </div>
             </div>
             
@@ -464,9 +462,7 @@
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-lg font-display font-bold">Receitas vs. Despesas Mês a Mês</h3>
                 </div>
-                <div style="position: relative; height: 350px; width: 100%;">
-                    <canvas id="receitasDespesasConsolidadoChart"></canvas>
-                </div>
+                <div style="position: relative; height: 350px; width: 100%;"><canvas id="receitasDespesasConsolidadoChart"></canvas></div>
             </div>
         </div>
     </main>
@@ -512,27 +508,35 @@
 
         async function sincronizarComNuvem() {
             mostrarStatus("Sincronizando dados...", "sucesso");
+            
             try {
-                const resExtrato = await fetch(LINK_CSV_EXTRATO);
-                if (!resExtrato.ok) throw new Error("Erro Extrato");
-                const csvExtrato = await resExtrato.text();
+                // 1. Busca os dados reais
+                const respostaExtrato = await fetch(LINK_CSV_EXTRATO);
+                const csvExtrato = await respostaExtrato.text();
+                
                 Papa.parse(csvExtrato, {
-                    complete: async function(results) { 
+                    complete: function(results) { 
                         processarMatriz(results.data); 
-                        try {
-                            const resProj = await fetch(LINK_CSV_PROJETADO);
-                            if (!resProj.ok) throw new Error("Erro Projeção");
-                            const csvProj = await resProj.text();
-                            Papa.parse(csvProj, {
-                                complete: function(resProjData) {
-                                    processarProjecoes(resProjData.data);
-                                    mostrarStatus("Atualizado com sucesso!", "sucesso");
-                                }, skipEmptyLines: true
+                        
+                        // 2. Após processar o extrato, busca as projeções
+                        fetch(LINK_CSV_PROJETADO)
+                            .then(res => res.text())
+                            .then(csvProj => {
+                                Papa.parse(csvProj, {
+                                    complete: function(resProj) {
+                                        processarProjecoes(resProj.data);
+                                        mostrarStatus("Dashboard atualizado com o Google Sheets!", "sucesso");
+                                    },
+                                    skipEmptyLines: true
+                                });
                             });
-                        } catch (errProj) { console.error(errProj); }
-                    }, skipEmptyLines: true
+                    },
+                    skipEmptyLines: true
                 });
-            } catch (erro) { console.error(erro); }
+            } catch (erro) {
+                mostrarStatus("Erro de conexão. Verifique sua internet.", "erro");
+                console.error(erro);
+            }
         }
 
         window.addEventListener('DOMContentLoaded', sincronizarComNuvem);
@@ -586,6 +590,11 @@
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         });
 
+        document.getElementById('btnExportarPDF').addEventListener('click', () => {
+            const element = document.querySelector('main');
+            html2pdf().set({ margin: 10, filename: `relatorio.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' } }).from(element).save();
+        });
+
         // ========================================
         // FUNÇÕES UTILITÁRIAS E CONVERSORES
         // ========================================
@@ -635,7 +644,44 @@
         }
 
         // ========================================
-        // PROCESSAMENTO DE DADOS 
+        // IMPORTAÇÃO MANUAL
+        // ========================================
+        document.getElementById('arquivoInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            mostrarStatus("Processando arquivo local...", "sucesso");
+            const leitorAssinatura = new FileReader();
+            leitorAssinatura.onload = function(e) {
+                const arr = new Uint8Array(e.target.result);
+                const isRealExcel = (arr[0] === 80 && arr[1] === 75) || (arr[0] === 208 && arr[1] === 207);
+                if (isRealExcel) lerComoExcel(file); else lerComoTexto(file);
+            };
+            leitorAssinatura.readAsArrayBuffer(file.slice(0, 4));
+        });
+
+        function lerComoTexto(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) { Papa.parse(e.target.result, { complete: function(results) { processarMatriz(results.data); }, skipEmptyLines: true }); };
+            reader.readAsText(file, 'ISO-8859-1');
+        }
+
+        function lerComoExcel(file) {
+            const reader = new FileReader();
+            reader.onerror = function() { mostrarStatus('Erro ao ler o arquivo.', 'erro'); };
+            reader.onload = function(e) {
+                try {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                    const nomeAbaReal = workbook.SheetNames.find(name => name.includes('Extrato'));
+                    if (nomeAbaReal) processarMatriz(XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaReal], {header: 1, defval: ""}));
+                    const nomeAbaProjetado = workbook.SheetNames.find(name => name.includes('Projetado'));
+                    if (nomeAbaProjetado) processarProjecoes(XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaProjetado], {header: 1, defval: ""}));
+                } catch (erro) { mostrarStatus('Erro: ' + erro.message, 'erro'); }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ========================================
+        // PROCESSAMENTO DE DADOS (REAL)
         // ========================================
         function processarMatriz(linhas) {
             let indexData = -1, indexDesc = -1, indexCred = -1, indexDeb = -1, indexSaldo = -1;
@@ -667,7 +713,7 @@
                 let mesAno = `${partesData[1]}/${partesData[2]}`;
                 mesesDetectados.add(mesAno);
 
-                let descricao = String(linha[indexDesc] || "").trim();
+                let descricao = String(linha[indexDesc] || "Sem descrição").trim();
                 let credito = converterNumero(linha[indexCred]);
                 let debito = converterNumero(linha[indexDeb]);
                 
@@ -700,37 +746,48 @@
         }
 
         function processarProjecoes(linhas) {
-            let idx = { data: -1, ano: -1, mes: -1, tipo: -1, cat: -1, desc: -1, valor: -1, saldo: -1 }; let inicio = false;
-            for (let i = 0; i < Math.min(linhas.length, 10); i++) {
-                const l = linhas[i]; if (!l || !Array.isArray(l)) continue;
-                for (let c = 0; c < l.length; c++) {
-                    let v = String(l[c] || "").trim().toUpperCase();
-                    if (v === "DATA") idx.data = c; else if (v === "ANO") idx.ano = c; else if (v === "MÊS" || v === "MES") idx.mes = c;
-                    else if (v === "TIPO") idx.tipo = c; else if (v === "CATEGORIA") idx.cat = c; else if (v === "DESCRIÇÃO" || v === "DESCRICAO") idx.desc = c;
-                    else if (v === "VALOR") idx.valor = c; else if (v === "SALDO") idx.saldo = c;
-                }
-                if (idx.data !== -1 && idx.tipo !== -1 && idx.valor !== -1) { linhas = linhas.slice(i + 1); inicio = true; break; }
-            }
-            if (!inicio) idx = { data: 0, ano: 1, mes: 2, tipo: 4, cat: 5, desc: 7, valor: 8, saldo: 9 };
+            transacoesProjetadas = [];
+            let anosDetectados = new Set();
+            let mesesDetectados = new Set();
 
-            transacoesProjetadas = []; let anosDetectados = new Set(); let mesesDetectados = new Set();
-            for (let linha of linhas) {
-                if (!linha || linha.length === 0 || linha[idx.data] === undefined) continue;
-                const dataRaw = linha[idx.data]; let dataFormatada = formatarDataCompleta(dataRaw);
-                const ano = String(linha[idx.ano] || "").trim(); const mes = String(linha[idx.mes] || "").trim();
-                const tipo = String(linha[idx.tipo] || "").trim(); const descricao = String(linha[idx.desc] || "").trim();
-                const valor = Math.abs(converterNumero(linha[idx.valor])); const saldo = converterNumero(linha[idx.saldo]);
+            for (let i = 1; i < linhas.length; i++) {
+                const linha = linhas[i];
+                if (!linha || linha.length === 0) continue;
+
+                const dataRaw = linha[0];
+                let dataFormatada = formatarDataCompleta(dataRaw);
+                
+                const ano = String(linha[1] || "").trim();
+                const mes = String(linha[2] || "").trim();
+                const tipo = String(linha[4] || "").trim();
+                const categoria = String(linha[5] || "").trim();
+                const descricao = String(linha[7] || "").trim();
+                
+                // CORREÇÃO MANTIDA: Math.abs garante que as despesas não fiquem negativas duplicadas no cálculo
+                const valor = Math.abs(converterNumero(linha[8]));
+                const saldo = converterNumero(linha[9]);
 
                 if (!ano || !mes || !tipo || !descricao || valor === 0) continue;
+
                 if (!dataFormatada || dataFormatada === "null") {
                     let numMes = conversorMesGlobal[mes.toLowerCase()] || "01";
                     dataFormatada = `01/${numMes}/${ano}`;
                 }
 
-                anosDetectados.add(ano); mesesDetectados.add(mes);
+                anosDetectados.add(ano);
+                mesesDetectados.add(mes);
+
                 transacoesProjetadas.push({
-                    data: dataFormatada, ano: ano, mes: mes, tipo: tipo, categoria: String(linha[idx.cat] || "").trim(),
-                    descricao: descricao, valor: valor, saldo: saldo, isReceita: tipo.toUpperCase() === 'RECEITA', isDespesa: tipo.toUpperCase() === 'DESPESA'
+                    data: dataFormatada,
+                    ano: ano,
+                    mes: mes,
+                    tipo: tipo,
+                    categoria: categoria,
+                    descricao: descricao,
+                    valor: valor,
+                    saldo: saldo,
+                    isReceita: tipo.toUpperCase() === 'RECEITA',
+                    isDespesa: tipo.toUpperCase() === 'DESPESA'
                 });
             }
 
@@ -755,7 +812,7 @@
         }
 
         // ========================================
-        // RENDERIZADORES
+        // RENDERIZADORES DADOS REAIS
         // ========================================
         function montarFiltrosDeMes(listaMesesAno) {
             const container = document.getElementById('containerFiltros'); const boxBotoes = document.getElementById('botoesMeses');
@@ -799,12 +856,13 @@
         function renderizarGraficoSaldo(labels, data) {
             const ctx = document.getElementById('saldoChart').getContext('2d'); if (saldoChartInstance) saldoChartInstance.destroy();
             const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(12, 145, 235, 0.2)'); grad.addColorStop(1, 'rgba(12, 145, 235, 0)');
-            saldoChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Saldo', data: data, borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+            saldoChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Saldo', data: data, borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: '#0c91eb' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
         }
 
         function renderizarGraficoDespesas(categorias) {
             const ctx = document.getElementById('despesasChart').getContext('2d'); if (despesasChartInstance) despesasChartInstance.destroy();
-            const labels = Object.keys(categorias); const data = Object.values(categorias); const colors = labels.map(l => coresCategorias[l] || '#cbd5e1'); const total = data.reduce((a, b) => a + b, 0);
+            const labels = Object.keys(categorias); const data = Object.values(categorias);
+            const colors = labels.map(l => coresCategorias[l] || '#cbd5e1'); const total = data.reduce((a, b) => a + b, 0);
             despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { datalabels: { display: true, color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (value) => ((value / total) * 100).toFixed(1) + '%' }, legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } } } });
         }
 
@@ -888,7 +946,7 @@
             const ctx = document.getElementById('saldoProjecaoChart').getContext('2d'); if (saldoProjecaoChartInstance) saldoProjecaoChartInstance.destroy();
             const dadosOrdenados = [...dados].sort((a, b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
             const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(12, 145, 235, 0.2)'); grad.addColorStop(1, 'rgba(12, 145, 235, 0)');
-            saldoProjecaoChartInstance = new Chart(ctx, { type: 'line', data: { labels: dadosOrdenados.map(d => d.data.substring(0, 5)), datasets: [{ label: 'Saldo', data: dadosOrdenados.map(d => d.saldo), borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+            saldoProjecaoChartInstance = new Chart(ctx, { type: 'line', data: { labels: dadosOrdenados.map(d => d.data.substring(0, 5)), datasets: [{ label: 'Saldo', data: dadosOrdenados.map(d => d.saldo), borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: '#0c91eb' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
         }
 
         function renderizarGraficoProjecaoDespesas(categorias) {
