@@ -2,18 +2,17 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="Dashboard financeiro inteligente com análise em tempo real de suas finanças">
-    <meta name="theme-color" content="#0c91eb">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
     <title>FinanceFlow Pro - Dashboard Financeiro Inteligente</title>
     
-    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="FinanceFlow">
-    <meta name="apple-mobile-web-app-status-bar" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-    <link rel="manifest" href="data:application/manifest+json,{\"name\":\"FinanceFlow Pro\",\"short_name\":\"FinanceFlow\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#ffffff\",\"theme_color\":\"#0c91eb\",\"icons\":[{\"src\":\"https://cdn-icons-png.flaticon.com/512/3135/3135715.png\",\"sizes\":\"192x192\",\"type\":\"image/png\"}]}"
+    <link rel="manifest" href='data:application/manifest+json,{"name":"FinanceFlow Pro","short_name":"FinanceFlow","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#0c91eb","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3135/3135715.png","sizes":"192x192","type":"image/png"}]}'>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,11 +67,31 @@
             --glass-border: rgba(51, 65, 85, 0.8);
         }
 
-        body { 
+        /* FÍSICA DE APP NATIVO */
+        html, body {
             background-color: var(--bg-primary); 
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
+            /* Previne o efeito elástico (bounce) de atualização da página no mobile */
+            overscroll-behavior-y: none;
+            /* Remove o flash azul/cinza ao tocar em elementos no mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body { 
             padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* Evitar seleção de texto em elementos de UI para parecer um App */
+        .no-select {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* Micro-interação de clique nos botões */
+        button:active, .tab-button:active, label:active {
+            transform: scale(0.96);
+            transition: transform 0.1s ease;
         }
 
         .glass-card { 
@@ -86,7 +105,10 @@
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
         }
 
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; display: none; } /* Oculto no mobile */
+        @media (min-width: 768px) {
+            .custom-scrollbar::-webkit-scrollbar { display: block; }
+        }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
@@ -108,25 +130,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
         .animate-slide-in { animation: slideIn 0.5s ease-out forwards; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-
-        .skeleton {
-            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-        body.dark-mode .skeleton {
-            background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
-        }
         
         .chart-container { position: relative; height: 320px; width: 100%; }
 
@@ -177,53 +180,15 @@
             .btn-active { padding: 6px 12px; font-size: 12px; }
         }
 
-        /* Touch-friendly buttons */
         button, input[type="button"], label { min-height: 44px; min-width: 44px; }
-
-        /* Prevent zoom on input focus */
         input, select, textarea { font-size: 16px; }
-
-        /* Safe area insets */
         nav { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
         main { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
 
-        .onboarding-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .onboarding-content {
-            background: white;
-            border-radius: 16px;
-            padding: 32px;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.4s ease-out;
-        }
-
-        body.dark-mode .onboarding-content {
-            background: #1e293b;
-        }
-
         .health-score {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            font-size: 32px;
-            font-weight: bold;
-            margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            width: 120px; height: 120px; border-radius: 50%;
+            font-size: 32px; font-weight: bold; margin: 0 auto;
         }
 
         .health-score.excellent { background: linear-gradient(135deg, #10b981, #059669); color: white; }
@@ -231,106 +196,17 @@
         .health-score.fair { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
         .health-score.poor { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
 
-        .search-box {
-            position: relative;
-            width: 100%;
-        }
+        .search-box { position: relative; width: 100%; }
+        .search-box input { width: 100%; padding: 10px 12px 10px 36px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; transition: all 0.3s; background: transparent;}
+        .search-box input:focus { outline: none; border-color: #0c91eb; box-shadow: 0 0 0 3px rgba(12, 145, 235, 0.1); }
+        .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
 
-        .search-box input {
-            width: 100%;
-            padding: 10px 12px 10px 36px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #0c91eb;
-            box-shadow: 0 0 0 3px rgba(12, 145, 235, 0.1);
-        }
-
-        .search-box svg {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        body.dark-mode .modal-content {
-            background: #1e293b;
-        }
-
-        .comparison-card {
-            display: flex;
-            gap: 16px;
-            padding: 16px;
-            border-radius: 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--border-color);
-        }
-
-        .comparison-value {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .comparison-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .comparison-amount {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .trend-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        .comparison-card { display: flex; gap: 16px; padding: 16px; border-radius: 12px; background: var(--glass-bg); border: 1px solid var(--border-color); }
+        .comparison-value { display: flex; flex-direction: column; gap: 4px; }
+        .comparison-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .comparison-amount { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+        
+        .trend-indicator { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
         .trend-up { color: #10b981; }
         .trend-down { color: #ef4444; }
         .trend-neutral { color: var(--text-secondary); }
@@ -338,8 +214,7 @@
 </head>
 <body class="min-h-screen pb-24 sm:pb-12">
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 mb-8 transition-all" style="padding-top: max(8px, env(safe-area-inset-top));">
+    <nav class="no-select sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 mb-8 transition-all" style="padding-top: max(8px, env(safe-area-inset-top));">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
             <div class="flex justify-between h-16 items-center flex-wrap gap-2 sm:flex-nowrap">
                 <div class="flex items-center gap-2 min-w-fit">
@@ -368,8 +243,7 @@
         </div>
     </nav>
 
-    <!-- Mobile Bottom Navigation -->
-    <div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 bottom-nav-safe">
+    <div class="no-select sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 bottom-nav-safe">
         <div class="flex justify-around items-center h-16 px-2">
             <button id="navMobileReal" class="flex flex-col items-center justify-center w-full h-full transition-colors text-brand-600 dark:text-brand-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
@@ -387,7 +261,6 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Header -->
         <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h2 class="text-xs sm:text-sm font-bold text-brand-600 uppercase tracking-widest mb-1">Visão Geral</h2>
@@ -396,22 +269,19 @@
             <div id="statusMessage" class="hidden px-4 py-2 rounded-lg text-xs sm:text-sm font-medium animate-fade-in"></div>
         </div>
 
-        <!-- Tabs Desktop -->
-        <div class="hidden sm:flex mb-8 gap-2 sm:gap-3 overflow-x-auto pb-2">
+        <div class="no-select hidden sm:flex mb-8 gap-2 sm:gap-3 overflow-x-auto pb-2">
             <button id="tabReal" class="tab-button active whitespace-nowrap text-xs sm:text-sm">📊 Dados Reais</button>
             <button id="tabProjetado" class="tab-button inactive whitespace-nowrap text-xs sm:text-sm">🔮 Projeção Futura</button>
             <button id="tabConsolidado" class="tab-button inactive whitespace-nowrap text-xs sm:text-sm">📈 Visão Consolidada</button>
         </div>
 
-        <!-- SEÇÃO: DADOS REAIS -->
         <div id="secaoReal">
-            <!-- Health Score Card -->
             <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 animate-fade-in">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
                     <div>
                         <h3 class="text-lg font-display font-bold mb-2">Indicador de Saúde Financeira</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-6">Score baseado em sua relação receita/despesa, metas atingidas e consistência mensal.</p>
-                        <div class="flex gap-4 text-sm">
+                        <div class="flex flex-wrap gap-4 text-sm">
                             <div><span class="font-bold text-emerald-600">90-100:</span> Excelente</div>
                             <div><span class="font-bold text-blue-600">70-89:</span> Bom</div>
                             <div><span class="font-bold text-amber-600">50-69:</span> Razoável</div>
@@ -424,7 +294,6 @@
                 </div>
             </div>
 
-            <!-- KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <div class="flex items-center justify-between mb-4">
@@ -471,7 +340,6 @@
                 </div>
             </div>
 
-            <!-- Comparativo Período vs Período -->
             <div class="glass-card rounded-2xl p-6 mb-8">
                 <h3 class="text-base sm:text-lg font-display font-bold mb-6">Comparativo: Mês Atual vs Mês Anterior</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
@@ -499,10 +367,9 @@
                 </div>
             </div>
 
-            <!-- Filtros e Busca -->
             <div class="glass-card rounded-2xl p-6 mb-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div id="containerFiltros" class="hidden">
+                    <div id="containerFiltros" class="hidden no-select">
                         <label class="block text-sm font-semibold mb-2">Filtrar por Mês</label>
                         <div id="botoesMeses" class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar"></div>
                     </div>
@@ -510,18 +377,17 @@
                         <label class="block text-sm font-semibold mb-2">Buscar Transações</label>
                         <div class="search-box">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                            <input type="text" id="searchInput" placeholder="Buscar por descrição, categoria..." class="w-full">
+                            <input type="text" id="searchInput" placeholder="Buscar por descrição, categoria..." class="w-full text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                         </div>
                     </div>
                 </div>
-                <div class="flex gap-2 flex-wrap">
+                <div class="flex gap-2 flex-wrap no-select">
                     <button id="filterAll" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all">Todas</button>
                     <button id="filterReceitas" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all">Receitas</button>
                     <button id="filterDespesas" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all">Despesas</button>
                 </div>
             </div>
 
-            <!-- Gráficos -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
                 <div class="glass-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-6">
@@ -553,7 +419,6 @@
                 </div>
             </div>
 
-            <!-- Tabela de Transações -->
             <div class="glass-card rounded-2xl p-6 mb-8">
                 <h3 class="text-lg font-display font-bold mb-6">Histórico de Transações</h3>
                 <div class="overflow-x-auto">
@@ -574,7 +439,6 @@
             </div>
         </div>
 
-        <!-- SEÇÃO: PROJEÇÃO FUTURA -->
         <div id="secaoProjetado" class="hidden">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
@@ -660,7 +524,6 @@
             </div>
         </div>
 
-        <!-- SEÇÃO: VISÃO CONSOLIDADA -->
         <div id="secaoConsolidado" class="hidden">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
@@ -700,37 +563,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Modal de Onboarding (Desativado) -->
-    <div id="onboardingModal" class="onboarding-overlay hidden" style="display: none;">
-        <div class="onboarding-content">
-            <h2 class="text-2xl font-display font-bold mb-4">Bem-vindo ao FinanceFlow Pro!</h2>
-            <p class="text-slate-600 dark:text-slate-400 mb-6">Este é seu dashboard financeiro inteligente. Aqui você pode:</p>
-            <ul class="space-y-3 mb-8 text-sm">
-                <li class="flex items-start gap-3">
-                    <span class="text-brand-600 font-bold">✓</span>
-                    <span>Importar extratos bancários em CSV ou Excel</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="text-brand-600 font-bold">✓</span>
-                    <span>Visualizar análises detalhadas de suas finanças</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="text-brand-600 font-bold">✓</span>
-                    <span>Comparar períodos e identificar tendências</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="text-brand-600 font-bold">✓</span>
-                    <span>Acompanhar projeções futuras</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="text-brand-600 font-bold">✓</span>
-                    <span>Exportar relatórios em PDF</span>
-                </li>
-            </ul>
-            <button id="btnFecharOnboarding" class="w-full bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-semibold transition-all">Começar Agora</button>
-        </div>
-    </div>
 
     <script>
         // ========================================
@@ -781,12 +613,6 @@
             'Salário': '#10b981',
             'Financiamento': '#f59e0b'
         };
-
-        // ========================================
-        // ONBOARDING (Desativado - Sincronização Automática)
-        // ========================================
-        // O onboarding foi removido para permitir sincronização automática
-        // ao carregar a página, oferecendo uma experiência mais fluida
 
         // ========================================
         // UTILITÁRIOS
@@ -1068,9 +894,9 @@
         // ========================================
         function switchTab(tab) {
             abaSelecionada = tab;
-            document.getElementById('tabReal').className = tab === 'real' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
-            document.getElementById('tabProjetado').className = tab === 'projetado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
-            document.getElementById('tabConsolidado').className = tab === 'consolidado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
+            document.getElementById('tabReal').className = tab === 'real' ? 'tab-button active whitespace-nowrap text-xs sm:text-sm' : 'tab-button inactive whitespace-nowrap text-xs sm:text-sm';
+            document.getElementById('tabProjetado').className = tab === 'projetado' ? 'tab-button active whitespace-nowrap text-xs sm:text-sm' : 'tab-button inactive whitespace-nowrap text-xs sm:text-sm';
+            document.getElementById('tabConsolidado').className = tab === 'consolidado' ? 'tab-button active whitespace-nowrap text-xs sm:text-sm' : 'tab-button inactive whitespace-nowrap text-xs sm:text-sm';
             
             document.getElementById('navMobileReal').className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'real' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
             document.getElementById('navMobileProj').className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'projetado' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
