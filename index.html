@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FinanceFlow Pro</title>
+    <title>FinanceFlow Pro - Dashboard Financeiro Inteligente</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -82,24 +81,15 @@
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
         }
 
-        .gradient-text {
-            background: linear-gradient(135deg, #0c91eb 0%, #005da3 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
-        
         body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
         body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
         
         .btn-active {
-            background: #0c91eb;
-            color: white;
-            box-shadow: 0 4px 12px rgba(12, 145, 235, 0.3);
+            background: #0c91eb; color: white; box-shadow: 0 4px 12px rgba(12, 145, 235, 0.3);
         }
         
         @keyframes fadeIn {
@@ -107,35 +97,199 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        
-        .chart-container { position: relative; height: 300px; width: 100%; }
 
-        .budget-bar { height: 6px; background: var(--border-color); border-radius: 999px; overflow: hidden; }
-        .budget-bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s ease; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .animate-slide-in { animation: slideIn 0.5s ease-out forwards; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        body.dark-mode .skeleton {
+            background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+        }
+        
+        .chart-container { position: relative; height: 320px; width: 100%; }
 
         .recurring-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #fef3c7; color: #92400e; }
         body.dark-mode .recurring-badge { background: #78350f; color: #fcd34d; }
 
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--bg-secondary); border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
-
-        nav { background: var(--bg-secondary); border-bottom-color: var(--border-color); }
-        body.dark-mode nav { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+        .projection-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; }
+        body.dark-mode .projection-badge { background: #1e3a8a; color: #93c5fd; }
 
         .tab-button { padding: 10px 16px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: all 0.3s; cursor: pointer; border: 1px solid transparent; }
         .tab-button.active { background: #0c91eb; color: white; }
         .tab-button.inactive { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); }
         .tab-button.inactive:hover { border-color: #0c91eb; color: #0c91eb; }
-
-        .projection-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #dbeafe; color: #1e40af; }
-        body.dark-mode .projection-badge { background: #1e3a8a; color: #93c5fd; }
         
         .bottom-nav-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+
+        .onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .onboarding-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.4s ease-out;
+        }
+
+        body.dark-mode .onboarding-content {
+            background: #1e293b;
+        }
+
+        .health-score {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+
+        .health-score.excellent { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .health-score.good { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .health-score.fair { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .health-score.poor { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #0c91eb;
+            box-shadow: 0 0 0 3px rgba(12, 145, 235, 0.1);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        body.dark-mode .modal-content {
+            background: #1e293b;
+        }
+
+        .comparison-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-value {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .comparison-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-amount {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .trend-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-neutral { color: var(--text-secondary); }
     </style>
 </head>
 <body class="min-h-screen pb-24 sm:pb-12">
 
+    <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 mb-8 transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
@@ -144,22 +298,20 @@
                     <span class="font-display text-xl font-extrabold tracking-tight">Finance<span class="text-brand-600">Flow</span> <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 ml-1">PRO</span></span>
                 </div>
                 <div class="flex items-center gap-4">
+                    <button id="btnSincronizar" class="hidden md:flex cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all items-center gap-2" title="Sincronizar com Google Sheets">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Sincronizar
+                    </button>
                     <button id="btnExportarPDF" class="hidden md:flex cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                         Exportar PDF
                     </button>
                     <button id="btnToggleDarkMode" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all" title="Alternar tema">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
                     </button>
                     <label for="arquivoInput" class="cursor-pointer bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                        </svg>
-                        <span class="hidden sm:inline">Importar Manual</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        <span class="hidden sm:inline">Importar</span>
                     </label>
                     <input type="file" id="arquivoInput" accept=".csv, .xls, .xlsx" class="hidden">
                 </div>
@@ -167,6 +319,7 @@
         </div>
     </nav>
 
+    <!-- Mobile Bottom Navigation -->
     <div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 bottom-nav-safe">
         <div class="flex justify-around items-center h-16 px-2">
             <button id="navMobileReal" class="flex flex-col items-center justify-center w-full h-full transition-colors text-brand-600 dark:text-brand-400">
@@ -185,6 +338,7 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
         <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
                 <h2 class="text-sm font-bold text-brand-600 uppercase tracking-widest mb-1">Visão Geral</h2>
@@ -193,415 +347,417 @@
             <div id="statusMessage" class="hidden px-4 py-2 rounded-lg text-sm font-medium animate-fade-in"></div>
         </div>
 
+        <!-- Tabs Desktop -->
         <div class="hidden sm:flex mb-8 gap-3">
             <button id="tabReal" class="tab-button active whitespace-nowrap">📊 Dados Reais</button>
             <button id="tabProjetado" class="tab-button inactive whitespace-nowrap">🔮 Projeção Futura</button>
             <button id="tabConsolidado" class="tab-button inactive whitespace-nowrap">📈 Visão Consolidada</button>
         </div>
 
+        <!-- SEÇÃO: DADOS REAIS -->
         <div id="secaoReal">
-            <div id="containerFiltros" class="hidden mb-6 animate-fade-in">
-                <div class="flex items-center gap-3 mb-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Período de Análise</h3>
+            <!-- Health Score Card -->
+            <div class="glass-card rounded-2xl p-8 mb-8 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-lg font-display font-bold mb-2">Indicador de Saúde Financeira</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-6">Score baseado em sua relação receita/despesa, metas atingidas e consistência mensal.</p>
+                        <div class="flex gap-4 text-sm">
+                            <div><span class="font-bold text-emerald-600">90-100:</span> Excelente</div>
+                            <div><span class="font-bold text-blue-600">70-89:</span> Bom</div>
+                            <div><span class="font-bold text-amber-600">50-69:</span> Razoável</div>
+                            <div><span class="font-bold text-red-600">&lt;50:</span> Crítico</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="health-score excellent" id="healthScore">85</div>
+                    </div>
                 </div>
-                <div id="botoesMeses" class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+            <!-- KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                         </div>
-                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">Entradas</span>
+                        <span class="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">Entradas</span>
                     </div>
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Recebido</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-entradas">R$ 0,00</p>
+                    <p class="text-3xl font-display font-bold mt-1" id="kpi-entradas">R$ 0,00</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
+
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
                         </div>
-                        <span class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-full">Saídas</span>
+                        <span class="text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-full">Saídas</span>
                     </div>
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Gasto</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-saidas">R$ 0,00</p>
+                    <p class="text-3xl font-display font-bold mt-1" id="kpi-despesas">R$ 0,00</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
+
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
                         </div>
-                        <span class="text-xs font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded-full">Balanço</span>
+                        <span class="text-xs font-bold text-brand-600 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded-full">Saldo</span>
                     </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Líquido</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-balanco">R$ 0,00</p>
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Atual</h3>
+                    <p class="text-3xl font-display font-bold mt-1" id="kpi-saldo">R$ 0,00</p>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold" id="tituloGraficoSaldo">Evolução do Saldo</h3>
-                    </div>
-                    <div class="chart-container"><canvas id="saldoChart"></canvas></div>
-                </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold" id="tituloGraficoDespesas">Distribuição de Gastos</h3>
-                    </div>
-                    <div class="chart-container"><canvas id="despesasChart"></canvas></div>
-                </div>
-            </div>
-
-            <div class="glass-card rounded-2xl p-5 sm:p-6 mb-8 min-w-0 w-full">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-blue-600 dark:text-blue-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
-                        <h3 class="text-lg font-display font-bold">Entradas vs. Saídas</h3>
+                        <span class="text-xs font-bold text-purple-600 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded-full">Taxa</span>
                     </div>
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Taxa Poupança</h3>
+                    <p class="text-3xl font-display font-bold mt-1" id="kpi-taxa">0%</p>
                 </div>
-                <div style="position: relative; height: 350px; width: 100%;"><canvas id="entradasSaidasChart"></canvas></div>
             </div>
 
-            <div class="glass-card rounded-2xl overflow-hidden min-w-0 w-full mb-4">
-                <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 class="text-lg font-display font-bold" id="tituloTabela">Maiores Movimentações</h3>
-                    <select id="filtroTipoTabela" class="text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-brand-500">
-                        <option value="saidas">Apenas Saídas</option>
-                        <option value="entradas">Apenas Entradas</option>
-                        <option value="todas">Todas</option>
-                    </select>
+            <!-- Comparativo Período vs Período -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-display font-bold mb-6">Comparativo: Mês Atual vs Mês Anterior</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="comparison-card">
+                        <div class="comparison-value">
+                            <span class="comparison-label">Receitas</span>
+                            <span class="comparison-amount" id="comp-receitas-atual">R$ 0,00</span>
+                            <span class="trend-indicator trend-neutral" id="comp-receitas-trend">→ 0%</span>
+                        </div>
+                    </div>
+                    <div class="comparison-card">
+                        <div class="comparison-value">
+                            <span class="comparison-label">Despesas</span>
+                            <span class="comparison-amount" id="comp-despesas-atual">R$ 0,00</span>
+                            <span class="trend-indicator trend-neutral" id="comp-despesas-trend">→ 0%</span>
+                        </div>
+                    </div>
+                    <div class="comparison-card">
+                        <div class="comparison-value">
+                            <span class="comparison-label">Saldo</span>
+                            <span class="comparison-amount" id="comp-saldo-atual">R$ 0,00</span>
+                            <span class="trend-indicator trend-neutral" id="comp-saldo-trend">→ 0%</span>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="hidden sm:block overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50/50 dark:bg-slate-800/50">
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Data</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Descrição</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoria</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Valor</th>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div id="containerFiltros" class="hidden">
+                        <label class="block text-sm font-semibold mb-2">Filtrar por Mês</label>
+                        <div id="botoesMeses" class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Buscar Transações</label>
+                        <div class="search-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <input type="text" id="searchInput" placeholder="Buscar por descrição, categoria..." class="w-full">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button id="filterAll" class="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all">Todas</button>
+                    <button id="filterReceitas" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all">Receitas</button>
+                    <button id="filterDespesas" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all">Despesas</button>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-display font-bold">Evolução do Saldo</h3>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Temporal</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="saldoChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-display font-bold">Distribuição de Gastos</h3>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categorias</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="despesasChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-display font-bold">Receitas vs. Despesas</h3>
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Comparativo</div>
+                </div>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="entradasSaidasChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabela de Transações -->
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-display font-bold mb-6">Histórico de Transações</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-slate-200 dark:border-slate-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Data</th>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Descrição</th>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Categoria</th>
+                                <th class="px-6 py-3 text-right font-semibold text-slate-600 dark:text-slate-400">Valor</th>
                             </tr>
                         </thead>
-                        <tbody id="topDespesasBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                            <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Aguardando importação...</td></tr>
+                        <tbody id="tabelaBody" class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Nenhuma transação carregada</td></tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div id="topDespesasMobile" class="sm:hidden flex flex-col gap-3 p-4 bg-slate-50/50 dark:bg-slate-900/50">
-                    </div>
             </div>
         </div>
 
+        <!-- SEÇÃO: PROJEÇÃO FUTURA -->
         <div id="secaoProjetado" class="hidden">
-            <div id="containerFiltrosProjecao" class="hidden mb-6 animate-fade-in">
-                <div class="flex flex-wrap items-center gap-4 mb-4">
-                    <div class="flex-1 min-w-[120px]">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Ano</label>
-                        <select id="filtroAnoProjecao" class="w-full px-4 py-3 sm:py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl sm:rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></select>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas Projetadas</h3>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-proj-receitas">R$ 0,00</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas Projetadas</h3>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-proj-despesas">R$ 0,00</p>
+                </div>
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500">
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Projetado (Dez/2026)</h3>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-proj-saldo">R$ 0,00</p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <label class="block text-sm font-semibold mb-4">Filtrar Projeção</label>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 block mb-2">Ano</label>
+                        <select id="filtroAnoProjecao" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-500">
+                            <option value="2026">2026</option>
+                        </select>
                     </div>
-                    <div class="flex-1 min-w-[120px]">
-                        <label class="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-2">Mês</label>
-                        <select id="filtroMesProjecao" class="w-full px-4 py-3 sm:py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl sm:rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 block mb-2">Mês</label>
+                        <select id="filtroMesProjecao" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-500">
                             <option value="">Todos os Meses</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600 dark:text-slate-400 block mb-2">Tipo</label>
+                        <select id="filtroTipoProjecao" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 focus:ring-2 focus:ring-brand-500">
+                            <option value="">Todos</option>
+                            <option value="receitas">Receitas</option>
+                            <option value="despesas">Despesas</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                        </div>
-                        <span class="projection-badge">Projetado</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-display font-bold mb-6">Evolução Projetada do Saldo</h3>
+                    <div class="chart-container">
+                        <canvas id="saldoProjecaoChart"></canvas>
                     </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas Previstas</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-proj-receitas">R$ 0,00</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
-                        </div>
-                        <span class="projection-badge">Projetado</span>
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-display font-bold mb-6">Distribuição de Despesas Projetadas</h3>
+                    <div class="chart-container">
+                        <canvas id="despesasProjecaoChart"></canvas>
                     </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas Previstas</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-proj-despesas">R$ 0,00</p>
-                </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
-                        </div>
-                        <span class="projection-badge">Projetado</span>
-                    </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Projetado</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-proj-saldo">R$ 0,00</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold">Evolução Projetada do Saldo</h3>
-                    </div>
-                    <div class="chart-container"><canvas id="saldoProjecaoChart"></canvas></div>
-                </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold">Distribuição de Despesas</h3>
-                    </div>
-                    <div class="chart-container"><canvas id="despesasProjecaoChart"></canvas></div>
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-display font-bold mb-6">Receitas vs. Despesas Projetadas</h3>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="receitasDespesasProjecaoChart"></canvas>
                 </div>
             </div>
 
-            <div class="glass-card rounded-2xl p-5 sm:p-6 mb-8 min-w-0 w-full">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-purple-600 dark:text-purple-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                        </div>
-                        <h3 class="text-lg font-display font-bold">Receitas vs. Despesas Mês a Mês</h3>
-                    </div>
-                </div>
-                <div style="position: relative; height: 350px; width: 100%;"><canvas id="receitasDespesasProjecaoChart"></canvas></div>
-            </div>
-
-            <div class="glass-card rounded-2xl overflow-hidden min-w-0 w-full mb-4">
-                <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <h3 class="text-lg font-display font-bold">Detalhamento da Projeção</h3>
-                    <select id="filtroTipoProjecao" class="text-sm font-bold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg p-2 focus:ring-2 focus:ring-brand-500">
-                        <option value="despesas">Apenas Despesas</option>
-                        <option value="receitas">Apenas Receitas</option>
-                        <option value="todas">Todas</option>
-                    </select>
-                </div>
-                
-                <div class="hidden sm:block overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50/50 dark:bg-slate-800/50">
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Data</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Descrição</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tipo</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Categoria</th>
-                                <th class="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Valor</th>
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-display font-bold mb-6">Detalhamento da Projeção</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-slate-200 dark:border-slate-700">
+                            <tr>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Data</th>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Descrição</th>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Tipo</th>
+                                <th class="px-6 py-3 text-left font-semibold text-slate-600 dark:text-slate-400">Categoria</th>
+                                <th class="px-6 py-3 text-right font-semibold text-slate-600 dark:text-slate-400">Valor</th>
                             </tr>
                         </thead>
-                        <tbody id="tabelaProjecaoBody" class="divide-y divide-slate-100 dark:divide-slate-800">
-                            <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Aguardando importação...</td></tr>
+                        <tbody id="tabelaProjecaoBody" class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Nenhuma projeção carregada</td></tr>
                         </tbody>
                     </table>
                 </div>
-
-                <div id="tabelaProjecaoMobile" class="sm:hidden flex flex-col gap-3 p-4 bg-slate-50/50 dark:bg-slate-900/50">
-                    </div>
             </div>
         </div>
 
+        <!-- SEÇÃO: VISÃO CONSOLIDADA -->
         <div id="secaoConsolidado" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-full">Total</span>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas (Executado + Projetado)</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-cons-receitas">R$ 0,00</p>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-cons-receitas">R$ 0,00</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-rose-50 dark:bg-rose-900/30 rounded-xl flex items-center justify-center text-rose-600 dark:text-rose-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
-                        </div>
-                        <span class="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-full">Total</span>
-                    </div>
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Despesas (Executado + Projetado)</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-cons-despesas">R$ 0,00</p>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-cons-despesas">R$ 0,00</p>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500 min-w-0">
-                    <div class="flex items-center justify-between mb-3 sm:mb-4">
-                        <div class="w-10 h-10 bg-brand-50 dark:bg-brand-900/30 rounded-xl flex items-center justify-center text-brand-600 dark:text-brand-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
-                        </div>
-                        <span class="text-xs font-bold text-brand-600 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded-full">Saldo Final</span>
-                    </div>
-                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Estimado</h3>
-                    <p class="text-2xl sm:text-3xl font-display font-bold mt-1 truncate" id="kpi-cons-saldo">R$ 0,00</p>
+                <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg border-b-4 border-b-brand-500">
+                    <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Saldo Estimado em Dez/2026</h3>
+                    <p class="text-3xl font-display font-bold mt-2" id="kpi-cons-saldo">R$ 0,00</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold">Evolução Consolidada</h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-display font-bold mb-6">Evolução Consolidada do Saldo</h3>
+                    <div class="chart-container">
+                        <canvas id="saldoConsolidadoChart"></canvas>
                     </div>
-                    <div class="chart-container"><canvas id="saldoConsolidadoChart"></canvas></div>
                 </div>
-                <div class="glass-card rounded-2xl p-5 sm:p-6 min-w-0 w-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold">Despesas Totais</h3>
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg font-display font-bold mb-6">Distribuição de Despesas Consolidada</h3>
+                    <div class="chart-container">
+                        <canvas id="despesasConsolidadoChart"></canvas>
                     </div>
-                    <div class="chart-container"><canvas id="despesasConsolidadoChart"></canvas></div>
                 </div>
             </div>
-            
-            <div class="glass-card rounded-2xl p-5 sm:p-6 mb-8 min-w-0 w-full">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-display font-bold">Receitas vs. Despesas Mês a Mês</h3>
+
+            <div class="glass-card rounded-2xl p-6 mb-8">
+                <h3 class="text-lg font-display font-bold mb-6">Receitas vs. Despesas Consolidadas</h3>
+                <div style="position: relative; height: 350px; width: 100%;">
+                    <canvas id="receitasDespesasConsolidadoChart"></canvas>
                 </div>
-                <div style="position: relative; height: 350px; width: 100%;"><canvas id="receitasDespesasConsolidadoChart"></canvas></div>
             </div>
         </div>
     </main>
 
+    <!-- Modal de Onboarding -->
+    <div id="onboardingModal" class="onboarding-overlay hidden">
+        <div class="onboarding-content">
+            <h2 class="text-2xl font-display font-bold mb-4">Bem-vindo ao FinanceFlow Pro!</h2>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Este é seu dashboard financeiro inteligente. Aqui você pode:</p>
+            <ul class="space-y-3 mb-8 text-sm">
+                <li class="flex items-start gap-3">
+                    <span class="text-brand-600 font-bold">✓</span>
+                    <span>Importar extratos bancários em CSV ou Excel</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-brand-600 font-bold">✓</span>
+                    <span>Visualizar análises detalhadas de suas finanças</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-brand-600 font-bold">✓</span>
+                    <span>Comparar períodos e identificar tendências</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-brand-600 font-bold">✓</span>
+                    <span>Acompanhar projeções futuras</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="text-brand-600 font-bold">✓</span>
+                    <span>Exportar relatórios em PDF</span>
+                </li>
+            </ul>
+            <button id="btnFecharOnboarding" class="w-full bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-semibold transition-all">Começar Agora</button>
+        </div>
+    </div>
+
     <script>
         // ========================================
-        // CONFIGURAÇÕES GLOBAIS E DICIONÁRIOS
+        // CONFIGURAÇÕES GLOBAIS
         // ========================================
+        Chart.register(ChartDataLabels);
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.color = '#94a3b8';
         
-        let saldoChartInstance = null; let despesasChartInstance = null; let entradasSaidasChartInstance = null;
-        let saldoProjecaoChartInstance = null; let despesasProjecaoChartInstance = null; let receitasDespesasProjecaoChartInstance = null;
-        let saldoConsolidadoChartInstance = null; let despesasConsolidadoChartInstance = null; let receitasDespesasConsolidadoChartInstance = null;
+        let saldoChartInstance = null;
+        let despesasChartInstance = null;
+        let entradasSaidasChartInstance = null;
+        let saldoProjecaoChartInstance = null;
+        let despesasProjecaoChartInstance = null;
+        let receitasDespesasProjecaoChartInstance = null;
+        let saldoConsolidadoChartInstance = null;
+        let despesasConsolidadoChartInstance = null;
+        let receitasDespesasConsolidadoChartInstance = null;
         
-        let transacoesGlobais = []; let transacoesProjetadas = [];
-        let mesAtualFiltro = 'Todos'; let anoProjecaoFiltro = '2026'; let mesProjecaoFiltro = '';
-        let metasOrcamento = JSON.parse(localStorage.getItem('metasOrcamento') || '{}');
-        let gastosPorCategoria = {}; let abaSelecionada = 'real';
+        let transacoesGlobais = [];
+        let transacoesProjetadas = [];
+        let mesAtualFiltro = 'Todos';
+        let anoProjecaoFiltro = '2026';
+        let mesProjecaoFiltro = '';
+        let abaSelecionada = 'real';
+        let filtroTipo = 'todos';
+        let searchTerm = '';
 
         const nomesDosMeses = {
-            "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr", "05": "Mai", "06": "Jun",
-            "07": "Jul", "08": "Ago", "09": "Set", "10": "Out", "11": "Nov", "12": "Dez"
-        };
-        
-        const conversorMesGlobal = {
-            "jan": "01", "fev": "02", "mar": "03", "abr": "04", "mai": "05", "jun": "06", "jul": "07", "ago": "08", "set": "09", "out": "10", "nov": "11", "dez": "12",
-            "janeiro": "01", "fevereiro": "02", "março": "03", "marco": "03", "maio": "05", "junho": "06", "julho": "07", "agosto": "08", "setembro": "09", "outubro": "10", "novembro": "11", "dezembro": "12"
+            "01": "Jan", "02": "Fev", "03": "Mar", "04": "Abr",
+            "05": "Mai", "06": "Jun", "07": "Jul", "08": "Ago",
+            "09": "Set", "10": "Out", "11": "Nov", "12": "Dez"
         };
 
         const coresCategorias = {
-            '🏠 Moradia & Contas': '#3b82f6', '🍔 Alimentação & Lazer': '#10b981', '🚗 Transporte & Veículo': '#f59e0b',
-            '👶 Filhos, Babá & Educação': '#8b5cf6', '🛍️ Compras & Assinaturas': '#ec4899', '💳 Financeiro & Cartões': '#ef4444',
-            '🔄 Outros PIX e Transf.': '#14b8a6', '📦 Outros Gastos': '#64748b', 'Entrada/Rendimento': '#10b981',
-            'Moradia': '#3b82f6', 'Empregada': '#8b5cf6', 'Cartão de Crédito': '#ef4444', 'Salário': '#10b981', 'Financiamento': '#f59e0b'
+            '🏠 Moradia & Contas': '#3b82f6',
+            '🍔 Alimentação & Lazer': '#10b981',
+            '🚗 Transporte & Veículo': '#f59e0b',
+            '👶 Filhos, Babá & Educação': '#8b5cf6',
+            '🛍️ Compras & Assinaturas': '#ec4899',
+            '💳 Financeiro & Cartões': '#ef4444',
+            '🔄 Outros PIX e Transf.': '#14b8a6',
+            '📦 Outros Gastos': '#64748b',
+            'Entrada/Rendimento': '#10b981',
+            'Moradia': '#3b82f6',
+            'Empregada': '#8b5cf6',
+            'Cartão de Crédito': '#ef4444',
+            'Salário': '#10b981',
+            'Financiamento': '#f59e0b'
         };
 
         // ========================================
-        // EVOLUÇÃO NÍVEL 3: SINCRONIZAÇÃO EM TEMPO REAL 
+        // ONBOARDING
         // ========================================
-        const LINK_CSV_EXTRATO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=0&single=true&output=csv';
-        const LINK_CSV_PROJETADO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=489511638&single=true&output=csv';
-
-        async function sincronizarComNuvem() {
-            mostrarStatus("Sincronizando dados...", "sucesso");
-            
-            try {
-                // 1. Busca os dados reais
-                const respostaExtrato = await fetch(LINK_CSV_EXTRATO);
-                const csvExtrato = await respostaExtrato.text();
-                
-                Papa.parse(csvExtrato, {
-                    complete: function(results) { 
-                        processarMatriz(results.data); 
-                        
-                        // 2. Após processar o extrato, busca as projeções
-                        fetch(LINK_CSV_PROJETADO)
-                            .then(res => res.text())
-                            .then(csvProj => {
-                                Papa.parse(csvProj, {
-                                    complete: function(resProj) {
-                                        processarProjecoes(resProj.data);
-                                        mostrarStatus("Dashboard atualizado com o Google Sheets!", "sucesso");
-                                    },
-                                    skipEmptyLines: true
-                                });
-                            });
-                    },
-                    skipEmptyLines: true
-                });
-            } catch (erro) {
-                mostrarStatus("Erro de conexão. Verifique sua internet.", "erro");
-                console.error(erro);
+        function mostrarOnboarding() {
+            if (!localStorage.getItem('onboardingCompleto')) {
+                document.getElementById('onboardingModal').classList.remove('hidden');
             }
         }
 
-        window.addEventListener('DOMContentLoaded', sincronizarComNuvem);
-
-        // ========================================
-        // NAVEGAÇÃO ENTRE ABAS (UNIFICADA DESKTOP/MOBILE)
-        // ========================================
-        const tabReal = document.getElementById('tabReal');
-        const tabProjetado = document.getElementById('tabProjetado');
-        const tabConsolidado = document.getElementById('tabConsolidado');
-        const secaoReal = document.getElementById('secaoReal');
-        const secaoProjetado = document.getElementById('secaoProjetado');
-        const secaoConsolidado = document.getElementById('secaoConsolidado');
-        
-        const navMobileReal = document.getElementById('navMobileReal');
-        const navMobileProj = document.getElementById('navMobileProj');
-        const navMobileCons = document.getElementById('navMobileCons');
-
-        function switchTab(tab) {
-            abaSelecionada = tab;
-            
-            // Abas Desktop
-            tabReal.className = tab === 'real' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
-            tabProjetado.className = tab === 'projetado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
-            tabConsolidado.className = tab === 'consolidado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
-            
-            // Abas Mobile
-            navMobileReal.className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'real' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
-            navMobileProj.className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'projetado' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
-            navMobileCons.className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'consolidado' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
-
-            // Exibir/Esconder Seções
-            secaoReal.classList.toggle('hidden', tab !== 'real');
-            secaoProjetado.classList.toggle('hidden', tab !== 'projetado');
-            secaoConsolidado.classList.toggle('hidden', tab !== 'consolidado');
-
-            if (tab === 'consolidado') atualizarDashboardConsolidado();
-        }
-
-        tabReal.addEventListener('click', () => switchTab('real'));
-        tabProjetado.addEventListener('click', () => switchTab('projetado'));
-        tabConsolidado.addEventListener('click', () => switchTab('consolidado'));
-        navMobileReal.addEventListener('click', () => switchTab('real'));
-        navMobileProj.addEventListener('click', () => switchTab('projetado'));
-        navMobileCons.addEventListener('click', () => switchTab('consolidado'));
-
-        const btnToggleDarkMode = document.getElementById('btnToggleDarkMode');
-        if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
-        btnToggleDarkMode.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        document.getElementById('btnFecharOnboarding').addEventListener('click', () => {
+            document.getElementById('onboardingModal').classList.add('hidden');
+            localStorage.setItem('onboardingCompleto', 'true');
         });
 
-        document.getElementById('btnExportarPDF').addEventListener('click', () => {
-            const element = document.querySelector('main');
-            html2pdf().set({ margin: 10, filename: `relatorio.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' } }).from(element).save();
-        });
+        window.addEventListener('DOMContentLoaded', mostrarOnboarding);
 
         // ========================================
-        // FUNÇÕES UTILITÁRIAS E CONVERSORES
+        // UTILITÁRIOS
         // ========================================
         function mostrarStatus(mensagem, tipo) {
             const statusEl = document.getElementById('statusMessage');
             statusEl.innerText = mensagem;
-            statusEl.className = `px-4 py-2 rounded-lg text-sm font-medium block animate-fade-in ${tipo === 'erro' ? 'bg-rose-50 text-rose-700 border border-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`;
+            statusEl.className = `px-4 py-2 rounded-lg text-sm font-medium block animate-fade-in ${
+                tipo === 'erro' ? 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-200 border border-rose-100 dark:border-rose-800' : 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-200 border border-emerald-100 dark:border-emerald-800'
+            }`;
             if (tipo === 'sucesso') setTimeout(() => statusEl.classList.add('hidden'), 5000);
         }
 
@@ -611,8 +767,11 @@
             let str = String(val).trim().replace(/[R$\s]/g, '');
             if (str === "") return 0;
             if (str.includes(',') && str.includes('.')) {
-                if (str.lastIndexOf(',') > str.lastIndexOf('.')) str = str.replace(/\./g, '').replace(',', '.');
-                else str = str.replace(/,/g, '');
+                if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
+                    str = str.replace(/\./g, '').replace(',', '.');
+                } else {
+                    str = str.replace(/,/g, '');
+                }
             } else if (str.includes(',')) {
                 str = str.replace(',', '.');
             }
@@ -621,71 +780,96 @@
 
         function formatarDataCompleta(val) {
             if (!val) return null;
-            let strVal = String(val).trim();
-            if (/^\d+(\.\d+)?$/.test(strVal)) {
-                let num = parseFloat(strVal);
-                if (num > 30000) {
-                    let dataJS = new Date((num - 25569) * 86400 * 1000);
-                    dataJS = new Date(dataJS.getTime() + dataJS.getTimezoneOffset() * 60000);
-                    return `${String(dataJS.getDate()).padStart(2, '0')}/${String(dataJS.getMonth() + 1).padStart(2, '0')}/${dataJS.getFullYear()}`;
-                }
+            if (typeof val === 'number') {
+                let dataJS = new Date((val - 25569) * 86400 * 1000);
+                dataJS = new Date(dataJS.getTime() + dataJS.getTimezoneOffset() * 60000);
+                let dia = String(dataJS.getDate()).padStart(2, '0');
+                let mes = String(dataJS.getMonth() + 1).padStart(2, '0');
+                let ano = dataJS.getFullYear();
+                return `${dia}/${mes}/${ano}`;
             }
-            let matchISO = strVal.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
-            if (matchISO) return `${matchISO[3]}/${matchISO[2]}/${matchISO[1]}`;
-            let matchLonga = strVal.match(/(\d{1,2})\s+de\s+([a-zA-ZçÇ]+)\s+de\s+(\d{4})/i);
-            if (matchLonga) {
-                let mesNum = conversorMesGlobal[matchLonga[2].toLowerCase()];
-                if (mesNum) return `${matchLonga[1].padStart(2, '0')}/${mesNum}/${matchLonga[3]}`;
-            }
-            let matchBR = strVal.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-            if (matchBR) return `${matchBR[1]}/${matchBR[2]}/${matchBR[3]}`;
-            if (strVal.length >= 10 && strVal.includes('/')) return strVal.substring(0, 10);
-            return strVal;
+            let str = String(val).trim();
+            if (str.length >= 10) return str.substring(0, 10); 
+            return str;
         }
 
         // ========================================
-        // IMPORTAÇÃO MANUAL
+        // IMPORTAÇÃO DE ARQUIVOS
         // ========================================
         document.getElementById('arquivoInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (!file) return;
-            mostrarStatus("Processando arquivo local...", "sucesso");
+            mostrarStatus("Processando arquivo...", "sucesso");
             const leitorAssinatura = new FileReader();
             leitorAssinatura.onload = function(e) {
                 const arr = new Uint8Array(e.target.result);
                 const isRealExcel = (arr[0] === 80 && arr[1] === 75) || (arr[0] === 208 && arr[1] === 207);
-                if (isRealExcel) lerComoExcel(file); else lerComoTexto(file);
+                if (isRealExcel) lerComoExcel(file);
+                else lerComoTexto(file);
             };
             leitorAssinatura.readAsArrayBuffer(file.slice(0, 4));
         });
 
         function lerComoTexto(file) {
             const reader = new FileReader();
-            reader.onload = function(e) { Papa.parse(e.target.result, { complete: function(results) { processarMatriz(results.data); }, skipEmptyLines: true }); };
+            reader.onload = function(e) {
+                Papa.parse(e.target.result, {
+                    complete: function(results) { processarMatriz(results.data); },
+                    skipEmptyLines: true
+                });
+            };
             reader.readAsText(file, 'ISO-8859-1');
         }
 
         function lerComoExcel(file) {
             const reader = new FileReader();
-            reader.onerror = function() { mostrarStatus('Erro ao ler o arquivo.', 'erro'); };
+            reader.onerror = function(e) {
+                console.error('Erro ao ler arquivo:', e);
+                mostrarStatus('Erro ao ler o arquivo. Tente novamente.', 'erro');
+            };
             reader.onload = function(e) {
                 try {
-                    const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    
+                    console.log('Abas encontradas:', workbook.SheetNames);
+                    
                     const nomeAbaReal = workbook.SheetNames.find(name => name.includes('Extrato'));
-                    if (nomeAbaReal) processarMatriz(XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaReal], {header: 1, defval: ""}));
+                    if (nomeAbaReal) {
+                        console.log('Processando aba real:', nomeAbaReal);
+                        const jsonReal = XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaReal], {header: 1, defval: ""});
+                        console.log('Linhas da aba real:', jsonReal.length);
+                        processarMatriz(jsonReal);
+                    } else {
+                        console.warn('Aba de Extrato não encontrada');
+                        mostrarStatus('Aba de Extrato não encontrada no arquivo.', 'erro');
+                    }
+
                     const nomeAbaProjetado = workbook.SheetNames.find(name => name.includes('Projetado'));
-                    if (nomeAbaProjetado) processarProjecoes(XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaProjetado], {header: 1, defval: ""}));
-                } catch (erro) { mostrarStatus('Erro: ' + erro.message, 'erro'); }
+                    if (nomeAbaProjetado) {
+                        console.log('Processando aba projetado:', nomeAbaProjetado);
+                        const jsonProjetado = XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaProjetado], {header: 1, defval: ""});
+                        console.log('Linhas da aba projetado:', jsonProjetado.length);
+                        processarProjecoes(jsonProjetado);
+                    } else {
+                        console.warn('Aba de Projetado não encontrada');
+                    }
+                } catch (erro) {
+                    console.error('Erro ao processar Excel:', erro);
+                    mostrarStatus('Erro ao processar o arquivo: ' + erro.message, 'erro');
+                }
             };
             reader.readAsArrayBuffer(file);
         }
 
         // ========================================
-        // PROCESSAMENTO DE DADOS (REAL)
+        // PROCESSAMENTO: DADOS REAIS
         // ========================================
         function processarMatriz(linhas) {
+            console.log('Iniciando processamento de matriz. Total de linhas:', linhas.length);
             let indexData = -1, indexDesc = -1, indexCred = -1, indexDeb = -1, indexSaldo = -1;
             let inicioDados = false;
+
             for (let i = 0; i < Math.min(linhas.length, 30); i++) {
                 const linha = linhas[i];
                 if (!linha || !Array.isArray(linha)) continue;
@@ -698,12 +882,17 @@
                     else if (val.includes("SALDO")) indexSaldo = c;
                 }
                 if (indexData !== -1 && indexDesc !== -1 && (indexDeb !== -1 || indexCred !== -1)) {
-                    linhas = linhas.slice(i + 1); inicioDados = true; break;
+                    linhas = linhas.slice(i + 1);
+                    inicioDados = true;
+                    break;
                 }
             }
+
             if (!inicioDados) { indexData = 0; indexDesc = 1; indexCred = 4; indexDeb = 5; indexSaldo = 6; }
 
-            transacoesGlobais = []; let mesesDetectados = new Set();
+            transacoesGlobais = [];
+            let mesesDetectados = new Set();
+
             for (let linha of linhas) {
                 if (!linha || linha.length === 0 || linha[indexData] === undefined) continue;
                 let dataCrua = formatarDataCompleta(linha[indexData]);
@@ -711,13 +900,16 @@
 
                 let partesData = dataCrua.split('/');
                 let mesAno = `${partesData[1]}/${partesData[2]}`;
+                let dataCurta = `${partesData[0]}/${partesData[1]}`;
                 mesesDetectados.add(mesAno);
 
                 let descricao = String(linha[indexDesc] || "Sem descrição").trim();
                 let credito = converterNumero(linha[indexCred]);
                 let debito = converterNumero(linha[indexDeb]);
-                
-                let valorEntrada = Math.abs(credito); let valorSaida = Math.abs(debito);
+                let saldo = converterNumero(linha[indexSaldo]);
+
+                let valorEntrada = Math.abs(credito);
+                let valorSaida = Math.abs(debito);
                 if (valorEntrada === 0 && valorSaida === 0) continue;
 
                 let categoriaAtribuida = "Entrada/Rendimento";
@@ -734,18 +926,37 @@
                 }
 
                 transacoesGlobais.push({
-                    dataStr: dataCrua, dataCurta: `${partesData[0]}/${partesData[1]}`, mesAno: mesAno, descricao: descricao,
-                    categoria: categoriaAtribuida, valorEntrada: valorEntrada, valorSaida: valorSaida,
-                    valorAbsoluto: valorSaida > 0 ? valorSaida : valorEntrada, isSaida: valorSaida > 0, saldo: converterNumero(linha[indexSaldo])
+                    dataStr: dataCrua,
+                    dataCurta: dataCurta,
+                    mesAno: mesAno,
+                    descricao: descricao,
+                    categoria: categoriaAtribuida,
+                    valorEntrada: valorEntrada,
+                    valorSaida: valorSaida,
+                    valorAbsoluto: valorSaida > 0 ? valorSaida : valorEntrada,
+                    isSaida: valorSaida > 0,
+                    saldo: saldo
                 });
             }
-            if (transacoesGlobais.length > 0) {
-                montarFiltrosDeMes(Array.from(mesesDetectados));
-                atualizarDashboard('Todos');
+
+            console.log('Total de transações processadas:', transacoesGlobais.length);
+            console.log('Meses detectados:', Array.from(mesesDetectados));
+            
+            if (transacoesGlobais.length === 0) {
+                mostrarStatus("Erro: O arquivo parece estar sem dados financeiros.", "erro");
+                return;
             }
+
+            montarFiltrosDeMes(Array.from(mesesDetectados));
+            atualizarDashboard('Todos');
+            mostrarStatus(`Análise concluída com sucesso! ${transacoesGlobais.length} transações carregadas.`, 'sucesso');
         }
 
+        // ========================================
+        // PROCESSAMENTO: PROJEÇÕES
+        // ========================================
         function processarProjecoes(linhas) {
+            console.log('Iniciando processamento de projeções. Total de linhas:', linhas.length);
             transacoesProjetadas = [];
             let anosDetectados = new Set();
             let mesesDetectados = new Set();
@@ -754,31 +965,22 @@
                 const linha = linhas[i];
                 if (!linha || linha.length === 0) continue;
 
-                const dataRaw = linha[0];
-                let dataFormatada = formatarDataCompleta(dataRaw);
-                
+                const data = String(linha[0] || "").trim();
                 const ano = String(linha[1] || "").trim();
                 const mes = String(linha[2] || "").trim();
                 const tipo = String(linha[4] || "").trim();
                 const categoria = String(linha[5] || "").trim();
                 const descricao = String(linha[7] || "").trim();
-                
-                // CORREÇÃO MANTIDA: Math.abs garante que as despesas não fiquem negativas duplicadas no cálculo
-                const valor = Math.abs(converterNumero(linha[8]));
+                const valor = converterNumero(linha[8]);
                 const saldo = converterNumero(linha[9]);
 
-                if (!ano || !mes || !tipo || !descricao || valor === 0) continue;
-
-                if (!dataFormatada || dataFormatada === "null") {
-                    let numMes = conversorMesGlobal[mes.toLowerCase()] || "01";
-                    dataFormatada = `01/${numMes}/${ano}`;
-                }
+                if (!data || !ano || !mes || !tipo || !descricao || valor === 0) continue;
 
                 anosDetectados.add(ano);
                 mesesDetectados.add(mes);
 
                 transacoesProjetadas.push({
-                    data: dataFormatada,
+                    data: formatarDataCompleta(data) || data,
                     ano: ano,
                     mes: mes,
                     tipo: tipo,
@@ -791,264 +993,960 @@
                 });
             }
 
-            const selectAno = document.getElementById('filtroAnoProjecao'); const selectMes = document.getElementById('filtroMesProjecao');
+            console.log('Total de transações projetadas processadas:', transacoesProjetadas.length);
+            console.log('Anos detectados:', Array.from(anosDetectados));
+            console.log('Meses detectados:', Array.from(mesesDetectados));
+            
+            const selectAno = document.getElementById('filtroAnoProjecao');
+            const selectMes = document.getElementById('filtroMesProjecao');
+            
             selectAno.innerHTML = '';
-            Array.from(anosDetectados).sort().forEach(ano => { const opt = document.createElement('option'); opt.value = ano; opt.textContent = ano; selectAno.appendChild(opt); });
+            Array.from(anosDetectados).sort().forEach(ano => {
+                const option = document.createElement('option');
+                option.value = ano;
+                option.textContent = ano;
+                selectAno.appendChild(option);
+            });
+
             selectMes.innerHTML = '<option value="">Todos os Meses</option>';
             Array.from(mesesDetectados).forEach(mes => {
-                const opt = document.createElement('option'); opt.value = mes; 
-                const mesKey = conversorMesGlobal[mes.toLowerCase()];
-                opt.textContent = mesKey && nomesDosMeses[mesKey] ? nomesDosMeses[mesKey] : mes; 
-                selectMes.appendChild(opt);
+                const option = document.createElement('option');
+                option.value = mes;
+                option.textContent = nomesDosMeses[mes] || mes;
+                selectMes.appendChild(option);
             });
 
             if (transacoesProjetadas.length > 0) {
-                document.getElementById('containerFiltrosProjecao').classList.remove('hidden');
                 atualizarDashboardProjecao();
-                selectAno.addEventListener('change', atualizarDashboardProjecao);
-                selectMes.addEventListener('change', atualizarDashboardProjecao);
-                document.getElementById('filtroTipoProjecao').addEventListener('change', () => renderizarTabelaProjecao(transacoesProjetadas));
+                mostrarStatus('Projeções carregadas com sucesso!', 'sucesso');
+            } else {
+                console.warn('Nenhuma transação projetada encontrada');
             }
         }
 
         // ========================================
-        // RENDERIZADORES DADOS REAIS
+        // ABAS DE NAVEGAÇÃO
+        // ========================================
+        function switchTab(tab) {
+            abaSelecionada = tab;
+            document.getElementById('tabReal').className = tab === 'real' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
+            document.getElementById('tabProjetado').className = tab === 'projetado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
+            document.getElementById('tabConsolidado').className = tab === 'consolidado' ? 'tab-button active whitespace-nowrap' : 'tab-button inactive whitespace-nowrap';
+            
+            document.getElementById('navMobileReal').className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'real' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
+            document.getElementById('navMobileProj').className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'projetado' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
+            document.getElementById('navMobileCons').className = `flex flex-col items-center justify-center w-full h-full transition-colors ${tab === 'consolidado' ? 'text-brand-600 dark:text-brand-400' : 'text-slate-400 hover:text-brand-500'}`;
+
+            document.getElementById('secaoReal').classList.toggle('hidden', tab !== 'real');
+            document.getElementById('secaoProjetado').classList.toggle('hidden', tab !== 'projetado');
+            document.getElementById('secaoConsolidado').classList.toggle('hidden', tab !== 'consolidado');
+            
+            if (tab === 'consolidado') atualizarDashboardConsolidado();
+        }
+
+        ['tabReal', 'navMobileReal'].forEach(id => document.getElementById(id)?.addEventListener('click', () => switchTab('real')));
+        ['tabProjetado', 'navMobileProj'].forEach(id => document.getElementById(id)?.addEventListener('click', () => switchTab('projetado')));
+        ['tabConsolidado', 'navMobileCons'].forEach(id => document.getElementById(id)?.addEventListener('click', () => switchTab('consolidado')));
+
+        // ========================================
+        // MODO ESCURO
+        // ========================================
+        const btnToggleDarkMode = document.getElementById('btnToggleDarkMode');
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) document.body.classList.add('dark-mode');
+
+        btnToggleDarkMode.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // ========================================
+        // BUSCA E FILTROS
+        // ========================================
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchTerm = e.target.value.toLowerCase();
+            renderizarTabela(filtrarTransacoes());
+        });
+
+        document.getElementById('filterAll').addEventListener('click', () => {
+            filtroTipo = 'todos';
+            document.getElementById('filterAll').className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all';
+            document.getElementById('filterReceitas').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            document.getElementById('filterDespesas').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            renderizarTabela(filtrarTransacoes());
+        });
+
+        document.getElementById('filterReceitas').addEventListener('click', () => {
+            filtroTipo = 'receitas';
+            document.getElementById('filterAll').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            document.getElementById('filterReceitas').className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all';
+            document.getElementById('filterDespesas').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            renderizarTabela(filtrarTransacoes());
+        });
+
+        document.getElementById('filterDespesas').addEventListener('click', () => {
+            filtroTipo = 'despesas';
+            document.getElementById('filterAll').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            document.getElementById('filterReceitas').className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all';
+            document.getElementById('filterDespesas').className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all';
+            renderizarTabela(filtrarTransacoes());
+        });
+
+        function filtrarTransacoes() {
+            let dados = mesAtualFiltro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => t.mesAno === mesAtualFiltro);
+            
+            if (filtroTipo === 'receitas') dados = dados.filter(t => !t.isSaida);
+            else if (filtroTipo === 'despesas') dados = dados.filter(t => t.isSaida);
+            
+            if (searchTerm) {
+                dados = dados.filter(t => 
+                    t.descricao.toLowerCase().includes(searchTerm) ||
+                    t.categoria.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            return dados;
+        }
+
+        // ========================================
+        // MONTAGEM DE FILTROS
         // ========================================
         function montarFiltrosDeMes(listaMesesAno) {
-            const container = document.getElementById('containerFiltros'); const boxBotoes = document.getElementById('botoesMeses');
+            const container = document.getElementById('containerFiltros');
+            const boxBotoes = document.getElementById('botoesMeses');
             boxBotoes.innerHTML = '';
             if (listaMesesAno.length <= 1) { container.classList.add('hidden'); return; }
             container.classList.remove('hidden');
-            listaMesesAno.sort((a, b) => { const pA = a.split('/'); const pB = b.split('/'); return (pA[1]+pA[0]).localeCompare(pB[1]+pB[0]); });
 
-            boxBotoes.appendChild(criarBotaoMes('Todos', 'Visão Geral'));
-            listaMesesAno.forEach(mesAno => {
-                let partes = mesAno.split('/'); let nomeAmigavel = nomesDosMeses[partes[0]] ? `${nomesDosMeses[partes[0]]}/${partes[1].substring(2)}` : mesAno;
-                boxBotoes.appendChild(criarBotaoMes(mesAno, nomeAmigavel));
+            const botaoTodos = document.createElement('button');
+            botaoTodos.className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all whitespace-nowrap';
+            botaoTodos.textContent = 'Todos';
+            botaoTodos.addEventListener('click', () => {
+                mesAtualFiltro = 'Todos';
+                document.querySelectorAll('#botoesMeses button').forEach(b => b.className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all whitespace-nowrap');
+                botaoTodos.className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all whitespace-nowrap';
+                atualizarDashboard('Todos');
+            });
+            boxBotoes.appendChild(botaoTodos);
+
+            listaMesesAno.sort().forEach(mesAno => {
+                const botao = document.createElement('button');
+                botao.className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all whitespace-nowrap';
+                const partes = mesAno.split('/');
+                botao.textContent = `${nomesDosMeses[partes[0]]}/${partes[1]}`;
+                botao.addEventListener('click', () => {
+                    mesAtualFiltro = mesAno;
+                    document.querySelectorAll('#botoesMeses button').forEach(b => b.className = 'px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-sm font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all whitespace-nowrap');
+                    botao.className = 'px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-semibold transition-all whitespace-nowrap';
+                    atualizarDashboard(mesAno);
+                });
+                boxBotoes.appendChild(botao);
             });
         }
 
-        function criarBotaoMes(valorFiltro, texto) {
-            const btn = document.createElement('button'); btn.innerText = texto;
-            btn.className = `px-5 py-2.5 rounded-xl text-sm sm:text-xs font-bold whitespace-nowrap transition-all border ${mesAtualFiltro === valorFiltro ? 'btn-active border-brand-600' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-brand-300 hover:text-brand-600'}`;
-            btn.onclick = () => { mesAtualFiltro = valorFiltro; montarFiltrosDeMes(Array.from(new Set(transacoesGlobais.map(t => t.mesAno)))); atualizarDashboard(mesAtualFiltro); };
-            return btn;
-        }
+        // ========================================
+        // ATUALIZAÇÃO DO DASHBOARD
+        // ========================================
+        function atualizarDashboard(mesSelecionado) {
+            let dados = mesSelecionado === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => t.mesAno === mesSelecionado);
+            
+            let totalEntradas = 0, totalSaidas = 0;
+            let gastosPorCategoria = {};
 
-        function atualizarDashboard(mesFiltrado) {
-            let dadosFiltrados = mesFiltrado === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => t.mesAno === mesFiltrado);
-            let totalEntradas = 0, totalSaidas = 0; gastosPorCategoria = {};
-            dadosFiltrados.forEach(t => { totalEntradas += t.valorEntrada; totalSaidas += t.valorSaida; if (t.isSaida) gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + t.valorSaida; });
+            dados.forEach(t => {
+                totalEntradas += t.valorEntrada;
+                totalSaidas += t.valorSaida;
+                if (t.isSaida) {
+                    gastosPorCategoria[t.categoria] = (gastosPorCategoria[t.categoria] || 0) + t.valorSaida;
+                }
+            });
 
-            const balanco = totalEntradas - totalSaidas;
+            const saldo = totalEntradas - totalSaidas;
+            const taxaPoupanca = totalEntradas > 0 ? ((saldo / totalEntradas) * 100).toFixed(1) : 0;
+
             document.getElementById('kpi-entradas').innerText = `R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('kpi-saidas').innerText = `R$ ${totalSaidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            const balancoEl = document.getElementById('kpi-balanco');
-            balancoEl.innerText = `R$ ${balanco.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            balancoEl.className = `text-2xl sm:text-3xl font-display font-bold mt-1 truncate ${balanco >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
+            document.getElementById('kpi-despesas').innerText = `R$ ${totalSaidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-saldo').innerText = `R$ ${saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-taxa').innerText = `${taxaPoupanca}%`;
 
-            let paraGraficos = [...dadosFiltrados].reverse();
-            renderizarGraficoSaldo(paraGraficos.map(t => t.dataCurta), paraGraficos.map(t => t.saldo));
-            renderizarGraficoDespesas(gastosPorCategoria); renderizarGraficoEntradasSaidas(mesFiltrado); 
-            renderizarTabela(dadosFiltrados);
+            // Calcular Saúde Financeira
+            calcularSaudeFinanceira(totalEntradas, totalSaidas, dados.length);
+
+            // Comparativo Período vs Período
+            calcularComparativoPeriodos(mesSelecionado);
+
+            renderizarGraficoSaldo(dados);
+            renderizarGraficoDespesas(gastosPorCategoria);
+            renderizarGraficoEntradasSaidas(dados);
+            renderizarTabela(filtrarTransacoes());
         }
 
-        function renderizarGraficoSaldo(labels, data) {
-            const ctx = document.getElementById('saldoChart').getContext('2d'); if (saldoChartInstance) saldoChartInstance.destroy();
-            const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(12, 145, 235, 0.2)'); grad.addColorStop(1, 'rgba(12, 145, 235, 0)');
-            saldoChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Saldo', data: data, borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: '#0c91eb' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+        // ========================================
+        // SAÚDE FINANCEIRA
+        // ========================================
+        function calcularSaudeFinanceira(receitas, despesas, numTransacoes) {
+            let score = 50;
+            
+            if (receitas > 0) {
+                const margem = ((receitas - despesas) / receitas) * 100;
+                if (margem >= 30) score += 30;
+                else if (margem >= 20) score += 20;
+                else if (margem >= 10) score += 10;
+                else if (margem >= 0) score += 5;
+            }
+
+            if (numTransacoes > 10) score += 15;
+            else if (numTransacoes > 5) score += 10;
+
+            score = Math.min(100, Math.max(0, score));
+
+            const scoreEl = document.getElementById('healthScore');
+            scoreEl.innerText = Math.round(score);
+            
+            if (score >= 90) scoreEl.className = 'health-score excellent';
+            else if (score >= 70) scoreEl.className = 'health-score good';
+            else if (score >= 50) scoreEl.className = 'health-score fair';
+            else scoreEl.className = 'health-score poor';
+        }
+
+        // ========================================
+        // COMPARATIVO PERÍODO VS PERÍODO
+        // ========================================
+        function calcularComparativoPeriodos(mesSelecionado) {
+            let mesesUnicos = [...new Set(transacoesGlobais.map(t => t.mesAno))].sort();
+            
+            if (mesesUnicos.length < 2) {
+                document.getElementById('comp-receitas-atual').innerText = 'R$ 0,00';
+                document.getElementById('comp-despesas-atual').innerText = 'R$ 0,00';
+                document.getElementById('comp-saldo-atual').innerText = 'R$ 0,00';
+                return;
+            }
+
+            let mesAtual = mesSelecionado === 'Todos' ? mesesUnicos[mesesUnicos.length - 1] : mesSelecionado;
+            let mesAnterior = mesesUnicos[mesesUnicos.indexOf(mesAtual) - 1];
+
+            let dadosAtual = transacoesGlobais.filter(t => t.mesAno === mesAtual);
+            let dadosAnterior = mesAnterior ? transacoesGlobais.filter(t => t.mesAno === mesAnterior) : [];
+
+            let receitasAtual = dadosAtual.reduce((sum, t) => sum + t.valorEntrada, 0);
+            let despesasAtual = dadosAtual.reduce((sum, t) => sum + t.valorSaida, 0);
+            let saldoAtual = receitasAtual - despesasAtual;
+
+            let receitasAnterior = dadosAnterior.reduce((sum, t) => sum + t.valorEntrada, 0);
+            let despesasAnterior = dadosAnterior.reduce((sum, t) => sum + t.valorSaida, 0);
+            let saldoAnterior = receitasAnterior - despesasAnterior;
+
+            let trendReceitas = receitasAnterior > 0 ? (((receitasAtual - receitasAnterior) / receitasAnterior) * 100) : 0;
+            let trendDespesas = despesasAnterior > 0 ? (((despesasAtual - despesasAnterior) / despesasAnterior) * 100) : 0;
+            let trendSaldo = saldoAnterior !== 0 ? (((saldoAtual - saldoAnterior) / Math.abs(saldoAnterior)) * 100) : 0;
+
+            document.getElementById('comp-receitas-atual').innerText = `R$ ${receitasAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('comp-despesas-atual').innerText = `R$ ${despesasAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('comp-saldo-atual').innerText = `R$ ${saldoAtual.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+
+            let classReceitas = trendReceitas > 0 ? 'trend-up' : trendReceitas < 0 ? 'trend-down' : 'trend-neutral';
+            let classDespesas = trendDespesas > 0 ? 'trend-down' : trendDespesas < 0 ? 'trend-up' : 'trend-neutral';
+            let classSaldo = trendSaldo > 0 ? 'trend-up' : trendSaldo < 0 ? 'trend-down' : 'trend-neutral';
+
+            document.getElementById('comp-receitas-trend').className = `trend-indicator ${classReceitas}`;
+            document.getElementById('comp-receitas-trend').innerText = `${trendReceitas > 0 ? '↑' : trendReceitas < 0 ? '↓' : '→'} ${Math.abs(trendReceitas).toFixed(1)}%`;
+
+            document.getElementById('comp-despesas-trend').className = `trend-indicator ${classDespesas}`;
+            document.getElementById('comp-despesas-trend').innerText = `${trendDespesas > 0 ? '↑' : trendDespesas < 0 ? '↓' : '→'} ${Math.abs(trendDespesas).toFixed(1)}%`;
+
+            document.getElementById('comp-saldo-trend').className = `trend-indicator ${classSaldo}`;
+            document.getElementById('comp-saldo-trend').innerText = `${trendSaldo > 0 ? '↑' : trendSaldo < 0 ? '↓' : '→'} ${Math.abs(trendSaldo).toFixed(1)}%`;
+        }
+
+        // ========================================
+        // GRÁFICOS
+        // ========================================
+        function renderizarGraficoSaldo(dados) {
+            const ctx = document.getElementById('saldoChart').getContext('2d');
+            if (saldoChartInstance) saldoChartInstance.destroy();
+
+            const dadosOrdenados = [...dados].sort((a, b) => new Date(a.dataStr.split('/').reverse().join('-')) - new Date(b.dataStr.split('/').reverse().join('-')));
+            const labels = dadosOrdenados.map(d => d.dataStr);
+            const saldos = dadosOrdenados.map(d => d.saldo);
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(12, 145, 235, 0.2)');
+            gradient.addColorStop(1, 'rgba(12, 145, 235, 0)');
+
+            saldoChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Saldo',
+                        data: saldos,
+                        borderColor: '#0c91eb',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#0c91eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
         function renderizarGraficoDespesas(categorias) {
-            const ctx = document.getElementById('despesasChart').getContext('2d'); if (despesasChartInstance) despesasChartInstance.destroy();
-            const labels = Object.keys(categorias); const data = Object.values(categorias);
-            const colors = labels.map(l => coresCategorias[l] || '#cbd5e1'); const total = data.reduce((a, b) => a + b, 0);
-            despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { datalabels: { display: true, color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (value) => ((value / total) * 100).toFixed(1) + '%' }, legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } } } });
-        }
+            const ctx = document.getElementById('despesasChart').getContext('2d');
+            if (despesasChartInstance) despesasChartInstance.destroy();
 
-        function renderizarGraficoEntradasSaidas(mesFiltrado) {
-            const ctx = document.getElementById('entradasSaidasChart').getContext('2d'); if (entradasSaidasChartInstance) entradasSaidasChartInstance.destroy();
-            let dados = [], labels = [];
-            if (mesFiltrado === 'Todos') {
-                const mesesMap = {};
-                transacoesGlobais.forEach(t => { if (!mesesMap[t.mesAno]) mesesMap[t.mesAno] = { entradas: 0, saidas: 0 }; mesesMap[t.mesAno].entradas += t.valorEntrada; mesesMap[t.mesAno].saidas += t.valorSaida; });
-                Object.keys(mesesMap).sort((a, b) => { const pA = a.split('/'); const pB = b.split('/'); return (pA[1]+pA[0]).localeCompare(pB[1]+pB[0]); }).forEach(mes => { const partes = mes.split('/'); labels.push(`${nomesDosMeses[partes[0]]}/${partes[1].substring(2)}`); dados.push(mesesMap[mes]); });
-            } else {
-                const diasMap = {};
-                transacoesGlobais.filter(t => t.mesAno === mesFiltrado).forEach(t => { const dia = t.dataStr.substring(0, 10); if (!diasMap[dia]) diasMap[dia] = { entradas: 0, saidas: 0 }; diasMap[dia].entradas += t.valorEntrada; diasMap[dia].saidas += t.valorSaida; });
-                Object.keys(diasMap).sort().forEach(dia => { labels.push(dia); dados.push(diasMap[dia]); });
-            }
-            entradasSaidasChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [ { label: 'Entradas', data: dados.map(d => d.entradas), backgroundColor: '#10b981', borderRadius: 8 }, { label: 'Saídas', data: dados.map(d => d.saidas), backgroundColor: '#ef4444', borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
-        }
+            const labels = Object.keys(categorias);
+            const data = Object.values(categorias);
+            const colors = labels.map(l => coresCategorias[l] || '#cbd5e1');
+            const total = data.reduce((a, b) => a + b, 0);
 
-        function renderizarTabela(transacoes) {
-            const tipo = document.getElementById('filtroTipoTabela').value;
-            let filtradas = transacoes;
-            if (tipo === 'saidas') filtradas = transacoes.filter(t => t.isSaida); else if (tipo === 'entradas') filtradas = transacoes.filter(t => !t.isSaida);
-            const ordenadas = [...filtradas].sort((a, b) => b.valorAbsoluto - a.valorAbsoluto).slice(0, 15);
-            
-            const tbodyDesktop = document.getElementById('topDespesasBody'); tbodyDesktop.innerHTML = '';
-            const containerMobile = document.getElementById('topDespesasMobile'); containerMobile.innerHTML = '';
-
-            if(ordenadas.length === 0) { 
-                tbodyDesktop.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`; 
-                containerMobile.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">Nenhum registro encontrado.</div>`;
-                return; 
-            }
-
-            ordenadas.forEach(t => {
-                // Preenche Tabela Desktop
-                const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group";
-                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">${t.dataStr}</td><td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">${t.descricao}</td><td class="px-6 py-4"><span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider" style="background-color: ${coresCategorias[t.categoria]}15; color: ${coresCategorias[t.categoria]}">${t.categoria}</span></td><td class="px-6 py-4 text-right whitespace-nowrap"><span class="text-sm font-bold ${t.isSaida ? 'text-rose-500' : 'text-emerald-500'}">${t.isSaida ? '-' : '+'} R$ ${t.valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></td>`;
-                tbodyDesktop.appendChild(tr);
-
-                // Preenche Cards Mobile
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-2";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">${t.dataStr}</span>
-                        <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider text-right" style="background-color: ${coresCategorias[t.categoria]}15; color: ${coresCategorias[t.categoria]}">${t.categoria}</span>
-                    </div>
-                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">${t.descricao}</div>
-                    <div class="text-right mt-1">
-                        <span class="text-sm font-black ${t.isSaida ? 'text-rose-500' : 'text-emerald-500'}">
-                            ${t.isSaida ? '-' : '+'} R$ ${t.valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                        </span>
-                    </div>
-                `;
-                containerMobile.appendChild(card);
+            despesasChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        datalabels: {
+                            display: true,
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value) => {
+                                const percentual = ((value / total) * 100).toFixed(1);
+                                return percentual + '%';
+                            },
+                            anchor: 'center',
+                            align: 'center'
+                        },
+                        legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: '600' } } },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    }
+                }
             });
         }
-        document.getElementById('filtroTipoTabela').addEventListener('change', () => { renderizarTabela(mesAtualFiltro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => t.mesAno === mesAtualFiltro)); });
 
-        // ========================================
-        // RENDERIZADORES PROJEÇÃO E CONSOLIDADO
-        // ========================================
-        function atualizarDashboardProjecao() {
-            const anoSelecionado = document.getElementById('filtroAnoProjecao').value; const mesSelecionado = document.getElementById('filtroMesProjecao').value;
-            let dadosFiltrados = transacoesProjetadas.filter(t => t.ano === anoSelecionado);
-            if (mesSelecionado) dadosFiltrados = dadosFiltrados.filter(t => t.mes === mesSelecionado);
-            let totalReceitas = 0, totalDespesas = 0; let despesasPorCategoria = {};
-            dadosFiltrados.forEach(t => { if (t.isReceita) totalReceitas += t.valor; if (t.isDespesa) { totalDespesas += t.valor; despesasPorCategoria[t.categoria] = (despesasPorCategoria[t.categoria] || 0) + t.valor; } });
-            
-            const saldoProjetado = totalReceitas - totalDespesas;
-            document.getElementById('kpi-proj-receitas').innerText = `R$ ${totalReceitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('kpi-proj-despesas').innerText = `R$ ${totalDespesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            const saldoEl = document.getElementById('kpi-proj-saldo'); saldoEl.innerText = `R$ ${saldoProjetado.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            saldoEl.className = `text-2xl sm:text-3xl font-display font-bold mt-1 truncate ${saldoProjetado >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
-            
-            renderizarGraficoProjecaoSaldo(dadosFiltrados); renderizarGraficoProjecaoDespesas(despesasPorCategoria);
-            renderizarGraficoProjecaoReceitasDespesas(anoSelecionado, mesSelecionado); renderizarTabelaProjecao(dadosFiltrados);
-        }
+        function renderizarGraficoEntradasSaidas(dados) {
+            const ctx = document.getElementById('entradasSaidasChart').getContext('2d');
+            if (entradasSaidasChartInstance) entradasSaidasChartInstance.destroy();
 
-        function renderizarGraficoProjecaoSaldo(dados) {
-            const ctx = document.getElementById('saldoProjecaoChart').getContext('2d'); if (saldoProjecaoChartInstance) saldoProjecaoChartInstance.destroy();
-            const dadosOrdenados = [...dados].sort((a, b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
-            const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(12, 145, 235, 0.2)'); grad.addColorStop(1, 'rgba(12, 145, 235, 0)');
-            saldoProjecaoChartInstance = new Chart(ctx, { type: 'line', data: { labels: dadosOrdenados.map(d => d.data.substring(0, 5)), datasets: [{ label: 'Saldo', data: dadosOrdenados.map(d => d.saldo), borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6, pointHoverBackgroundColor: '#0c91eb' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
-        }
-
-        function renderizarGraficoProjecaoDespesas(categorias) {
-            const ctx = document.getElementById('despesasProjecaoChart').getContext('2d'); if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy();
-            const labels = Object.keys(categorias); const data = Object.values(categorias); const colors = labels.map(l => coresCategorias[l] || '#cbd5e1'); const total = data.reduce((a, b) => a + b, 0);
-            despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { datalabels: { display: true, color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (value) => ((value / total) * 100).toFixed(1) + '%' }, legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } } } });
-        }
-
-        function renderizarGraficoProjecaoReceitasDespesas(ano, mes) {
-            const ctx = document.getElementById('receitasDespesasProjecaoChart').getContext('2d'); if (receitasDespesasProjecaoChartInstance) receitasDespesasProjecaoChartInstance.destroy();
-            let dadosFiltrados = transacoesProjetadas.filter(t => t.ano === ano); if (mes) dadosFiltrados = dadosFiltrados.filter(t => t.mes === mes);
-            const mesesMap = {};
-            dadosFiltrados.forEach(t => {
-                const mesNum = conversorMesGlobal[t.mes.toLowerCase()] || "01"; const sortKey = `${t.ano}-${mesNum}`; 
-                if (!mesesMap[sortKey]) mesesMap[sortKey] = { receitas: 0, despesas: 0, label: `${nomesDosMeses[mesNum]}/${t.ano.substring(2)}` };
-                if (t.isReceita) mesesMap[sortKey].receitas += t.valor; if (t.isDespesa) mesesMap[sortKey].despesas += t.valor;
+            const diasMap = {};
+            dados.forEach(t => {
+                const dia = t.dataStr;
+                if (!diasMap[dia]) {
+                    diasMap[dia] = { receitas: 0, despesas: 0 };
+                }
+                diasMap[dia].receitas += t.valorEntrada;
+                diasMap[dia].despesas += t.valorSaida;
             });
-            let labels = []; let dados = []; Object.keys(mesesMap).sort().forEach(key => { labels.push(mesesMap[key].label); dados.push(mesesMap[key]); });
-            receitasDespesasProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [ { label: 'Receitas', data: dados.map(d => d.receitas), backgroundColor: '#10b981', borderRadius: 8 }, { label: 'Despesas', data: dados.map(d => d.despesas), backgroundColor: '#ef4444', borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+
+            const diasOrdenados = Object.keys(diasMap).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
+            const labels = diasOrdenados;
+            const receitasData = diasOrdenados.map(dia => diasMap[dia].receitas);
+            const despesasData = diasOrdenados.map(dia => diasMap[dia].despesas);
+
+            entradasSaidasChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: receitasData,
+                            backgroundColor: '#10b981',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Despesas',
+                            data: despesasData,
+                            backgroundColor: '#ef4444',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
-        function renderizarTabelaProjecao(dados) {
-            const tipo = document.getElementById('filtroTipoProjecao').value;
-            const anoSel = document.getElementById('filtroAnoProjecao').value; const mesSel = document.getElementById('filtroMesProjecao').value;
-            let dadosFiltrados = transacoesProjetadas.filter(t => t.ano === anoSel); if (mesSel) dadosFiltrados = dadosFiltrados.filter(t => t.mes === mesSel);
-            if (tipo === 'receitas') dadosFiltrados = dadosFiltrados.filter(t => t.isReceita); else if (tipo === 'despesas') dadosFiltrados = dadosFiltrados.filter(t => t.isDespesa);
-            
-            const ordenados = [...dadosFiltrados].sort((a, b) => new Date(b.data.split('/').reverse().join('-')) - new Date(a.data.split('/').reverse().join('-')));
-            const tbodyDesktop = document.getElementById('tabelaProjecaoBody'); tbodyDesktop.innerHTML = '';
-            const containerMobile = document.getElementById('tabelaProjecaoMobile'); containerMobile.innerHTML = '';
+        // ========================================
+        // TABELA
+        // ========================================
+        function renderizarTabela(dados) {
+            const tbody = document.getElementById('tabelaBody');
+            const ordenados = [...dados].sort((a, b) => new Date(b.dataStr.split('/').reverse().join('-')) - new Date(a.dataStr.split('/').reverse().join('-')));
+            tbody.innerHTML = '';
 
-            if (ordenados.length === 0) { 
-                tbodyDesktop.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`; 
-                containerMobile.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">Nenhum registro encontrado.</div>`;
-                return; 
+            if (ordenados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-12 text-center text-slate-400">Nenhuma transação encontrada.</td></tr>`;
+                return;
             }
 
             ordenados.forEach(t => {
-                // Tabela Desktop
-                const tr = document.createElement('tr'); tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors";
-                tr.innerHTML = `<td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">${t.data}</td><td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">${t.descricao}</td><td class="px-6 py-4"><span class="text-xs font-bold px-2 py-1 rounded-md ${t.isReceita ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">${t.tipo}</span></td><td class="px-6 py-4 text-xs font-medium text-slate-600 dark:text-slate-400">${t.categoria}</td><td class="px-6 py-4 text-right whitespace-nowrap"><span class="text-sm font-bold ${t.isReceita ? 'text-emerald-600' : 'text-rose-600'}">${t.isReceita ? '+' : '-'} R$ ${t.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></td>`;
-                tbodyDesktop.appendChild(tr);
-
-                // Cards Mobile
-                const card = document.createElement('div');
-                card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col gap-2";
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-medium text-slate-500 dark:text-slate-400">${t.data}</span>
-                        <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider text-right ${t.isReceita ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}">${t.tipo}</span>
-                    </div>
-                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200">${t.descricao}</div>
-                    <div class="flex justify-between items-end mt-1">
-                        <span class="text-xs text-slate-500 font-semibold">${t.categoria}</span>
-                        <span class="text-sm font-black ${t.isReceita ? 'text-emerald-500' : 'text-rose-500'}">
-                            ${t.isReceita ? '+' : '-'} R$ ${t.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">${t.dataStr}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]" title="${t.descricao}">${t.descricao}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider" style="background-color: ${coresCategorias[t.categoria]}15; color: ${coresCategorias[t.categoria]}">
+                            ${t.categoria}
                         </span>
-                    </div>
+                    </td>
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                        <span class="text-sm font-bold ${t.isSaida ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}">
+                            ${t.isSaida ? '-' : '+'} R$ ${t.valorAbsoluto.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                        </span>
+                    </td>
                 `;
-                containerMobile.appendChild(card);
+                tbody.appendChild(tr);
             });
         }
-        document.getElementById('filtroTipoProjecao').addEventListener('change', () => renderizarTabelaProjecao(transacoesProjetadas));
 
-        function atualizarDashboardConsolidado() {
-            let totalReceitasExec = 0, totalDespesasExec = 0, totalReceitasProj = 0, totalDespesasProj = 0; let despesasConsolidadas = {};
-            transacoesGlobais.forEach(t => { totalReceitasExec += t.valorEntrada; totalDespesasExec += t.valorSaida; if (t.isSaida) despesasConsolidadas[t.categoria] = (despesasConsolidadas[t.categoria] || 0) + t.valorSaida; });
-            transacoesProjetadas.forEach(t => { if (t.isReceita) totalReceitasProj += t.valor; if (t.isDespesa) { totalDespesasProj += t.valor; despesasConsolidadas[t.categoria] = (despesasConsolidadas[t.categoria] || 0) + t.valor; } });
+        // ========================================
+        // PROJEÇÕES
+        // ========================================
+        function atualizarDashboardProjecao() {
+            const anoSelecionado = document.getElementById('filtroAnoProjecao').value;
+            const mesSelecionado = document.getElementById('filtroMesProjecao').value;
+
+            let dadosFiltrados = transacoesProjetadas.filter(t => t.ano === anoSelecionado);
+            if (mesSelecionado) dadosFiltrados = dadosFiltrados.filter(t => t.mes === mesSelecionado);
+
+            let totalReceitas = 0, totalDespesas = 0;
+            let despesasProjetadas = {};
+
+            dadosFiltrados.forEach(t => {
+                if (t.isReceita) totalReceitas += t.valor;
+                if (t.isDespesa) {
+                    totalDespesas += t.valor;
+                    despesasProjetadas[t.categoria] = (despesasProjetadas[t.categoria] || 0) + t.valor;
+                }
+            });
+
+            const saldo = totalReceitas - totalDespesas;
+
+            document.getElementById('kpi-proj-receitas').innerText = `R$ ${totalReceitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-proj-despesas').innerText = `R$ ${totalDespesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-proj-saldo').innerText = `R$ ${saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+
+            renderizarGraficoProjecaoSaldo(dadosFiltrados);
+            renderizarGraficoProjecaoDespesas(despesasProjetadas);
+            renderizarGraficoProjecaoReceitasDespesas(dadosFiltrados);
+            renderizarTabelaProjecao();
+        }
+
+        function renderizarGraficoProjecaoSaldo(dados) {
+            const ctx = document.getElementById('saldoProjecaoChart').getContext('2d');
+            if (saldoProjecaoChartInstance) saldoProjecaoChartInstance.destroy();
+
+            const dadosOrdenados = [...dados].sort((a, b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
+            const labels = dadosOrdenados.map(d => d.data);
+            const saldos = dadosOrdenados.map(d => d.saldo);
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(12, 145, 235, 0.2)');
+            gradient.addColorStop(1, 'rgba(12, 145, 235, 0)');
+
+            saldoProjecaoChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Saldo Projetado',
+                        data: saldos,
+                        borderColor: '#0c91eb',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#0c91eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderizarGraficoProjecaoDespesas(categorias) {
+            const ctx = document.getElementById('despesasProjecaoChart').getContext('2d');
+            if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy();
+
+            const labels = Object.keys(categorias);
+            const data = Object.values(categorias);
+            const colors = labels.map(l => coresCategorias[l] || '#cbd5e1');
+            const total = data.reduce((a, b) => a + b, 0);
+
+            despesasProjecaoChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        datalabels: {
+                            display: true,
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value) => {
+                                const percentual = ((value / total) * 100).toFixed(1);
+                                return percentual + '%';
+                            },
+                            anchor: 'center',
+                            align: 'center'
+                        },
+                        legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: '600' } } },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    }
+                }
+            });
+        }
+
+        function renderizarGraficoProjecaoReceitasDespesas(dados) {
+            const ctx = document.getElementById('receitasDespesasProjecaoChart').getContext('2d');
+            if (receitasDespesasProjecaoChartInstance) receitasDespesasProjecaoChartInstance.destroy();
+
+            const diasMap = {};
+            dados.forEach(t => {
+                const dia = t.data;
+                if (!diasMap[dia]) {
+                    diasMap[dia] = { receitas: 0, despesas: 0 };
+                }
+                if (t.isReceita) diasMap[dia].receitas += t.valor;
+                if (t.isDespesa) diasMap[dia].despesas += t.valor;
+            });
+
+            const diasOrdenados = Object.keys(diasMap).sort((a, b) => new Date(a.split('/').reverse().join('-')) - new Date(b.split('/').reverse().join('-')));
+            const labels = diasOrdenados;
+            const receitasData = diasOrdenados.map(dia => diasMap[dia].receitas);
+            const despesasData = diasOrdenados.map(dia => diasMap[dia].despesas);
+
+            receitasDespesasProjecaoChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: receitasData,
+                            backgroundColor: '#10b981',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Despesas',
+                            data: despesasData,
+                            backgroundColor: '#ef4444',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderizarTabelaProjecao() {
+            const tipo = document.getElementById('filtroTipoProjecao').value;
+            const tbody = document.getElementById('tabelaProjecaoBody');
+
+            const anoSelecionado = document.getElementById('filtroAnoProjecao').value;
+            const mesSelecionado = document.getElementById('filtroMesProjecao').value;
+
+            let dadosFiltrados = transacoesProjetadas.filter(t => t.ano === anoSelecionado);
+            if (mesSelecionado) dadosFiltrados = dadosFiltrados.filter(t => t.mes === mesSelecionado);
             
-            const totalReceitas = totalReceitasExec + totalReceitasProj; const totalDespesas = totalDespesasExec + totalDespesasProj; const saldoFinal = totalReceitas - totalDespesas;
+            if (tipo === 'receitas') dadosFiltrados = dadosFiltrados.filter(t => t.isReceita);
+            else if (tipo === 'despesas') dadosFiltrados = dadosFiltrados.filter(t => t.isDespesa);
+
+            const ordenados = [...dadosFiltrados].sort((a, b) => new Date(b.data.split('/').reverse().join('-')) - new Date(a.data.split('/').reverse().join('-')));
+            tbody.innerHTML = '';
+
+            if (ordenados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Nenhum registro encontrado.</td></tr>`;
+                return;
+            }
+
+            ordenados.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 dark:hover:bg-slate-700/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-500 dark:text-slate-400">${t.data}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]" title="${t.descricao}">${t.descricao}</td>
+                    <td class="px-6 py-4">
+                        <span class="text-xs font-bold px-2 py-1 rounded-md ${t.isReceita ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-200' : 'bg-rose-50 dark:bg-rose-900/30 text-rose-700 dark:text-rose-200'}">
+                            ${t.tipo}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-xs font-medium text-slate-600 dark:text-slate-400">${t.categoria}</td>
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                        <span class="text-sm font-bold ${t.isReceita ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}">
+                            ${t.isReceita ? '+' : '-'} R$ ${t.valor.toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('filtroAnoProjecao').addEventListener('change', atualizarDashboardProjecao);
+        document.getElementById('filtroMesProjecao').addEventListener('change', atualizarDashboardProjecao);
+        document.getElementById('filtroTipoProjecao').addEventListener('change', renderizarTabelaProjecao);
+
+        // ========================================
+        // CONSOLIDADO
+        // ========================================
+        function atualizarDashboardConsolidado() {
+            let totalReceitasExec = 0, totalDespesasExec = 0;
+            let totalReceitasProj = 0, totalDespesasProj = 0;
+            let despesasConsolidadas = {};
+
+            transacoesGlobais.forEach(t => {
+                totalReceitasExec += t.valorEntrada;
+                totalDespesasExec += t.valorSaida;
+                if (t.isSaida) {
+                    despesasConsolidadas[t.categoria] = (despesasConsolidadas[t.categoria] || 0) + t.valorSaida;
+                }
+            });
+
+            transacoesProjetadas.forEach(t => {
+                if (t.isReceita) totalReceitasProj += t.valor;
+                if (t.isDespesa) {
+                    totalDespesasProj += t.valor;
+                    despesasConsolidadas[t.categoria] = (despesasConsolidadas[t.categoria] || 0) + t.valor;
+                }
+            });
+
+            const totalReceitas = totalReceitasExec + totalReceitasProj;
+            const totalDespesas = totalDespesasExec + totalDespesasProj;
+            const saldoFinal = totalReceitas - totalDespesas;
+
             document.getElementById('kpi-cons-receitas').innerText = `R$ ${totalReceitas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('kpi-cons-despesas').innerText = `R$ ${totalDespesas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            const saldoEl = document.getElementById('kpi-cons-saldo'); saldoEl.innerText = `R$ ${saldoFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            saldoEl.className = `text-2xl sm:text-3xl font-display font-bold mt-1 truncate ${saldoFinal >= 0 ? 'text-emerald-600' : 'text-rose-600'}`;
-            
-            renderizarGraficoConsolidadoSaldo(); renderizarGraficoConsolidadoDespesas(despesasConsolidadas); renderizarGraficoConsolidadoReceitasDespesas();
+            const saldoEl = document.getElementById('kpi-cons-saldo');
+            saldoEl.innerText = `R$ ${saldoFinal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            saldoEl.className = `text-3xl font-display font-bold mt-2 ${saldoFinal >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+
+            renderizarGraficoConsolidadoSaldo();
+            renderizarGraficoConsolidadoDespesas(despesasConsolidadas);
+            renderizarGraficoConsolidadoReceitasDespesas();
         }
 
         function renderizarGraficoConsolidadoSaldo() {
-            const ctx = document.getElementById('saldoConsolidadoChart').getContext('2d'); if (saldoConsolidadoChartInstance) saldoConsolidadoChartInstance.destroy();
-            const ordenadas = [...transacoesGlobais, ...transacoesProjetadas].sort((a, b) => new Date((a.dataStr || a.data).split('/').reverse().join('-')) - new Date((b.dataStr || b.data).split('/').reverse().join('-')));
-            let saldoAcumulado = 0; const saldosMap = {};
-            ordenadas.forEach(t => { const data = (t.dataStr || t.data).substring(0, 5); if (!saldosMap[data]) saldosMap[data] = 0; if (t.valorEntrada) saldoAcumulado += t.valorEntrada; if (t.valorSaida) saldoAcumulado -= t.valorSaida; if (t.valor) { if (t.isReceita) saldoAcumulado += t.valor; if (t.isDespesa) saldoAcumulado -= t.valor; } saldosMap[data] = saldoAcumulado; });
-            const grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(12, 145, 235, 0.2)'); grad.addColorStop(1, 'rgba(12, 145, 235, 0)');
-            saldoConsolidadoChartInstance = new Chart(ctx, { type: 'line', data: { labels: Object.keys(saldosMap), datasets: [{ label: 'Saldo Consolidado', data: Object.values(saldosMap), borderColor: '#0c91eb', backgroundColor: grad, borderWidth: 3, fill: true, tension: 0.4, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+            const ctx = document.getElementById('saldoConsolidadoChart').getContext('2d');
+            if (saldoConsolidadoChartInstance) saldoConsolidadoChartInstance.destroy();
+
+            const todasAsTransacoes = [...transacoesGlobais, ...transacoesProjetadas];
+            const ordenadas = todasAsTransacoes.sort((a, b) => {
+                const dataA = a.dataStr || a.data;
+                const dataB = b.dataStr || b.data;
+                return new Date(dataA.split('/').reverse().join('-')) - new Date(dataB.split('/').reverse().join('-'));
+            });
+
+            let saldoAcumulado = 0;
+            const saldosMap = {};
+            ordenadas.forEach(t => {
+                const data = (t.dataStr || t.data);
+                if (!saldosMap[data]) {
+                    saldosMap[data] = 0;
+                }
+                if (t.valorEntrada) saldoAcumulado += t.valorEntrada;
+                if (t.valorSaida) saldoAcumulado -= t.valorSaida;
+                if (t.valor) {
+                    if (t.isReceita) saldoAcumulado += t.valor;
+                    if (t.isDespesa) saldoAcumulado -= t.valor;
+                }
+                saldosMap[data] = saldoAcumulado;
+            });
+
+            const labels = Object.keys(saldosMap);
+            const dados = Object.values(saldosMap);
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(12, 145, 235, 0.2)');
+            gradient.addColorStop(1, 'rgba(12, 145, 235, 0)');
+
+            saldoConsolidadoChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Saldo Consolidado',
+                        data: dados,
+                        borderColor: '#0c91eb',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#0c91eb'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
         function renderizarGraficoConsolidadoDespesas(categorias) {
-            const ctx = document.getElementById('despesasConsolidadoChart').getContext('2d'); if (despesasConsolidadoChartInstance) despesasConsolidadoChartInstance.destroy();
-            const labels = Object.keys(categorias); const data = Object.values(categorias); const colors = labels.map(l => coresCategorias[l] || '#cbd5e1'); const total = data.reduce((a, b) => a + b, 0);
-            despesasConsolidadoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: labels, datasets: [{ data: data, backgroundColor: colors, borderWidth: 0, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '75%', plugins: { datalabels: { display: true, color: '#ffffff', font: { weight: 'bold', size: 12 }, formatter: (value) => ((value / total) * 100).toFixed(1) + '%' }, legend: { position: 'right', labels: { usePointStyle: true, padding: 20 } }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } } } });
+            const ctx = document.getElementById('despesasConsolidadoChart').getContext('2d');
+            if (despesasConsolidadoChartInstance) despesasConsolidadoChartInstance.destroy();
+
+            const labels = Object.keys(categorias);
+            const data = Object.values(categorias);
+            const colors = labels.map(l => coresCategorias[l] || '#cbd5e1');
+            const total = data.reduce((a, b) => a + b, 0);
+
+            despesasConsolidadoChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        datalabels: {
+                            display: true,
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value) => {
+                                const percentual = ((value / total) * 100).toFixed(1);
+                                return percentual + '%';
+                            },
+                            anchor: 'center',
+                            align: 'center'
+                        },
+                        legend: { position: 'right', labels: { usePointStyle: true, padding: 20, font: { size: 11, weight: '600' } } },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    }
+                }
+            });
         }
 
         function renderizarGraficoConsolidadoReceitasDespesas() {
-            const ctx = document.getElementById('receitasDespesasConsolidadoChart').getContext('2d'); if (receitasDespesasConsolidadoChartInstance) receitasDespesasConsolidadoChartInstance.destroy();
+            const ctx = document.getElementById('receitasDespesasConsolidadoChart').getContext('2d');
+            if (receitasDespesasConsolidadoChartInstance) receitasDespesasConsolidadoChartInstance.destroy();
+
             const mesesMap = {};
-            transacoesGlobais.forEach(t => { if (!mesesMap[t.mesAno]) mesesMap[t.mesAno] = { receitas: 0, despesas: 0 }; mesesMap[t.mesAno].receitas += t.valorEntrada; mesesMap[t.mesAno].despesas += t.valorSaida; });
-            transacoesProjetadas.forEach(t => { const mesNum = conversorMesGlobal[t.mes.toLowerCase()] || "01"; const mesAno = `${mesNum}/${t.ano}`; if (!mesesMap[mesAno]) mesesMap[mesAno] = { receitas: 0, despesas: 0 }; if (t.isReceita) mesesMap[mesAno].receitas += t.valor; if (t.isDespesa) mesesMap[mesAno].despesas += t.valor; });
-            const mesesOrdenados = Object.keys(mesesMap).sort((a, b) => { const pA = a.split('/'); const pB = b.split('/'); return (pA[1]+pA[0]).localeCompare(pB[1]+pB[0]); });
-            const labels = mesesOrdenados.map(mes => { const partes = mes.split('/'); return `${nomesDosMeses[partes[0]] || partes[0]}/${partes[1].substring(2)}`; });
-            receitasDespesasConsolidadoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: labels, datasets: [ { label: 'Receitas', data: mesesOrdenados.map(mes => mesesMap[mes].receitas), backgroundColor: '#10b981', borderRadius: 8 }, { label: 'Despesas', data: mesesOrdenados.map(mes => mesesMap[mes].despesas), backgroundColor: '#ef4444', borderRadius: 8 } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'top' }, tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } } }, scales: { y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }, x: { grid: { display: false } } } } });
+            transacoesGlobais.forEach(t => {
+                if (!mesesMap[t.mesAno]) {
+                    mesesMap[t.mesAno] = { receitas: 0, despesas: 0 };
+                }
+                mesesMap[t.mesAno].receitas += t.valorEntrada;
+                mesesMap[t.mesAno].despesas += t.valorSaida;
+            });
+
+            transacoesProjetadas.forEach(t => {
+                const mesAno = `${t.mes}/${t.ano}`;
+                if (!mesesMap[mesAno]) {
+                    mesesMap[mesAno] = { receitas: 0, despesas: 0 };
+                }
+                if (t.isReceita) mesesMap[mesAno].receitas += t.valor;
+                if (t.isDespesa) mesesMap[mesAno].despesas += t.valor;
+            });
+
+            const mesesOrdenados = Object.keys(mesesMap).sort((a, b) => {
+                const partsA = a.split('/');
+                const partsB = b.split('/');
+                return (partsA[1]+partsA[0]).localeCompare(partsB[1]+partsB[0]);
+            });
+
+            const labels = mesesOrdenados.map(mes => {
+                const partes = mes.split('/');
+                return `${nomesDosMeses[partes[0]]}/${partes[1].substring(2)}`;
+            });
+            const receitasData = mesesOrdenados.map(mes => mesesMap[mes].receitas);
+            const despesasData = mesesOrdenados.map(mes => mesesMap[mes].despesas);
+
+            receitasDespesasConsolidadoChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Receitas',
+                            data: receitasData,
+                            backgroundColor: '#10b981',
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            barThickness: 'flex',
+                            maxBarThickness: 50
+                        },
+                        {
+                            label: 'Despesas',
+                            data: despesasData,
+                            backgroundColor: '#ef4444',
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            barThickness: 'flex',
+                            maxBarThickness: 50
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 15, font: { size: 12, weight: '600' } } },
+                        tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
+                    },
+                    scales: {
+                        y: {
+                            grid: { display: false },
+                            ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
+
+        // ========================================
+        // EXPORTAR PDF
+        // ========================================
+        document.getElementById('btnExportarPDF').addEventListener('click', () => {
+            const element = document.querySelector('main');
+            const opt = {
+                margin: 10,
+                filename: `relatorio-financeiro-${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+            };
+            html2pdf().set(opt).from(element).save();
+        });
+
+        // ========================================
+        // ATALHOS DE TECLADO
+        // ========================================
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                document.getElementById('btnExportarPDF').click();
+            }
+            if (e.ctrlKey && e.key === 'i') {
+                e.preventDefault();
+                document.getElementById('arquivoInput').click();
+            }
+        });
+
+        // ========================================
+        // SINCRONIZAÇÃO COM NUVEM
+        // ========================================
+        const LINK_CSV_EXTRATO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=0&single=true&output=csv';
+        const LINK_CSV_PROJETADO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=489511638&single=true&output=csv';
+
+        document.getElementById('btnSincronizar').addEventListener('click', sincronizarComNuvem);
+
+        async function sincronizarComNuvem() {
+            mostrarStatus("Sincronizando dados da nuvem...", "sucesso");
+            try {
+                const resExtrato = await fetch(LINK_CSV_EXTRATO);
+                if (!resExtrato.ok) throw new Error("Erro ao buscar Extrato");
+                Papa.parse(await resExtrato.text(), {
+                    complete: async function(results) { 
+                        processarMatriz(results.data); 
+                        try {
+                            const resProj = await fetch(LINK_CSV_PROJETADO);
+                            if (!resProj.ok) throw new Error("Erro ao buscar Projeção");
+                            Papa.parse(await resProj.text(), {
+                                complete: function(resProjData) {
+                                    processarProjecoes(resProjData.data);
+                                    mostrarStatus("Atualizado com sucesso!", "sucesso");
+                                }, skipEmptyLines: true
+                            });
+                        } catch (errProj) { 
+                            console.error(errProj);
+                            mostrarStatus("Erro ao sincronizar projeções", "erro");
+                        }
+                    }, skipEmptyLines: true
+                });
+            } catch (erro) { 
+                console.error(erro);
+                mostrarStatus("Erro ao sincronizar com a nuvem", "erro");
+            }
+        }
+
+        // Sincronizar automaticamente ao carregar
+        window.addEventListener('DOMContentLoaded', () => {
+            // Comentado para não sincronizar automaticamente
+            // sincronizarComNuvem();
+        });
     </script>
 </body>
 </html>
