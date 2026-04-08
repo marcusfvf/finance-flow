@@ -1283,7 +1283,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { display: false }
+                    },
                     scales: {
                         y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
                         x: { grid: { display: false } }
@@ -1380,6 +1383,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true, position: 'top' },
+                        datalabels: { display: false },
                         tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
                     },
                     scales: {
@@ -1489,7 +1493,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { display: false }
+                    },
                     scales: {
                         y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
                         x: { grid: { display: false } }
@@ -1586,6 +1593,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true, position: 'top' },
+                        datalabels: { display: false },
                         tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
                     },
                     scales: {
@@ -1736,7 +1744,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { 
+                        legend: { display: false },
+                        datalabels: { display: false }
+                    },
                     scales: {
                         y: { grid: { display: false }, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } },
                         x: { grid: { display: false } }
@@ -1853,6 +1864,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: true, position: 'top', labels: { usePointStyle: true, padding: 15, font: { size: 12, weight: '600' } } },
+                        datalabels: { display: false },
                         tooltip: { callbacks: { label: c => ' R$ ' + c.raw.toLocaleString('pt-BR', {minimumFractionDigits: 2}) } }
                     },
                     scales: {
