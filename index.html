@@ -2,13 +2,18 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="description" content="Dashboard financeiro inteligente com análise em tempo real de suas finanças">
+    <meta name="theme-color" content="#0c91eb">
     <title>FinanceFlow Pro - Dashboard Financeiro Inteligente</title>
     
+    <!-- PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FinanceFlow">
+    <meta name="apple-mobile-web-app-status-bar" content="black-translucent">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="manifest" href="data:application/manifest+json,{\"name\":\"FinanceFlow Pro\",\"short_name\":\"FinanceFlow\",\"start_url\":\"/\",\"display\":\"standalone\",\"background_color\":\"#ffffff\",\"theme_color\":\"#0c91eb\",\"icons\":[{\"src\":\"https://cdn-icons-png.flaticon.com/512/3135/3135715.png\",\"sizes\":\"192x192\",\"type\":\"image/png\"}]}"
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,6 +142,50 @@
         .tab-button.inactive:hover { border-color: #0c91eb; color: #0c91eb; }
         
         .bottom-nav-safe { padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+
+        /* Otimizações Mobile */
+        @media (max-width: 768px) {
+            body { font-size: 14px; }
+            main { padding-left: 12px; padding-right: 12px; }
+            .glass-card { padding: 16px; border-radius: 12px; }
+            .tab-button { padding: 8px 12px; font-size: 12px; }
+            .health-score { width: 100px; height: 100px; font-size: 28px; }
+            h1 { font-size: 24px; }
+            h2 { font-size: 18px; }
+            h3 { font-size: 16px; }
+            .chart-container { height: 280px; }
+            table { font-size: 12px; }
+            table th, table td { padding: 8px 4px; }
+            .comparison-card { flex-direction: column; gap: 8px; padding: 12px; }
+            .comparison-amount { font-size: 18px; }
+        }
+
+        @media (max-width: 480px) {
+            body { font-size: 13px; }
+            main { padding-left: 10px; padding-right: 10px; }
+            .glass-card { padding: 12px; border-radius: 10px; }
+            .tab-button { padding: 6px 10px; font-size: 11px; }
+            .health-score { width: 90px; height: 90px; font-size: 24px; }
+            h1 { font-size: 20px; }
+            h2 { font-size: 16px; }
+            h3 { font-size: 14px; }
+            .chart-container { height: 240px; }
+            table { font-size: 11px; }
+            table th, table td { padding: 6px 2px; }
+            .comparison-card { padding: 10px; }
+            .comparison-amount { font-size: 16px; }
+            .btn-active { padding: 6px 12px; font-size: 12px; }
+        }
+
+        /* Touch-friendly buttons */
+        button, input[type="button"], label { min-height: 44px; min-width: 44px; }
+
+        /* Prevent zoom on input focus */
+        input, select, textarea { font-size: 16px; }
+
+        /* Safe area insets */
+        nav { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+        main { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
 
         .onboarding-overlay {
             position: fixed;
@@ -290,26 +339,26 @@
 <body class="min-h-screen pb-24 sm:pb-12">
 
     <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 mb-8 transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold">F</div>
-                    <span class="font-display text-xl font-extrabold tracking-tight">Finance<span class="text-brand-600">Flow</span> <span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 ml-1">PRO</span></span>
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 mb-8 transition-all" style="padding-top: max(8px, env(safe-area-inset-top));">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="flex justify-between h-16 items-center flex-wrap gap-2 sm:flex-nowrap">
+                <div class="flex items-center gap-2 min-w-fit">
+                    <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">F</div>
+                    <span class="font-display text-lg sm:text-xl font-extrabold tracking-tight">Finance<span class="text-brand-600">Flow</span> <span class="hidden sm:inline text-xs font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-slate-500 ml-1">PRO</span></span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button id="btnSincronizar" class="hidden md:flex cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all items-center gap-2" title="Sincronizar com Google Sheets">
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button id="btnSincronizar" class="hidden lg:flex cursor-pointer bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all items-center gap-1 sm:gap-2" title="Sincronizar com Google Sheets">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                        Sincronizar
+                        <span class="hidden lg:inline">Sincronizar</span>
                     </button>
-                    <button id="btnExportarPDF" class="hidden md:flex cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all items-center gap-2">
+                    <button id="btnExportarPDF" class="hidden sm:flex cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all items-center gap-1 sm:gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                        Exportar PDF
+                        <span class="hidden sm:inline">PDF</span>
                     </button>
                     <button id="btnToggleDarkMode" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all" title="Alternar tema">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600 dark:text-slate-400" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
                     </button>
-                    <label for="arquivoInput" class="cursor-pointer bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2">
+                    <label for="arquivoInput" class="cursor-pointer bg-brand-600 hover:bg-brand-700 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-1 sm:gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                         <span class="hidden sm:inline">Importar</span>
                     </label>
@@ -341,24 +390,24 @@
         <!-- Header -->
         <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
             <div>
-                <h2 class="text-sm font-bold text-brand-600 uppercase tracking-widest mb-1">Visão Geral</h2>
-                <h1 class="text-3xl font-display font-extrabold">Seu Dashboard Financeiro</h1>
+                <h2 class="text-xs sm:text-sm font-bold text-brand-600 uppercase tracking-widest mb-1">Visão Geral</h2>
+                <h1 class="text-2xl sm:text-3xl font-display font-extrabold">Seu Dashboard Financeiro</h1>
             </div>
-            <div id="statusMessage" class="hidden px-4 py-2 rounded-lg text-sm font-medium animate-fade-in"></div>
+            <div id="statusMessage" class="hidden px-4 py-2 rounded-lg text-xs sm:text-sm font-medium animate-fade-in"></div>
         </div>
 
         <!-- Tabs Desktop -->
-        <div class="hidden sm:flex mb-8 gap-3">
-            <button id="tabReal" class="tab-button active whitespace-nowrap">📊 Dados Reais</button>
-            <button id="tabProjetado" class="tab-button inactive whitespace-nowrap">🔮 Projeção Futura</button>
-            <button id="tabConsolidado" class="tab-button inactive whitespace-nowrap">📈 Visão Consolidada</button>
+        <div class="hidden sm:flex mb-8 gap-2 sm:gap-3 overflow-x-auto pb-2">
+            <button id="tabReal" class="tab-button active whitespace-nowrap text-xs sm:text-sm">📊 Dados Reais</button>
+            <button id="tabProjetado" class="tab-button inactive whitespace-nowrap text-xs sm:text-sm">🔮 Projeção Futura</button>
+            <button id="tabConsolidado" class="tab-button inactive whitespace-nowrap text-xs sm:text-sm">📈 Visão Consolidada</button>
         </div>
 
         <!-- SEÇÃO: DADOS REAIS -->
         <div id="secaoReal">
             <!-- Health Score Card -->
-            <div class="glass-card rounded-2xl p-8 mb-8 animate-fade-in">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="glass-card rounded-2xl p-6 sm:p-8 mb-8 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
                     <div>
                         <h3 class="text-lg font-display font-bold mb-2">Indicador de Saúde Financeira</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-6">Score baseado em sua relação receita/despesa, metas atingidas e consistência mensal.</p>
@@ -376,7 +425,7 @@
             </div>
 
             <!-- KPIs -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600">
@@ -424,8 +473,8 @@
 
             <!-- Comparativo Período vs Período -->
             <div class="glass-card rounded-2xl p-6 mb-8">
-                <h3 class="text-lg font-display font-bold mb-6">Comparativo: Mês Atual vs Mês Anterior</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <h3 class="text-base sm:text-lg font-display font-bold mb-6">Comparativo: Mês Atual vs Mês Anterior</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
                     <div class="comparison-card">
                         <div class="comparison-value">
                             <span class="comparison-label">Receitas</span>
@@ -452,7 +501,7 @@
 
             <!-- Filtros e Busca -->
             <div class="glass-card rounded-2xl p-6 mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                     <div id="containerFiltros" class="hidden">
                         <label class="block text-sm font-semibold mb-2">Filtrar por Mês</label>
                         <div id="botoesMeses" class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar"></div>
@@ -473,10 +522,10 @@
             </div>
 
             <!-- Gráficos -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-8">
                 <div class="glass-card rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="text-lg font-display font-bold">Evolução do Saldo</h3>
+                        <h3 class="text-base sm:text-lg font-display font-bold">Evolução do Saldo</h3>
                         <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Temporal</div>
                     </div>
                     <div class="chart-container">
@@ -527,7 +576,7 @@
 
         <!-- SEÇÃO: PROJEÇÃO FUTURA -->
         <div id="secaoProjetado" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas Projetadas</h3>
                     <p class="text-3xl font-display font-bold mt-2" id="kpi-proj-receitas">R$ 0,00</p>
@@ -613,7 +662,7 @@
 
         <!-- SEÇÃO: VISÃO CONSOLIDADA -->
         <div id="secaoConsolidado" class="hidden">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <div class="glass-card rounded-2xl p-6 transition-all hover:shadow-lg">
                     <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Receitas (Executado + Projetado)</h3>
                     <p class="text-3xl font-display font-bold mt-2" id="kpi-cons-receitas">R$ 0,00</p>
