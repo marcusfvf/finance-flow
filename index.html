@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="description" content="Dashboard financeiro inteligente com análise em tempo real de suas finanças">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0c91eb">
     <title>FinanceFlow Pro - Dashboard Financeiro Inteligente</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FinanceFlow">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    
     <link rel="manifest" href='data:application/manifest+json,{"name":"FinanceFlow Pro","short_name":"FinanceFlow","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#0c91eb","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3135/3135715.png","sizes":"192x192","type":"image/png"}]}'>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,28 +67,28 @@
             --glass-border: rgba(51, 65, 85, 0.8);
         }
 
-        /* FÍSICA DE APP NATIVO */
-        html, body {
+        /* COMPORTAMENTO DE APP NATIVO */
+        html, body { 
             background-color: var(--bg-primary); 
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
-            /* Previne o efeito elástico (bounce) de atualização da página no mobile */
+            /* Impede o overscroll (efeito elástico) e highlight ao tocar */
             overscroll-behavior-y: none;
-            /* Remove o flash azul/cinza ao tocar em elementos no mobile */
             -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
         }
 
-        body { 
+        body {
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* Evitar seleção de texto em elementos de UI para parecer um App */
+        /* Classes para impedir seleção acidental de texto na UI */
         .no-select {
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Micro-interação de clique nos botões */
+        /* Efeito tátil em botões */
         button:active, .tab-button:active, label:active {
             transform: scale(0.96);
             transition: transform 0.1s ease;
@@ -105,32 +105,22 @@
             box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
         }
 
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; display: none; } /* Oculto no mobile */
-        @media (min-width: 768px) {
-            .custom-scrollbar::-webkit-scrollbar { display: block; }
-        }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; display: none; }
+        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { display: block; } }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
         body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
         body.dark-mode .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
         
-        .btn-active {
-            background: #0c91eb; color: white; box-shadow: 0 4px 12px rgba(12, 145, 235, 0.3);
-        }
+        .btn-active { background: #0c91eb; color: white; box-shadow: 0 4px 12px rgba(12, 145, 235, 0.3); }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         .animate-slide-in { animation: slideIn 0.5s ease-out forwards; }
-        
+
         .chart-container { position: relative; height: 320px; width: 100%; }
 
         .recurring-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px; background: #fef3c7; color: #92400e; }
@@ -163,34 +153,12 @@
             .comparison-amount { font-size: 18px; }
         }
 
-        @media (max-width: 480px) {
-            body { font-size: 13px; }
-            main { padding-left: 10px; padding-right: 10px; }
-            .glass-card { padding: 12px; border-radius: 10px; }
-            .tab-button { padding: 6px 10px; font-size: 11px; }
-            .health-score { width: 90px; height: 90px; font-size: 24px; }
-            h1 { font-size: 20px; }
-            h2 { font-size: 16px; }
-            h3 { font-size: 14px; }
-            .chart-container { height: 240px; }
-            table { font-size: 11px; }
-            table th, table td { padding: 6px 2px; }
-            .comparison-card { padding: 10px; }
-            .comparison-amount { font-size: 16px; }
-            .btn-active { padding: 6px 12px; font-size: 12px; }
-        }
-
         button, input[type="button"], label { min-height: 44px; min-width: 44px; }
         input, select, textarea { font-size: 16px; }
         nav { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
         main { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
 
-        .health-score {
-            display: flex; align-items: center; justify-content: center;
-            width: 120px; height: 120px; border-radius: 50%;
-            font-size: 32px; font-weight: bold; margin: 0 auto;
-        }
-
+        .health-score { display: flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; font-size: 32px; font-weight: bold; margin: 0 auto; }
         .health-score.excellent { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .health-score.good { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
         .health-score.fair { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
@@ -205,7 +173,6 @@
         .comparison-value { display: flex; flex-direction: column; gap: 4px; }
         .comparison-label { font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .comparison-amount { font-size: 20px; font-weight: 700; color: var(--text-primary); }
-        
         .trend-indicator { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
         .trend-up { color: #10b981; }
         .trend-down { color: #ef4444; }
@@ -689,7 +656,6 @@
         function lerComoExcel(file) {
             const reader = new FileReader();
             reader.onerror = function(e) {
-                console.error('Erro ao ler arquivo:', e);
                 mostrarStatus('Erro ao ler o arquivo. Tente novamente.', 'erro');
             };
             reader.onload = function(e) {
@@ -697,30 +663,20 @@
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, {type: 'array'});
                     
-                    console.log('Abas encontradas:', workbook.SheetNames);
-                    
                     const nomeAbaReal = workbook.SheetNames.find(name => name.includes('Extrato'));
                     if (nomeAbaReal) {
-                        console.log('Processando aba real:', nomeAbaReal);
                         const jsonReal = XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaReal], {header: 1, defval: ""});
-                        console.log('Linhas da aba real:', jsonReal.length);
                         processarMatriz(jsonReal);
                     } else {
-                        console.warn('Aba de Extrato não encontrada');
                         mostrarStatus('Aba de Extrato não encontrada no arquivo.', 'erro');
                     }
 
                     const nomeAbaProjetado = workbook.SheetNames.find(name => name.includes('Projetado'));
                     if (nomeAbaProjetado) {
-                        console.log('Processando aba projetado:', nomeAbaProjetado);
                         const jsonProjetado = XLSX.utils.sheet_to_json(workbook.Sheets[nomeAbaProjetado], {header: 1, defval: ""});
-                        console.log('Linhas da aba projetado:', jsonProjetado.length);
                         processarProjecoes(jsonProjetado);
-                    } else {
-                        console.warn('Aba de Projetado não encontrada');
                     }
                 } catch (erro) {
-                    console.error('Erro ao processar Excel:', erro);
                     mostrarStatus('Erro ao processar o arquivo: ' + erro.message, 'erro');
                 }
             };
@@ -731,7 +687,6 @@
         // PROCESSAMENTO: DADOS REAIS
         // ========================================
         function processarMatriz(linhas) {
-            console.log('Iniciando processamento de matriz. Total de linhas:', linhas.length);
             let indexData = -1, indexDesc = -1, indexCred = -1, indexDeb = -1, indexSaldo = -1;
             let inicioDados = false;
 
@@ -804,9 +759,6 @@
                 });
             }
 
-            console.log('Total de transações processadas:', transacoesGlobais.length);
-            console.log('Meses detectados:', Array.from(mesesDetectados));
-            
             if (transacoesGlobais.length === 0) {
                 mostrarStatus("Erro: O arquivo parece estar sem dados financeiros.", "erro");
                 return;
@@ -821,7 +773,6 @@
         // PROCESSAMENTO: PROJEÇÕES
         // ========================================
         function processarProjecoes(linhas) {
-            console.log('Iniciando processamento de projeções. Total de linhas:', linhas.length);
             transacoesProjetadas = [];
             let anosDetectados = new Set();
             let mesesDetectados = new Set();
@@ -858,10 +809,6 @@
                 });
             }
 
-            console.log('Total de transações projetadas processadas:', transacoesProjetadas.length);
-            console.log('Anos detectados:', Array.from(anosDetectados));
-            console.log('Meses detectados:', Array.from(mesesDetectados));
-            
             const selectAno = document.getElementById('filtroAnoProjecao');
             const selectMes = document.getElementById('filtroMesProjecao');
             
@@ -884,8 +831,6 @@
             if (transacoesProjetadas.length > 0) {
                 atualizarDashboardProjecao();
                 mostrarStatus('Projeções carregadas com sucesso!', 'sucesso');
-            } else {
-                console.warn('Nenhuma transação projetada encontrada');
             }
         }
 
@@ -1027,17 +972,30 @@
             });
 
             const saldo = totalEntradas - totalSaidas;
-            const taxaPoupanca = totalEntradas > 0 ? ((saldo / totalEntradas) * 100).toFixed(1) : 0;
+            
+            // INTELIGÊNCIA: TAXA DE POUPANÇA COM CORES
+            let taxaPoupanca = 0;
+            if (totalEntradas > 0) {
+                taxaPoupanca = (saldo / totalEntradas) * 100;
+            }
 
             document.getElementById('kpi-entradas').innerText = `R$ ${totalEntradas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('kpi-despesas').innerText = `R$ ${totalSaidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             document.getElementById('kpi-saldo').innerText = `R$ ${saldo.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            document.getElementById('kpi-taxa').innerText = `${taxaPoupanca}%`;
+            
+            const taxaEl = document.getElementById('kpi-taxa');
+            taxaEl.innerText = `${taxaPoupanca.toFixed(1)}%`;
+            
+            // Dinâmica de Cor para a Taxa de Poupança
+            if (taxaPoupanca >= 20) {
+                taxaEl.className = "text-3xl font-display font-bold mt-1 text-emerald-600 dark:text-emerald-400";
+            } else if (taxaPoupanca > 0) {
+                taxaEl.className = "text-3xl font-display font-bold mt-1 text-blue-600 dark:text-blue-400";
+            } else {
+                taxaEl.className = "text-3xl font-display font-bold mt-1 text-rose-600 dark:text-rose-400";
+            }
 
-            // Calcular Saúde Financeira
             calcularSaudeFinanceira(totalEntradas, totalSaidas, dados.length);
-
-            // Comparativo Período vs Período
             calcularComparativoPeriodos(mesSelecionado);
 
             renderizarGraficoSaldo(dados);
