@@ -169,43 +169,67 @@
                 <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar hide-scrollbar" id="botoesMeses"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
-                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Total Recebido</span>
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Total Recebido</span>
+                            <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-end justify-between">
                         <p class="text-3xl font-display font-bold tracking-tight" id="kpi-entradas">R$ 0,00</p>
-                        <span id="mom-entradas" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"></span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3 h-5">
+                        <span id="mom-entradas" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-md"></span>
+                        <span id="mom-entradas-lbl" class="hidden text-[11px] font-medium text-slate-400">vs. mês anterior</span>
                     </div>
                 </div>
 
-                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Total Gasto</span>
-                        <div class="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-600 dark:text-rose-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Total Gasto</span>
+                            <div class="w-8 h-8 rounded-full bg-rose-100 dark:bg-rose-500/20 flex items-center justify-center text-rose-600 dark:text-rose-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-end justify-between">
                         <p class="text-3xl font-display font-bold tracking-tight" id="kpi-saidas">R$ 0,00</p>
-                        <span id="mom-saidas" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"></span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3 h-5">
+                        <span id="mom-saidas" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-md"></span>
+                        <span id="mom-saidas-lbl" class="hidden text-[11px] font-medium text-slate-400">vs. mês anterior</span>
                     </div>
                 </div>
 
-                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02]">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Saldo Líquido</span>
-                        <div class="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 flex items-center justify-center text-brand-600 dark:text-brand-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Saldo Líquido</span>
+                            <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-end justify-between">
                         <p class="text-3xl font-display font-bold tracking-tight" id="kpi-balanco">R$ 0,00</p>
-                        <span id="mom-balanco" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-full ml-2"></span>
+                    </div>
+                    <div class="flex items-center gap-2 mt-3 h-5">
+                        <span id="mom-balanco" class="hidden text-[11px] font-bold px-2 py-0.5 rounded-md"></span>
+                        <span id="mom-balanco-lbl" class="hidden text-[11px] font-medium text-slate-400">vs. mês anterior</span>
+                    </div>
+                </div>
+
+                <div class="ios-card p-5 sm:p-6 transition-all hover:scale-[1.02] flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[13px] font-semibold text-slate-500 dark:text-slate-400">Poder de Poupança</span>
+                            <div class="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-500/20 flex items-center justify-center text-brand-600 dark:text-brand-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-display font-bold tracking-tight" id="val-pct-poupanca">0%</p>
+                    </div>
+                    <div class="mt-3 h-5">
+                        <span id="lbl-pct-poupanca" class="text-[11px] font-medium text-slate-400">da receita foi retida</span>
                     </div>
                 </div>
             </div>
@@ -276,6 +300,7 @@
                         <option value="todas">Todas</option>
                     </select>
                 </div>
+                
                 <div class="hidden sm:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -482,7 +507,7 @@
                 });
             } catch (erro) { 
                 console.error(erro); 
-                mostrarStatus("Falha ao carregar do Google. Se estiver rodando um arquivo local (file://), abra usando um Servidor Local.", "erro");
+                mostrarStatus("Falha ao carregar do Google. Se estiver rodando um arquivo local, use um Servidor Local.", "erro");
             }
         }
         window.addEventListener('DOMContentLoaded', sincronizarComNuvem);
@@ -676,7 +701,7 @@
         }
 
         // ========================================
-        // ATUALIZAÇÃO DADOS REAIS + (Velocímetro, MoM, Tags)
+        // ATUALIZAÇÃO DADOS REAIS + MoM + Tags
         // ========================================
         function montarFiltrosDeMes(lista) {
             const cont = document.getElementById('containerFiltros'); const box = document.getElementById('botoesMeses'); box.innerHTML = '';
@@ -701,7 +726,7 @@
             let cor = '#34C759'; 
             let status = "Tranquilo (Saudável)";
             if (pct > 50 && pct <= 80) { cor = '#FF9500'; status = "Atenção (Moderado)"; } 
-            else if (pct > 80) { cor = '#FF3B30'; status = "Alerta (Alto Comprometimento)"; }
+            else if (pct > 80) { cor = '#FF3B30'; status = "Alerta (Comprometimento Alto)"; }
             if(pct === 0) status = "Sem saídas";
 
             const statusEl = document.getElementById('txt-saude-status');
@@ -722,11 +747,7 @@
                         rotation: -90
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { display: false } }
-                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { enabled: false }, legend: { display: false }, datalabels: { display: false } } },
                 plugins: [{
                     id: 'textCenter',
                     beforeDraw: function(chart) {
@@ -736,9 +757,7 @@
                         ctx.font = "bold " + fontSize + "px '-apple-system', 'SF Pro Display', sans-serif";
                         ctx.textBaseline = "middle";
                         ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#FFFFFF' : '#000000';
-                        var text = pct.toFixed(0) + "%",
-                            textX = Math.round((width - ctx.measureText(text).width) / 2),
-                            textY = height - (height * 0.15);
+                        var text = pct.toFixed(0) + "%", textX = Math.round((width - ctx.measureText(text).width) / 2), textY = height - (height * 0.15);
                         ctx.fillText(text, textX, textY);
                         
                         ctx.font = "600 " + (fontSize * 0.25) + "px '-apple-system', 'SF Pro Text', sans-serif";
@@ -763,7 +782,20 @@
             const bEl = document.getElementById('kpi-balanco'); bEl.innerText = `R$ ${bal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             bEl.className = `text-3xl font-display font-bold tracking-tight ${bal >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
 
-            // VELOCÍMETRO
+            // PODER DE POUPANÇA (% de retenção)
+            let pctPoupanca = totE > 0 ? (bal / totE) * 100 : 0;
+            const poupancaEl = document.getElementById('val-pct-poupanca');
+            poupancaEl.innerText = `${pctPoupanca.toFixed(1)}%`;
+            
+            if (pctPoupanca >= 20) {
+                poupancaEl.className = "text-3xl font-display font-bold tracking-tight text-emerald-600 dark:text-emerald-400";
+            } else if (pctPoupanca > 0) {
+                poupancaEl.className = "text-3xl font-display font-bold tracking-tight text-brand-600 dark:text-brand-400";
+            } else {
+                poupancaEl.className = "text-3xl font-display font-bold tracking-tight text-rose-600 dark:text-rose-400";
+            }
+
+            // VELOCÍMETRO DE SAÚDE
             let pctComprometido = totE > 0 ? (totS / totE) * 100 : (totS > 0 ? 100 : 0);
             renderizarGaugeSaude(pctComprometido);
 
@@ -779,14 +811,29 @@
                     let eA = 0, sA = 0; dAnt.forEach(t => { eA += t.valorEntrada; sA += t.valorSaida; });
                     let balA = eA - sA;
 
+                    // Função para atualizar as "Pílulas" de Evolução (MoM)
                     const updateBadge = (id, atual, ant, invert) => {
-                        const bg = document.getElementById(id); if (ant === 0) { bg.classList.add('hidden'); return; }
-                        const pct = ((atual - ant) / Math.abs(ant)) * 100; bg.classList.remove('hidden');
-                        let c = invert ? (pct > 0 ? 'bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-400' : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400') : (pct > 0 ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' : 'bg-rose-100 text-rose-600 dark:bg-rose-900/50 dark:text-rose-400');
-                        bg.className = `text-[11px] font-bold px-2 py-0.5 rounded-full ml-2 ${c}`; bg.innerText = `${pct >= 0 ? '↑' : '↓'} ${Math.abs(pct).toFixed(1)}%`;
-                    };
-                    updateBadge('mom-entradas', totE, eA, false); updateBadge('mom-saidas', totS, sA, true); updateBadge('mom-balanco', bal, balA, false);
+                        const bg = document.getElementById(id);
+                        const lbl = document.getElementById(id + '-lbl');
+                        if (ant === 0) { bg.classList.add('hidden'); if(lbl) lbl.classList.add('hidden'); return; }
+                        
+                        const pct = ((atual - ant) / Math.abs(ant)) * 100; 
+                        bg.classList.remove('hidden');
+                        if(lbl) lbl.classList.remove('hidden');
 
+                        let isPositive = pct >= 0;
+                        let isGood = invert ? !isPositive : isPositive; // Gastar mais é ruim (invert=true)
+
+                        let c = isGood ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400';
+                        bg.className = `text-[11px] font-bold px-2 py-0.5 rounded-md ${c}`; 
+                        bg.innerText = `${isPositive ? '↑' : '↓'} ${Math.abs(pct).toFixed(1)}%`;
+                    };
+
+                    updateBadge('mom-entradas', totE, eA, false); // Entradas: Subir é Bom
+                    updateBadge('mom-saidas', totS, sA, true);    // Saídas: Subir é Ruim
+                    updateBadge('mom-balanco', bal, balA, false); // Saldo: Subir é Bom
+
+                    // Container de Evolução Detalhado
                     cEvolucao.classList.remove('hidden');
                     const formatarLblMes = (mStr) => { let p = mStr.split('/'); return nomesDosMeses[p[0]] ? `${nomesDosMeses[p[0]]}/${p[1].substring(2)}` : mStr; };
                     document.getElementById('lbl-mes-atual').innerText = formatarLblMes(mes);
@@ -795,20 +842,26 @@
                     document.getElementById('val-saldo-anterior').innerText = `R$ ${balA.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 
                     const diff = bal - balA;
-                    const pct = balA !== 0 ? (diff / Math.abs(balA)) * 100 : (bal > 0 ? 100 : (bal < 0 ? -100 : 0));
+                    const pctDiff = balA !== 0 ? (diff / Math.abs(balA)) * 100 : (bal > 0 ? 100 : (bal < 0 ? -100 : 0));
                     const varRsEl = document.getElementById('val-variacao-rs');
                     const varPctEl = document.getElementById('badge-variacao-pct');
                     
                     varRsEl.innerText = `${diff >= 0 ? '+' : ''} R$ ${diff.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
                     varRsEl.className = `text-[15px] font-bold tracking-tight ${diff >= 0 ? 'text-emerald-500' : 'text-rose-500'}`;
-                    varPctEl.innerText = `${diff >= 0 ? '↑' : '↓'} ${Math.abs(pct).toFixed(1)}%`;
+                    varPctEl.innerText = `${diff >= 0 ? '↑' : '↓'} ${Math.abs(pctDiff).toFixed(1)}%`;
                     varPctEl.className = `text-[11px] font-bold px-2 py-0.5 rounded-md ${diff >= 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`;
                 } else { 
-                    ['mom-entradas', 'mom-saidas', 'mom-balanco'].forEach(id => document.getElementById(id).classList.add('hidden')); 
+                    ['mom-entradas', 'mom-saidas', 'mom-balanco'].forEach(id => {
+                        document.getElementById(id).classList.add('hidden');
+                        if(document.getElementById(id+'-lbl')) document.getElementById(id+'-lbl').classList.add('hidden');
+                    });
                     cEvolucao.classList.add('hidden');
                 }
             } else { 
-                ['mom-entradas', 'mom-saidas', 'mom-balanco'].forEach(id => document.getElementById(id).classList.add('hidden')); 
+                ['mom-entradas', 'mom-saidas', 'mom-balanco'].forEach(id => {
+                        document.getElementById(id).classList.add('hidden');
+                        if(document.getElementById(id+'-lbl')) document.getElementById(id+'-lbl').classList.add('hidden');
+                });
                 cEvolucao.classList.add('hidden');
             }
 
