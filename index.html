@@ -382,7 +382,12 @@ async function sincronizarComNuvem() {
                 const resProj = await fetch(`${LINK_PROJETADO}&t=${t}`);
                 if (!resProj.ok) throw new Error("Erro Proj");
                 Papa.parse(await resProj.text(), { complete: (rp) => {
-                    processarProjecoes(rp.data);
+                    try {
+                        processarProjecoes(rp.data);
+                    } catch(errProjParse) {
+                        console.error("Erro no processamento da projeção:", errProjParse);
+                        mostrarStatus("Extrato OK. Projeção com formato inválido.", "erro");
+                    }
                 }, skipEmptyLines: true });
             } catch(e) { mostrarStatus("Extrato OK. Projeção indisponível.", "info"); }
         }, skipEmptyLines: true });
@@ -429,7 +434,6 @@ function formatarDataCompleta(v) {
     if(!v) return null; let s = String(v); if(s.includes('/')) return s.substring(0,10); return null;
 }
 
-// NOVO CATEGORIZADOR RESTAURADO
 function categorizarTransacao(desc, ehSaida) {
     if (!ehSaida) return 'Entrada/Rendimento';
     const d = String(desc).toUpperCase();
@@ -472,71 +476,79 @@ function processarMatriz(linhas) {
     if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); mostrarStatus(`Dashboard atualizado!`, 'sucesso'); }
 }
 
-// NOVO MOTOR DE BUSCA TOLERANTE PARA PROJEÇÃO
+// NOVO MOTOR DE BUSCA TOLERANTE E SEGURO PARA PROJEÇÃO
 function processarProjecoes(linhas) {
-    let idxData = -1, idxTipo = -1, idxCat = -1, idxDesc = -1, idxValor = -1;
+    // Declarando o objeto idx CORRETAMENTE para evitar ReferenceError
+    let idx = { data: -1, ano: -1, mes: -1, tipo: -1, cat: -1, desc: -1, valor: -1 };
+    let inicio = false;
 
-    // Procura flexível nos primeiros 10 registros
-    for (let i = 0; i < Math.min(linhas.length, 10); i++) {
+    // Varre as primeiras 15 linhas atrás de palavras-chave do cabeçalho
+    for (let i = 0; i < Math.min(linhas.length, 15); i++) {
         if (!Array.isArray(linhas[i])) continue;
         for (let c = 0; c < linhas[i].length; c++) {
             let v = String(linhas[i][c] || "").trim().toUpperCase();
-            if (v.includes("DATA") || v.includes("VENCIMENTO")) idxData = c;
-            else if (v.includes("TIPO") || v.includes("NATUREZA")) idxTipo = c;
-            else if (v.includes("CATEGORIA") || v.includes("GRUPO")) idxCat = c;
-            else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("NOME")) idxDesc = c;
-            else if (v.includes("VALOR") || v.includes("PREVISTO") || v.includes("TOTAL")) idxValor = c;
+            if (v.includes("DATA") || v.includes("VENCIMENTO")) idx.data = c;
+            else if (v === "ANO") idx.ano = c;
+            else if (v.includes("MÊS") || v.includes("MES")) idx.mes = c;
+            else if (v.includes("TIPO") || v.includes("NATUREZA")) idx.tipo = c;
+            else if (v.includes("CATEGORIA") || v.includes("GRUPO")) idx.cat = c;
+            else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("NOME") || v.includes("PROJETO")) idx.desc = c;
+            else if (v.includes("VALOR") || v.includes("QUANTIA") || v.includes("PREVISTO") || v.includes("R$")) idx.valor = c;
         }
         // Exige apenas Data e Valor para começar a ler
-        if (idxData !== -1 && idxValor !== -1) {
-            linhas = linhas.slice(i + 1);
-            break;
+        if (idx.data !== -1 && idx.valor !== -1) { 
+            linhas = linhas.slice(i + 1); 
+            inicio = true; 
+            break; 
         }
     }
 
-    // Se o cabeçalho for totalmente em branco, chuta a posição padrão
-    if (idxData === -1 || idxValor === -1) {
-        idxData = 0; idxTipo = 4; idxCat = 5; idxDesc = 7; idxValor = 8;
+    // Fallback: se não achar cabeçalho, chuta a posição padrão da planilha original
+    if (!inicio) {
+        idx = { data: 0, ano: 1, mes: 2, tipo: 4, cat: 5, desc: 7, valor: 8 };
     }
 
-    transacoesProjetadas = [];
-    let anos = new Set(); let meses = new Set();
+    transacoesProjetadas = []; 
+    let anos = new Set(); 
+    let meses = new Set();
 
     for (let l of linhas) {
         if (!Array.isArray(l) || l.length < 2) continue;
 
-        let dStr = formatarDataCompleta(l[idxData]);
+        let dStr = formatarDataCompleta(l[idx.data]);
         if (!dStr) continue;
 
-        let valRaw = converterNumero(l[idxValor]);
+        let valRaw = converterNumero(l[idx.valor]);
         if (valRaw === 0) continue; 
 
-        let tipoStr = idxTipo !== -1 ? String(l[idxTipo]).toUpperCase() : "";
-        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA');
-        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA');
+        let tipoStr = idx.tipo !== -1 ? String(l[idx.tipo]).toUpperCase() : "";
+        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || tipoStr.includes('CREDITO');
+        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DEBITO');
 
-        // Se não tiver a coluna TIPO clara, a regra financeira é: conta futura geralmente é despesa.
+        // Se não achar o tipo de forma clara, assume que previsões futuras são despesas.
         if (!isRec && !isDes) isDes = true; 
 
-        let descr = idxDesc !== -1 && l[idxDesc] ? String(l[idxDesc]).trim() : "Projeção Futura";
-        let cat = idxCat !== -1 && l[idxCat] ? String(l[idxCat]).trim() : categorizarTransacao(descr, isDes);
+        let descr = idx.desc !== -1 && l[idx.desc] ? String(l[idx.desc]).trim() : "Projeção Futura";
+        let cat = idx.cat !== -1 && l[idx.cat] ? String(l[idx.cat]).trim() : categorizarTransacao(descr, isDes);
 
-        let a = dStr.split('/')[2];
-        let m = dStr.split('/')[1];
+        // Preenchimento inteligente de Ano/Mês caso faltem colunas
+        let a = idx.ano !== -1 && l[idx.ano] ? String(l[idx.ano]).trim() : dStr.split('/')[2];
+        let m = idx.mes !== -1 && l[idx.mes] ? String(l[idx.mes]).trim() : dStr.split('/')[1];
 
-        anos.add(a); meses.add(m);
+        anos.add(a); 
+        meses.add(m);
 
-        transacoesProjetadas.push({
-            data: dStr, ano: a, mes: m,
-            descricao: descr, categoria: cat,
-            valorEntrada: isRec ? Math.abs(valRaw) : 0,
-            valorSaida: isDes ? Math.abs(valRaw) : 0,
-            isReceita: isRec, isDespesa: isDes
+        transacoesProjetadas.push({ 
+            data: dStr, ano: a, mes: m, 
+            descricao: descr, categoria: cat, 
+            valorEntrada: isRec ? Math.abs(valRaw) : 0, 
+            valorSaida: isDes ? Math.abs(valRaw) : 0, 
+            isReceita: isRec, isDespesa: isDes 
         });
     }
 
     if (transacoesProjetadas.length === 0) {
-        throw new Error("Projeções vazias");
+        throw new Error("Aba lida, mas sem transações numéricas detectadas.");
     }
 
     const selA = document.getElementById('filtroAnoProjecao'); const selM = document.getElementById('filtroMesProjecao');
@@ -663,14 +675,14 @@ function renderizarGraficoSaldo(tx) {
 function renderizarGraficoDespesas(tx) {
     const ctx = document.getElementById('despesasChart').getContext('2d'); if (despesasChartInstance) despesasChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
+    despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
 }
 
 function renderizarGraficoEntradasSaidas(tx) {
     const ctx = document.getElementById('entradasSaidasChart').getContext('2d'); if (entradasSaidasChartInstance) entradasSaidasChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
     const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
-    entradasSaidasChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Entradas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Saídas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+    entradasSaidasChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Entradas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Saídas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] } });
 }
 
 function renderizarMaioresMovimentacoes(txOverride) {
@@ -693,6 +705,7 @@ function renderizarGraficoProjecao(tx) {
 function renderizarGraficoDespesasProjecao(tx) {
     const ctx = document.getElementById('despesasProjecaoChart').getContext('2d'); if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
+    const ord = Object.entries(m).sort((a,b) => b[1]-a[1]); const labels = ord.map(e=>e[0]), data = ord.map(e=>e[1]);
     despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
 }
 
@@ -712,7 +725,7 @@ function renderizarGraficoConsolidado() {
     const m = {};
     [...transacoesGlobais, ...transacoesProjetadas].forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
     const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
-    receitasDespesasConsolidadoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Receitas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Despesas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+    receitasDespesasConsolidadoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Receitas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Despesas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] } });
 }
 </script>
 </body>
