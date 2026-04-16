@@ -481,7 +481,30 @@ function mostrarStatus(msg, tipo) {
 function formatarMoeda(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2}); }
 function converterNumero(v) { if(!v) return 0; let s = String(v).replace(/[R$\s]/g,'').replace('.','').replace(',','.'); return parseFloat(s) || 0; }
 function formatarDataCompleta(v) { if(!v) return null; let s = String(v); if(s.includes('/')) return s.substring(0,10); return null; }
-function categorizarTransacao(d, s) { if(!s) return 'Entrada/Rendimento'; return 'Outros Gastos'; }
+
+// ==========================================
+// CATEGORIZADOR ROBUSTO COM AS SUAS REGRAS
+// ==========================================
+function categorizarTransacao(desc, ehSaida) {
+    if (!ehSaida) return 'Entrada/Rendimento';
+    const d = String(desc).toUpperCase();
+    
+    if (d.includes("CEMIG") || d.includes("VIVO FIBRA") || d.includes("COPASA") || d.includes("CONDOMINIO") || d.includes("ALUGUEL") || d.includes("ENERGIA") || d.includes("AGUA") || d.includes("LUZ") || d.includes("INTERNET")) return 'Moradia & Contas';
+    
+    if (d.includes("PADARIA") || d.includes("IFOOD") || d.includes("SUPERMERCADO") || d.includes("RESTAURANTE") || d.includes("PAO DE CASA") || d.includes("PIZZA") || d.includes("CERVEJA") || d.includes("MERCADO") || d.includes("LANCHE") || d.includes("ALIMENT")) return 'Alimentação & Lazer';
+    
+    if (d.includes("BH TRANS") || d.includes("POSTO") || d.includes("UBER") || d.includes("99") || d.includes("JEEP") || d.includes("TAOS") || d.includes("ESTACIONAMENTO") || d.includes("MULTA") || d.includes("PEDAGIO") || d.includes("COMBUST")) return 'Transporte & Veículo';
+    
+    if (d.includes("CRUZEIRO DO SUL") || d.includes("ESCOLA") || d.includes("COLEGIO") || d.includes("JOAQUIM") || d.includes("JOACAO") || d.includes("JESUINA") || d.includes("MARIA VITORIA") || d.includes("FACULDADE") || d.includes("BABA")) return 'Filhos, Babá & Educação';
+    
+    if (d.includes("AMAZON") || d.includes("MERCADO LIVRE") || d.includes("SHOPEE") || d.includes("NETFLIX") || d.includes("SPOTIFY") || d.includes("COMPRA") || d.includes("ASSINAT")) return 'Compras & Assinaturas';
+    
+    if (d.includes("NU PAGAMENTOS") || d.includes("FATURA") || d.includes("TRIBUTO") || d.includes("JUROS") || d.includes("IOF") || d.includes("EMPRESTIMO") || d.includes("TARIFA") || d.includes("CARTAO") || d.includes("CARTÃO")) return 'Financeiro & Cartões';
+    
+    if (d.includes("PIX ENVIADO") || d.includes("TED") || d.includes("DOC") || d.includes("TRANSF") || d.includes("PIX")) return 'Outros PIX & Transf.';
+    
+    return 'Outros Gastos';
+}
 
 function processarMatriz(linhas) {
     let iData = -1, iDesc = -1, iCred = -1, iDeb = -1; let linhasProc = [...linhas];
@@ -510,6 +533,7 @@ function processarMatriz(linhas) {
     if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); mostrarStatus(`Dashboard atualizado!`, 'sucesso'); }
 }
 
+// MOTOR DE BUSCA TOLERANTE DE CABEÇALHOS PARA PROJEÇÃO
 function processarProjecoes(linhas) {
     let idx = { data: -1, ano: -1, mes: -1, tipo: -1, cat: -1, desc: -1, valor: -1 };
     let inicio = false;
@@ -534,12 +558,13 @@ function processarProjecoes(linhas) {
     }
 
     if (!inicio) {
-        // Fallback fixo para a planilha
         idx = { data: 0, ano: 1, mes: 2, tipo: 4, cat: 5, desc: 7, valor: 8 };
     }
 
     transacoesProjetadas = []; 
-    
+    let anos = new Set(); 
+    let meses = new Set();
+
     for (let l of linhas) {
         if (!l || l.length === 0 || l[idx.data] === undefined) continue;
         
@@ -560,6 +585,9 @@ function processarProjecoes(linhas) {
         if (!a && dForm.includes('/')) a = dForm.split('/')[2];
         if (!m && dForm.includes('/')) m = dForm.split('/')[1];
 
+        anos.add(a); 
+        meses.add(m);
+
         const isRec = tipo.includes('RECEITA') || tipo.includes('ENTRADA') || tipo.includes('CREDITO');
         const isDes = tipo.includes('DESPESA') || tipo.includes('SAÍDA') || tipo.includes('SAIDA') || tipo.includes('DEBITO');
 
@@ -576,11 +604,22 @@ function processarProjecoes(linhas) {
         });
     }
 
+    const selA = document.getElementById('filtroAnoProjecao'); 
+    const selM = document.getElementById('filtroMesProjecao');
+    
+    selA.innerHTML = ''; 
+    Array.from(anos).sort().forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; selA.appendChild(o); });
+    
+    selM.innerHTML = '<option value="">Todos os Meses</option>'; 
+    Array.from(meses).forEach(m => { 
+        const o = document.createElement('option'); o.value = m; o.textContent = nomesMeses[m] || m; selM.appendChild(o); 
+    });
+
     if (transacoesProjetadas.length > 0) {
-        montarFiltrosDeMesesProjecao(); 
-        atualizarDashboardProjecao('Todos');
-    } else {
-        throw new Error("Falha na leitura");
+        document.getElementById('containerFiltrosProjecao').classList.remove('hidden');
+        atualizarDashboardProjecao();
+        selA.addEventListener('change', atualizarDashboardProjecao);
+        selM.addEventListener('change', atualizarDashboardProjecao);
     }
 }
 
@@ -664,8 +703,7 @@ function switchTab(tab) {
 }
 
 function renderizarGaugeSaude(pct) {
-    const ctx = document.getElementById('gaugeSaudeChart').getContext('2d');
-    if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
+    const canvas = document.getElementById('gaugeSaudeChart'); if (!canvas) return; const ctx = canvas.getContext('2d'); if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
     let cor = '#34C759', status = 'Tranquilo (Saudável)';
     if (pct > 50 && pct <= 80) { cor = '#FF9500'; status = 'Atenção (Moderado)'; } else if (pct > 80) { cor = '#FF3B30'; status = 'Alerta (Gasto Alto)'; } if (pct === 0) status = 'Sem dados';
     const sEl = document.getElementById('txt-saude-status'); if (sEl) sEl.innerText = status;
@@ -697,7 +735,7 @@ function renderizarMaioresMovimentacoes(txOverride) {
     let tx = txOverride || (mesAtualFiltro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === mesAtualFiltro));
     if (tp === 'saidas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => Math.max(b.valorEntrada,b.valorSaida) - Math.max(a.valorEntrada,a.valorSaida));
     const flt = tx.slice(0, 15);
-    document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem transações.</td></tr>' : flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary);">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
+    document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem transações.</td></tr>' : flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
     document.getElementById('tabelaMovimentacoesMobile').innerHTML = flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<div class="mobile-tx-card flex items-center justify-between gap-3"><div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${t.descricao}</p><p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${t.data} · <span style="color: ${c}">${t.categoria}</span></p></div><span class="text-sm font-bold ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '-' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span></div>`; }).join('');
 }
 
@@ -706,13 +744,14 @@ function renderizarGraficoProjecao(tx) {
     const m = {}; tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
     const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
     const s = ord.map(k => m[k].e - m[k].s);
-    saldoProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Saldo', data: s, backgroundColor: s.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }] } });
+    saldoProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Saldo', data: s, backgroundColor: s.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => 'R$ ' + (v/1000).toFixed(0) + 'k' } }, x: { grid: { display: false } } } } });
 }
 
 function renderizarGraficoDespesasProjecao(tx) {
     const ctx = document.getElementById('despesasProjecaoChart').getContext('2d'); if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] } });
+    const ord = Object.entries(m).sort((a,b) => b[1]-a[1]); const labels = ord.map(e=>e[0]), data = ord.map(e=>e[1]);
+    despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: labels.map(l => coresCategorias[l] || '#ccc') }] } });
 }
 
 function renderizarTabelaProjecao(txOverride) {
