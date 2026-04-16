@@ -9,7 +9,6 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="apple-mobile-web-app-title" content="FinanceFlow">
 	<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-	<link rel="manifest" href='data:application/manifest+json,{"name":"FinanceFlow Pro","short_name":"FinanceFlow","start_url":"/","display":"standalone","background_color":"#ffffff","theme_color":"#0c91eb","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3135/3135715.png","sizes":"192x192","type":"image/png"}]}'>
 
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -156,16 +155,28 @@
 				<span class="font-display text-[20px] font-bold tracking-tight" style="color: var(--text-primary)">FinanceFlow</span>
 			</div>
 			<div class="flex items-center gap-2">
-				<button id="btnToggleDarkMode" title="Alternar tema" class="p-2 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/10">
-					<svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10A5 5 0 0012 7z"/></svg>
-					<svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+				<button id="btnToggleDarkMode" title="Alternar tema"
+					class="p-2 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/10">
+					<svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10A5 5 0 0012 7z"/>
+					</svg>
+					<svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+					</svg>
 				</button>
-				<button id="btnExporterPDF" class="hidden md:flex cursor-pointer items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all" style="background: rgba(118,118,128,0.12); color: var(--text-primary)">
-					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+				<button id="btnExporterPDF"
+					class="hidden md:flex cursor-pointer items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all"
+					style="background: rgba(118,118,128,0.12); color: var(--text-primary)">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+					</svg>
 					Exportar
 				</button>
-				<label for="arquivoInput" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
-					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+				<label for="arquivoInput"
+					class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+					</svg>
 					Importar
 				</label>
 				<input type="file" id="arquivoInput" accept=".csv, .xls, .xlsx" class="hidden">
@@ -191,19 +202,39 @@
 
 		<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Recebido</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Recebido</span>
+					<div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="kpi-entradas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Gasto</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Gasto</span>
+					<div class="kpi-icon bg-red-100 dark:bg-red-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="kpi-saidas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span><div class="kpi-icon bg-blue-100 dark:bg-blue-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span>
+					<div class="kpi-icon bg-blue-100 dark:bg-blue-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="kpi-saldo">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Poder de Poupança</span><div class="kpi-icon bg-purple-100 dark:bg-purple-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Poder de Poupança</span>
+					<div class="kpi-icon bg-purple-100 dark:bg-purple-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="kpi-poupanca">0%</p>
 				<p class="text-[11px] mt-1" style="color: var(--text-secondary)">da receita foi retida</p>
 			</div>
@@ -224,8 +255,14 @@
 		</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Distribuição de Gastos</h3><div class="chart-container"><canvas id="despesasChart"></canvas></div></div>
-			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Entradas vs. Saídas</h3><div class="chart-container"><canvas id="entradasSaidasChart"></canvas></div></div>
+			<div class="ios-card p-5">
+				<h3 class="text-[15px] font-semibold mb-4">Distribuição de Gastos</h3>
+				<div class="chart-container"><canvas id="despesasChart"></canvas></div>
+			</div>
+			<div class="ios-card p-5">
+				<h3 class="text-[15px] font-semibold mb-4">Entradas vs. Saídas</h3>
+				<div class="chart-container"><canvas id="entradasSaidasChart"></canvas></div>
+			</div>
 		</div>
 
 		<div class="ios-card mb-6">
@@ -263,22 +300,41 @@
 
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Previstas</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Previstas</span>
+					<div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="kpi-proj-receitas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Previstas</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Previstas</span>
+					<div class="kpi-icon bg-red-100 dark:bg-red-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="kpi-proj-despesas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Projetado</span><span class="projection-badge">Projetado</span></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Projetado</span>
+					<span class="projection-badge">Projetado</span>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="kpi-proj-saldo">R$ 0,00</p>
 			</div>
 		</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Evolução Projetada</h3><div class="chart-container"><canvas id="saldoProjecaoChart"></canvas></div></div>
-			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Distribuição de Despesas Previstas</h3><div class="chart-container"><canvas id="despesasProjecaoChart"></canvas></div></div>
+			<div class="ios-card p-5">
+				<h3 class="text-[15px] font-semibold mb-4">Evolução Projetada</h3>
+				<div class="chart-container"><canvas id="saldoProjecaoChart"></canvas></div>
+			</div>
+			<div class="ios-card p-5">
+				<h3 class="text-[15px] font-semibold mb-4">Distribuição de Despesas Previstas</h3>
+				<div class="chart-container"><canvas id="despesasProjecaoChart"></canvas></div>
+			</div>
 		</div>
 
 		<div class="ios-card mb-6">
@@ -312,15 +368,28 @@
 	<div id="secaoConsolidado" class="hidden animate-fade-in">
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Totais</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Totais</span>
+					<div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="rConsReceitas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Totais</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Totais</span>
+					<div class="kpi-icon bg-red-100 dark:bg-red-500/20">
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+					</div>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="rConsDespesas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span><span class="projection-badge">Real + Proj.</span></div>
+				<div class="kpi-header">
+					<span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span>
+					<span class="projection-badge">Real + Proj.</span>
+				</div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="rConsSaldo">R$ 0,00</p>
 			</div>
 		</div>
@@ -354,18 +423,7 @@ let abaAtual = 'real';
 
 const nomesMeses = {"01":"Jan","02":"Fev","03":"Mar","04":"Abr","05":"Mai","06":"Jun","07":"Jul","08":"Ago","09":"Set","10":"Out","11":"Nov","12":"Dez"};
 const conversorMesGlobal = {"janeiro":"01","fevereiro":"02","marco":"03","março":"03","abril":"04","maio":"05","junho":"06","julho":"07","agosto":"08","setembro":"09","outubro":"10","novembro":"11","dezembro":"12","jan":"01","fev":"02","mar":"03","abr":"04","mai":"05","jun":"06","jul":"07","ago":"08","set":"09","out":"10","nov":"11","dez":"12"};
-
-const coresCategorias = {
-    'Moradia & Contas':'#3b82f6',
-    'Alimentação & Lazer':'#10b981',
-    'Transporte & Veículo':'#f59e0b',
-    'Filhos, Babá & Educação':'#8b5cf6',
-    'Compras & Assinaturas':'#ec4899',
-    'Financeiro & Cartões':'#ef4444',
-    'Outros PIX & Transf.':'#14b8a6',
-    'Outros Gastos':'#64748b',
-    'Entrada/Rendimento':'#10b981'
-};
+const coresCategorias = {'Moradia & Contas':'#3b82f6','Alimentação & Lazer':'#10b981','Transporte & Veículo':'#f59e0b','Filhos, Babá & Educação':'#8b5cf6','Compras & Assinaturas':'#ec4899','Financeiro & Cartões':'#ef4444','Outros PIX & Transf.':'#14b8a6','Outros Gastos':'#64748b','Entrada/Rendimento':'#10b981'};
 
 const LINK_EXTRATO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=0&single=true&output=csv';
 const LINK_PROJETADO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=489511638&single=true&output=csv';
@@ -382,13 +440,7 @@ async function sincronizarComNuvem() {
                 const resProj = await fetch(`${LINK_PROJETADO}&t=${t}`);
                 if (!resProj.ok) throw new Error("Erro Proj");
                 Papa.parse(await resProj.text(), { complete: (rp) => {
-                    try {
-                        processarProjecoes(rp.data);
-                        mostrarStatus("Atualizado com sucesso!", "sucesso");
-                    } catch(errProjParse) {
-                        console.error(errProjParse);
-                        mostrarStatus("Extrato OK. Erro ao ler Projeção.", "erro");
-                    }
+                    processarProjecoes(rp.data);
                 }, skipEmptyLines: true });
             } catch(e) { mostrarStatus("Extrato OK. Projeção indisponível.", "info"); }
         }, skipEmptyLines: true });
@@ -411,9 +463,8 @@ document.getElementById('btnToggleDarkMode').addEventListener('click', () => {
     document.getElementById('iconSun').classList.toggle('hidden', isDark);
     document.getElementById('iconMoon').classList.toggle('hidden', !isDark);
     if (gaugeSaudeChartInstance) {
-        const pctStr = document.getElementById('kpi-poupanca').textContent.replace('%','');
-        const retido = parseFloat(pctStr) || 0;
-        renderizarGaugeSaude(retido > 0 ? 100 - retido : 100);
+        const pct = parseFloat(document.getElementById('kpi-poupanca').textContent) || 0;
+        renderizarGaugeSaude(100 - pct < 0 ? 100 : 100 - pct);
     }
 });
 
@@ -427,50 +478,10 @@ function mostrarStatus(msg, tipo) {
     if (tipo === 'sucesso') statusTimer = setTimeout(() => el.classList.add('hidden'), 4000);
 }
 
-function formatarMoeda(v) { return 'R$ ' + (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-
-function converterNumero(val) {
-    if (typeof val === 'number') return val || 0;
-    let str = String(val).trim().replace(/[R$\s]/g, '');
-    if (!str) return 0;
-    if (str.includes(',') && str.includes('.')) {
-        if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-            str = str.split('.').join('').replace(',', '.');
-        } else {
-            str = str.split(',').join('');
-        }
-    } else if (str.includes(',')) {
-        str = str.replace(',', '.');
-    }
-    return parseFloat(str) || 0;
-}
-
-function formatarDataCompleta(val) {
-    if (!val) return null; let strVal = String(val).trim();
-    if (/^\d{5}$/.test(strVal) || /^\d{5}\.\d+$/.test(strVal)) { 
-        let d = new Date((parseInt(strVal) - 25569) * 86400 * 1000); 
-        d = new Date(d.getTime() + d.getTimezoneOffset() * 60000); 
-        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
-    }
-    let mISO = strVal.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/); if (mISO) return `${mISO[3]}/${mISO[2]}/${mISO[1]}`;
-    let mBR = strVal.match(/^(\d{2})[-/](\d{2})[-/](\d{4})/); if (mBR) return `${mBR[1]}/${mBR[2]}/${mBR[3]}`;
-    let mLong = strVal.match(/(\d{1,2})\s+([a-zA-ZçÇ]+)\s+(\d{4})/); if (mLong) { const mN = conversorMesGlobal[mLong[2].toLowerCase()]; if (mN) return `${mLong[1].padStart(2,'0')}/${mN}/${mLong[3]}`; }
-    if (strVal.includes('/')) return strVal.substring(0, 10);
-    return null;
-}
-
-function categorizarTransacao(desc, ehSaida) {
-    if (!ehSaida) return 'Entrada/Rendimento';
-    const d = String(desc).toUpperCase();
-    if (d.includes("CEMIG") || d.includes("VIVO FIBRA") || d.includes("COPASA") || d.includes("CONDOMINIO") || d.includes("ALUGUEL") || d.includes("ENERGIA") || d.includes("AGUA") || d.includes("LUZ") || d.includes("INTERNET")) return 'Moradia & Contas';
-    if (d.includes("PADARIA") || d.includes("IFOOD") || d.includes("SUPERMERCADO") || d.includes("RESTAURANTE") || d.includes("PAO DE CASA") || d.includes("PIZZA") || d.includes("CERVEJA") || d.includes("MERCADO") || d.includes("LANCHE") || d.includes("ALIMENT")) return 'Alimentação & Lazer';
-    if (d.includes("BH TRANS") || d.includes("POSTO") || d.includes("UBER") || d.includes("99") || d.includes("JEEP") || d.includes("TAOS") || d.includes("ESTACIONAMENTO") || d.includes("MULTA") || d.includes("PEDAGIO") || d.includes("COMBUST")) return 'Transporte & Veículo';
-    if (d.includes("CRUZEIRO DO SUL") || d.includes("ESCOLA") || d.includes("COLEGIO") || d.includes("JOAQUIM") || d.includes("JOACAO") || d.includes("JESUINA") || d.includes("MARIA VITORIA") || d.includes("FACULDADE") || d.includes("BABA")) return 'Filhos, Babá & Educação';
-    if (d.includes("AMAZON") || d.includes("MERCADO LIVRE") || d.includes("SHOPEE") || d.includes("NETFLIX") || d.includes("SPOTIFY") || d.includes("COMPRA") || d.includes("ASSINAT")) return 'Compras & Assinaturas';
-    if (d.includes("NU PAGAMENTOS") || d.includes("FATURA") || d.includes("TRIBUTO") || d.includes("JUROS") || d.includes("IOF") || d.includes("EMPRESTIMO") || d.includes("TARIFA") || d.includes("CARTAO") || d.includes("CARTÃO")) return 'Financeiro & Cartões';
-    if (d.includes("PIX ENVIADO") || d.includes("TED") || d.includes("DOC") || d.includes("TRANSF") || d.includes("PIX")) return 'Outros PIX & Transf.';
-    return 'Outros Gastos';
-}
+function formatarMoeda(v) { return 'R$ ' + v.toLocaleString('pt-BR', {minimumFractionDigits:2}); }
+function converterNumero(v) { if(!v) return 0; let s = String(v).replace(/[R$\s]/g,'').replace('.','').replace(',','.'); return parseFloat(s) || 0; }
+function formatarDataCompleta(v) { if(!v) return null; let s = String(v); if(s.includes('/')) return s.substring(0,10); return null; }
+function categorizarTransacao(d, s) { if(!s) return 'Entrada/Rendimento'; return 'Outros Gastos'; }
 
 function processarMatriz(linhas) {
     let iData = -1, iDesc = -1, iCred = -1, iDeb = -1; let linhasProc = [...linhas];
@@ -485,7 +496,7 @@ function processarMatriz(linhas) {
         }
         if (iData !== -1 && iDesc !== -1 && (iCred > -1 || iDeb > -1)) { linhasProc = linhasProc.slice(i + 1); break; }
     }
-    if (iData === -1) { iData = 0; iDesc = 1; iCred = 4; iDeb = 5; } // Fallback
+    if (iData === -1) { mostrarStatus('Erro de formatação no Extrato.', 'erro'); return; }
     transacoesGlobais = [];
     for (let l of linhasProc) {
         if (!Array.isArray(l) || !l[iData]) continue;
@@ -496,81 +507,81 @@ function processarMatriz(linhas) {
         if (vEnt === 0 && vSai === 0) continue;
         transacoesGlobais.push({ data: dStr, ano: dStr.split('/')[2], mes: dStr.split('/')[1], descricao: desc, categoria: categorizarTransacao(desc, vSai > 0), valorEntrada: vEnt, valorSaida: vSai });
     }
-    if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); }
+    if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); mostrarStatus(`Dashboard atualizado!`, 'sucesso'); }
 }
 
 function processarProjecoes(linhas) {
-    let idxData = -1, idxTipo = -1, idxCat = -1, idxDesc = -1, idxValor = -1;
-    let startRow = 1;
+    let idx = { data: -1, ano: -1, mes: -1, tipo: -1, cat: -1, desc: -1, valor: -1 };
+    let inicio = false;
 
     for (let i = 0; i < Math.min(linhas.length, 15); i++) {
-        if (!Array.isArray(linhas[i])) continue;
+        if (!linhas[i] || !Array.isArray(linhas[i])) continue;
         for (let c = 0; c < linhas[i].length; c++) {
             let v = String(linhas[i][c] || "").trim().toUpperCase();
-            if (v.includes("DATA") || v.includes("VENCIMENTO")) idxData = c;
-            else if (v.includes("TIPO") || v.includes("NATUREZA") || v === "C/D") idxTipo = c;
-            else if (v.includes("CATEGORIA") || v.includes("GRUPO")) idxCat = c;
-            else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("NOME") || v.includes("PROJETO")) idxDesc = c;
-            else if (v.includes("VALOR") || v.includes("QUANTIA") || v.includes("PREVISTO") || v.includes("R$")) idxValor = c;
+            if (v.includes("DATA") || v.includes("VENCIMENTO")) idx.data = c;
+            else if (v === "ANO") idx.ano = c;
+            else if (v.includes("MÊS") || v.includes("MES")) idx.mes = c;
+            else if (v.includes("TIPO") || v.includes("NATUREZA")) idx.tipo = c;
+            else if (v.includes("CATEGORIA") || v.includes("GRUPO")) idx.cat = c;
+            else if (v.includes("DESCRI") || v.includes("LANÇA")) idx.desc = c;
+            else if (v.includes("VALOR") || v.includes("QUANTIA") || v.includes("PREVISTO")) idx.valor = c;
         }
-        if (idxData !== -1 && idxValor !== -1) { startRow = i + 1; break; }
+        if (idx.data !== -1 && idx.tipo !== -1 && idx.valor !== -1) { 
+            linhas = linhas.slice(i + 1); 
+            inicio = true; 
+            break; 
+        }
     }
 
-    if (idxData === -1) idxData = 0; 
-    if (idxDesc === -1) idxDesc = 1;
-    if (idxValor === -1) {
-        if (linhas[startRow] && linhas[startRow].length > 8 && converterNumero(linhas[startRow][8]) !== 0) idxValor = 8;
-        else idxValor = 2;
+    if (!inicio) {
+        // Fallback fixo para a planilha
+        idx = { data: 0, ano: 1, mes: 2, tipo: 4, cat: 5, desc: 7, valor: 8 };
     }
-    if (idxTipo === -1) idxTipo = 4; 
-    if (idxCat === -1) idxCat = 5;
 
     transacoesProjetadas = []; 
-    let anos = new Set(); 
-    let meses = new Set();
+    
+    for (let l of linhas) {
+        if (!l || l.length === 0 || l[idx.data] === undefined) continue;
+        
+        let dForm = formatarDataCompleta(l[idx.data]);
+        const tipo = String(l[idx.tipo] || "").trim().toUpperCase();
+        const val = Math.abs(converterNumero(l[idx.valor]));
+        
+        if (!tipo || val === 0) continue;
 
-    for (let i = startRow; i < linhas.length; i++) {
-        let l = linhas[i];
-        if (!Array.isArray(l) || l.length < 2) continue;
+        let a = idx.ano !== -1 ? String(l[idx.ano]).trim() : '';
+        let m = idx.mes !== -1 ? String(l[idx.mes]).trim() : '';
+        
+        if (!dForm || dForm === "null") { 
+            let n = conversorMesGlobal[m.toLowerCase()] || "01"; 
+            dForm = `01/${n}/${a || new Date().getFullYear()}`; 
+        }
 
-        let dataRaw = String(l[idxData] || "").trim();
-        let dForm = formatarDataCompleta(dataRaw);
-        if (!dForm) continue;
+        if (!a && dForm.includes('/')) a = dForm.split('/')[2];
+        if (!m && dForm.includes('/')) m = dForm.split('/')[1];
 
-        let valRaw = converterNumero(l[idxValor]);
-        if (valRaw === 0) continue; 
+        const isRec = tipo.includes('RECEITA') || tipo.includes('ENTRADA') || tipo.includes('CREDITO');
+        const isDes = tipo.includes('DESPESA') || tipo.includes('SAÍDA') || tipo.includes('SAIDA') || tipo.includes('DEBITO');
 
-        let tipoStr = idxTipo !== -1 ? String(l[idxTipo] || "").toUpperCase() : "";
-        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || tipoStr.includes('C');
-        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DEBITO') || tipoStr.includes('D');
-        if (!isRec && !isDes) isDes = true; 
-
-        let descr = idxDesc !== -1 && l[idxDesc] ? String(l[idxDesc]).trim() : "Projeção";
-        let cat = idxCat !== -1 && l[idxCat] ? String(l[idxCat]).trim() : categorizarTransacao(descr, isDes);
-
-        let a = dForm.split('/')[2];
-        let m = dForm.split('/')[1];
-
-        anos.add(a); 
-        meses.add(m);
+        let descr = idx.desc !== -1 ? String(l[idx.desc]).trim() : "Projeção";
+        let cat = idx.cat !== -1 ? String(l[idx.cat]).trim() : "Outros";
 
         transacoesProjetadas.push({ 
             data: dForm, ano: a, mes: m, 
-            descricao: descr, categoria: cat, 
-            valorEntrada: isRec ? Math.abs(valRaw) : 0, 
-            valorSaida: isDes ? Math.abs(valRaw) : 0, 
+            descricao: descr, 
+            categoria: cat, 
+            valorEntrada: isRec ? val : 0, 
+            valorSaida: isDes ? val : 0, 
             isReceita: isRec, isDespesa: isDes 
         });
     }
 
-    if (transacoesProjetadas.length === 0) throw new Error("Sem transacoes numericas");
-
-    const selA = document.getElementById('filtroAnoProjecao'); const selM = document.getElementById('filtroMesProjecao');
-    selA.innerHTML = ''; Array.from(anos).sort().forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; selA.appendChild(o); });
-    selM.innerHTML = '<option value="">Todos os Meses</option>'; Array.from(meses).forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = nomesMeses[m] || m; selM.appendChild(o); });
-
-    montarFiltrosDeMesesProjecao();
-    atualizarDashboardProjecao('Todos');
+    if (transacoesProjetadas.length > 0) {
+        montarFiltrosDeMesesProjecao(); 
+        atualizarDashboardProjecao('Todos');
+    } else {
+        throw new Error("Falha na leitura");
+    }
 }
 
 function montarFiltrosDeMeses() {
@@ -612,19 +623,10 @@ function montarFiltrosDeMesesProjecao() {
 function atualizarDashboard(filtro) {
     const tx = filtro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === filtro);
     const ent = tx.reduce((s, t) => s + t.valorEntrada, 0), sai = tx.reduce((s, t) => s + t.valorSaida, 0), sal = ent - sai;
-    
     document.getElementById('kpi-entradas').innerText = formatarMoeda(ent);
     document.getElementById('kpi-saidas').innerText = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('kpi-saldo'); 
-    sEl.innerText = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
-    const poupPct = ent > 0 ? ((sal / ent) * 100) : 0;
-    const pEl = document.getElementById('kpi-poupanca'); 
-    pEl.innerText = poupPct.toFixed(1) + '%'; 
-    pEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (poupPct >= 20 ? 'text-emerald-600' : poupPct > 0 ? 'text-blue-500' : 'text-red-500');
-
+    document.getElementById('kpi-saldo').innerText = formatarMoeda(sal);
+    document.getElementById('kpi-poupanca').innerText = (ent > 0 ? ((sal/ent)*100).toFixed(1) : 0) + '%';
     renderizarGaugeSaude(ent > 0 ? (sai/ent)*100 : 0);
     renderizarGraficoSaldo(tx); renderizarGraficoDespesas(tx); renderizarGraficoEntradasSaidas(tx); renderizarMaioresMovimentacoes(tx);
 }
@@ -632,15 +634,10 @@ function atualizarDashboard(filtro) {
 function atualizarDashboardProjecao(filtroParam) {
     const filtro = filtroParam || mesProjecaoFiltro;
     const tx = filtro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === filtro);
-    const ent = tx.reduce((s, t) => s + t.valorEntrada, 0), sai = tx.reduce((s, t) => s + t.valorSaida, 0), sal = ent - sai;
-    
+    const ent = tx.reduce((s, t) => s + t.valorEntrada, 0), sai = tx.reduce((s, t) => s + t.valorSaida, 0);
     document.getElementById('kpi-proj-receitas').innerText = formatarMoeda(ent);
     document.getElementById('kpi-proj-despesas').innerText = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('kpi-proj-saldo'); 
-    sEl.innerText = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
+    document.getElementById('kpi-proj-saldo').innerText = formatarMoeda(ent - sai);
     renderizarGraficoProjecao(tx); renderizarGraficoDespesasProjecao(tx); renderizarTabelaProjecao(tx);
 }
 
@@ -648,13 +645,8 @@ function atualizarDashboardConsolidado() {
     const ent = transacoesGlobais.reduce((s, t) => s + t.valorEntrada, 0) + transacoesProjetadas.reduce((s, t) => s + t.valorEntrada, 0);
     const sai = transacoesGlobais.reduce((s, t) => s + t.valorSaida, 0) + transacoesProjetadas.reduce((s, t) => s + t.valorSaida, 0);
     const sal = ent - sai;
-    document.getElementById('rConsReceitas').textContent = formatarMoeda(ent); 
-    document.getElementById('rConsDespesas').textContent = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('rConsSaldo'); 
-    sEl.textContent = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
+    document.getElementById('rConsReceitas').textContent = formatarMoeda(ent); document.getElementById('rConsDespesas').textContent = formatarMoeda(sai);
+    document.getElementById('rConsSaldo').textContent = formatarMoeda(sal);
     renderizarGraficoConsolidado();
 }
 
@@ -672,7 +664,8 @@ function switchTab(tab) {
 }
 
 function renderizarGaugeSaude(pct) {
-    const canvas = document.getElementById('gaugeSaudeChart'); if (!canvas) return; const ctx = canvas.getContext('2d'); if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
+    const ctx = document.getElementById('gaugeSaudeChart').getContext('2d');
+    if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
     let cor = '#34C759', status = 'Tranquilo (Saudável)';
     if (pct > 50 && pct <= 80) { cor = '#FF9500'; status = 'Atenção (Moderado)'; } else if (pct > 80) { cor = '#FF3B30'; status = 'Alerta (Gasto Alto)'; } if (pct === 0) status = 'Sem dados';
     const sEl = document.getElementById('txt-saude-status'); if (sEl) sEl.innerText = status;
@@ -689,7 +682,7 @@ function renderizarGraficoSaldo(tx) {
 function renderizarGraficoDespesas(tx) {
     const ctx = document.getElementById('despesasChart').getContext('2d'); if (despesasChartInstance) despesasChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+    despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] } });
 }
 
 function renderizarGraficoEntradasSaidas(tx) {
@@ -704,7 +697,7 @@ function renderizarMaioresMovimentacoes(txOverride) {
     let tx = txOverride || (mesAtualFiltro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === mesAtualFiltro));
     if (tp === 'saidas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => Math.max(b.valorEntrada,b.valorSaida) - Math.max(a.valorEntrada,a.valorSaida));
     const flt = tx.slice(0, 15);
-    document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem transações.</td></tr>' : flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
+    document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem transações.</td></tr>' : flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary);">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
     document.getElementById('tabelaMovimentacoesMobile').innerHTML = flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<div class="mobile-tx-card flex items-center justify-between gap-3"><div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${t.descricao}</p><p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${t.data} · <span style="color: ${c}">${t.categoria}</span></p></div><span class="text-sm font-bold ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '-' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span></div>`; }).join('');
 }
 
@@ -713,18 +706,17 @@ function renderizarGraficoProjecao(tx) {
     const m = {}; tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
     const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
     const s = ord.map(k => m[k].e - m[k].s);
-    saldoProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Saldo', data: s, backgroundColor: s.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }] }, options: { plugins: { legend: { display: false } } } });
+    saldoProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Saldo', data: s, backgroundColor: s.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }] } });
 }
 
 function renderizarGraficoDespesasProjecao(tx) {
     const ctx = document.getElementById('despesasProjecaoChart').getContext('2d'); if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy(); if (!tx || tx.length === 0) return;
     const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+    despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] } });
 }
 
 function renderizarTabelaProjecao(txOverride) {
     const tp = document.getElementById('filtroTipoProjecao').value;
-    const aSel = document.getElementById('filtroAnoProjecao').value, mSel = document.getElementById('filtroMesProjecao').value;
     let tx = txOverride || (mesProjecaoFiltro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === mesProjecaoFiltro));
     if (tp === 'despesas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
     
