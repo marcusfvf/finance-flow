@@ -65,7 +65,8 @@
 			background-color: var(--bg-primary);
 			color: var(--text-primary);
 			transition: background-color 0.3s, color 0.3s;
-			padding-bottom: calc(80px + env(safe-area-inset-bottom));
+			/* Reserva espaço inferior: barra fixa + home indicator (iPhone) */
+			padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 			-webkit-font-smoothing: antialiased;
 			-moz-osx-font-smoothing: grayscale;
 			overscroll-behavior-y: none;
@@ -89,6 +90,11 @@
 			background-color: var(--nav-bg);
 			backdrop-filter: saturate(180%) blur(20px);
 			-webkit-backdrop-filter: saturate(180%) blur(20px);
+		}
+
+		/* Barra superior: fundo até o topo; conteúdo abaixo do notch / Dynamic Island */
+		nav.app-top-nav {
+			padding-top: env(safe-area-inset-top, 0px);
 		}
 
 		.custom-scrollbar::-webkit-scrollbar { height: 0; width: 0; }
@@ -147,7 +153,7 @@
 
 <body class="min-h-screen">
 
-<nav class="no-select sticky top-0 z-50 apple-blur border-b border-black/5 dark:border-white/5">
+<nav class="app-top-nav no-select sticky top-0 z-50 apple-blur border-b border-black/5 dark:border-white/5">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between h-16 items-center">
 			<div class="flex items-center gap-3">
