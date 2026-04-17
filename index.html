@@ -497,7 +497,8 @@ function processarProjecoes(linhas) {
             let v = String(linhas[i][c] || "").trim().toUpperCase();
             if (v.includes("DATA") || v.includes("VENCIMENTO")) idxData = c;
             else if (v.includes("TIPO") || v.includes("NATUREZA") || v === "C/D") idxTipo = c;
-            else if (v.includes("CATEGORIA") || v.includes("GRUPO")) idxCat = c;
+            else if (v.includes("CATEGORIA") && !v.includes("RECEITA")) idxCat = c;
+            else if (v.includes("GRUPO")) idxCat = c;
             else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("NOME") || v.includes("PROJETO")) idxDesc = c;
             else if (v.includes("VALOR") || v.includes("QUANTIA") || v.includes("PREVISTO") || v.includes("R$")) idxValor = c;
         }
@@ -513,9 +514,7 @@ function processarProjecoes(linhas) {
     if (idxTipo === -1) idxTipo = 4; 
     if (idxCat === -1) idxCat = 5;
 
-    transacoesProjetadas = []; 
-    let anos = new Set(); 
-    let meses = new Set();
+    transacoesProjetadas = [];
 
     for (let i = startRow; i < linhas.length; i++) {
         let l = linhas[i];
@@ -529,18 +528,15 @@ function processarProjecoes(linhas) {
         if (valRaw === 0) continue; 
 
         let tipoStr = idxTipo !== -1 ? String(l[idxTipo] || "").toUpperCase() : "";
-        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || tipoStr.includes('C');
-        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DEBITO') || tipoStr.includes('D');
-        if (!isRec && !isDes) isDes = true; 
+        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || /^C\b/.test(tipoStr) || tipoStr === 'C';
+        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DÉBITO') || tipoStr.includes('DEBITO') || /^D\b/.test(tipoStr) || tipoStr === 'D';
+        if (!isRec && !isDes) isDes = true;
 
         let descr = idxDesc !== -1 && l[idxDesc] ? String(l[idxDesc]).trim() : "Projeção";
         let cat = idxCat !== -1 && l[idxCat] ? String(l[idxCat]).trim() : categorizarTransacao(descr, isDes);
 
         let a = dForm.split('/')[2];
         let m = dForm.split('/')[1];
-
-        anos.add(a); 
-        meses.add(m);
 
         transacoesProjetadas.push({ 
             data: dForm, ano: a, mes: m, 
@@ -552,10 +548,6 @@ function processarProjecoes(linhas) {
     }
 
     if (transacoesProjetadas.length === 0) throw new Error("Sem transacoes numericas");
-
-    const selA = document.getElementById('filtroAnoProjecao'); const selM = document.getElementById('filtroMesProjecao');
-    selA.innerHTML = ''; Array.from(anos).sort().forEach(a => { const o = document.createElement('option'); o.value = a; o.textContent = a; selA.appendChild(o); });
-    selM.innerHTML = '<option value="">Todos os Meses</option>'; Array.from(meses).forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = nomesMeses[m] || m; selM.appendChild(o); });
 
     montarFiltrosDeMesesProjecao();
     atualizarDashboardProjecao('Todos');
@@ -712,7 +704,6 @@ function renderizarGraficoDespesasProjecao(tx) {
 
 function renderizarTabelaProjecao(txOverride) {
     const tp = document.getElementById('filtroTipoProjecao').value;
-    const aSel = document.getElementById('filtroAnoProjecao').value, mSel = document.getElementById('filtroMesProjecao').value;
     let tx = txOverride || (mesProjecaoFiltro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === mesProjecaoFiltro));
     if (tp === 'despesas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
     
