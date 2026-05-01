@@ -65,7 +65,6 @@
 			background-color: var(--bg-primary);
 			color: var(--text-primary);
 			transition: background-color 0.3s, color 0.3s;
-			/* Reserva espaço inferior: barra fixa + home indicator (iPhone) */
 			padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
 			-webkit-font-smoothing: antialiased;
 			-moz-osx-font-smoothing: grayscale;
@@ -83,7 +82,6 @@
 			border: 1px solid rgba(0,0,0,0.04);
 			overflow: hidden;
 		}
-
 		body.dark-mode .ios-card { border: 1px solid rgba(255,255,255,0.06); }
 
 		.apple-blur {
@@ -92,16 +90,16 @@
 			-webkit-backdrop-filter: saturate(180%) blur(20px);
 		}
 
-		/* Barra superior: fundo até o topo; conteúdo abaixo do notch / Dynamic Island */
-		nav.app-top-nav {
-			padding-top: env(safe-area-inset-top, 0px);
-		}
+		.app-top-nav { padding-top: env(safe-area-inset-top, 0px); }
 
 		.custom-scrollbar::-webkit-scrollbar { height: 0; width: 0; }
 		.btn-active { background: #007AFF; color: white; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3); }
 
 		@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 		.animate-fade-in { animation: fadeIn 0.35s ease-out forwards; }
+
+		@keyframes spin { to { transform: rotate(360deg); } }
+		.animate-spin-slow { animation: spin 1s linear infinite; }
 
 		.chart-container { position: relative; height: 300px; width: 100%; }
 
@@ -141,6 +139,57 @@
 		.mobile-tx-card { padding: 12px 16px; border-radius: 14px; background: var(--card-bg); margin-bottom: 8px; }
 		.bottom-nav-safe { padding-bottom: env(safe-area-inset-bottom); }
 
+		/* Budget progress bars */
+		.budget-row { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+		.budget-row:last-child { border-bottom: none; }
+		.budget-bar-track { width: 100%; height: 6px; border-radius: 99px; background: rgba(118,118,128,0.15); margin-top: 6px; }
+		.budget-bar-fill { height: 6px; border-radius: 99px; transition: width 0.4s ease; }
+
+		/* Search input */
+		.search-input {
+			background: rgba(118,118,128,0.1);
+			border: none;
+			outline: none;
+			border-radius: 12px;
+			padding: 8px 14px 8px 36px;
+			font-size: 13px;
+			color: var(--text-primary);
+			width: 100%;
+			transition: background 0.2s;
+		}
+		.search-input:focus { background: rgba(118,118,128,0.18); }
+		.search-input::placeholder { color: var(--text-secondary); }
+		.search-wrapper { position: relative; }
+		.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+
+		/* Modal */
+		.modal-overlay {
+			position: fixed; inset: 0; z-index: 60;
+			display: flex; align-items: center; justify-content: center; padding: 16px;
+			background: rgba(0,0,0,0.5);
+			backdrop-filter: blur(6px);
+			-webkit-backdrop-filter: blur(6px);
+			opacity: 0; pointer-events: none;
+			transition: opacity 0.2s ease;
+		}
+		.modal-overlay.visible { opacity: 1; pointer-events: all; }
+		.modal-box {
+			background: var(--card-bg);
+			border-radius: 20px;
+			padding: 24px;
+			width: 100%; max-width: 360px;
+			box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+			transform: scale(0.95);
+			transition: transform 0.2s ease;
+		}
+		.modal-overlay.visible .modal-box { transform: scale(1); }
+
+		/* Loading spinner on sync button */
+		#btnRefresh.syncing svg { animation: spin 1s linear infinite; }
+
+		/* Last synced text */
+		#txtSyncTime { font-size: 11px; color: var(--text-secondary); }
+
 		select {
 			appearance: none;
 			background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A8E' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
@@ -153,67 +202,85 @@
 
 <body class="min-h-screen">
 
-<nav class="app-top-nav no-select sticky top-0 z-50 apple-blur border-b border-black/5 dark:border-white/5">
+<!-- ===================== NAVBAR ===================== -->
+<nav class="app-top-nav no-select sticky top-0 z-50 apple-blur border-b border-black/5">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex justify-between h-16 items-center">
 			<div class="flex items-center gap-3">
 				<div class="w-9 h-9 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-sm">F</div>
-				<span class="font-display text-[20px] font-bold tracking-tight" style="color: var(--text-primary)">FinanceFlow</span>
+				<div>
+					<span class="font-display text-[20px] font-bold tracking-tight" style="color: var(--text-primary)">FinanceFlow</span>
+					<div id="txtSyncTime" class="hidden sm:block leading-none mt-0.5"></div>
+				</div>
 			</div>
 			<div class="flex items-center gap-2">
-				<button id="btnToggleDarkMode" title="Alternar tema" class="p-2 rounded-full transition-all hover:bg-black/5 dark:hover:bg-white/10">
+				<!-- Refresh -->
+				<button id="btnRefresh" title="Sincronizar dados" class="p-2 rounded-full transition-all hover:bg-black/5">
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+					</svg>
+				</button>
+				<!-- Dark mode -->
+				<button id="btnToggleDarkMode" title="Alternar tema" class="p-2 rounded-full transition-all hover:bg-black/5">
 					<svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 100 10A5 5 0 0012 7z"/></svg>
 					<svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" style="color: var(--text-secondary)" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
 				</button>
-				<button id="btnExporterPDF" class="hidden md:flex cursor-pointer items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all" style="background: rgba(118,118,128,0.12); color: var(--text-primary)">
+				<!-- Export PDF -->
+				<button id="btnExportarPDF" class="hidden md:flex cursor-pointer items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold transition-all" style="background: rgba(118,118,128,0.12); color: var(--text-primary)">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
 					Exportar
 				</button>
+				<!-- Import file -->
 				<label for="arquivoInput" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
 					<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
 					Importar
 				</label>
-				<input type="file" id="arquivoInput" accept=".csv, .xls, .xlsx" class="hidden">
+				<input type="file" id="arquivoInput" accept=".csv,.xls,.xlsx" class="hidden">
 			</div>
 		</div>
 	</div>
 </nav>
 
+<!-- ===================== MAIN ===================== -->
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
 	<div id="statusMessage" class="hidden mb-4 p-3 rounded-2xl text-sm font-medium animate-fade-in text-center"></div>
 
 	<div class="no-select flex gap-2 mb-6 overflow-x-auto pb-1 custom-scrollbar">
-		<button id="tabReal" class="tab-button active whitespace-nowrap" onclick="switchTab('real')">Extrato Atual</button>
-		<button id="tabProjetado" class="tab-button inactive whitespace-nowrap" onclick="switchTab('projetado')">Projeção Futura</button>
+		<button id="tabReal"        class="tab-button active   whitespace-nowrap" onclick="switchTab('real')">Extrato Atual</button>
+		<button id="tabProjetado"   class="tab-button inactive whitespace-nowrap" onclick="switchTab('projetado')">Projeção Futura</button>
 		<button id="tabConsolidado" class="tab-button inactive whitespace-nowrap" onclick="switchTab('consolidado')">Visão Consolidada</button>
 	</div>
 
+	<!-- ============ EXTRATO ATUAL ============ -->
 	<div id="secaoReal">
+		<!-- Month filters -->
 		<div id="containerFiltros" class="hidden mb-6 animate-fade-in">
 			<div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar" id="botoesMeses"></div>
 		</div>
 
+		<!-- KPI cards -->
 		<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Recebido</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Recebido</span><div class="kpi-icon bg-emerald-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="kpi-entradas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Gasto</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Total Gasto</span><div class="kpi-icon bg-red-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="kpi-saidas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span><div class="kpi-icon bg-blue-100 dark:bg-blue-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Saldo Líquido</span><div class="kpi-icon bg-blue-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="kpi-saldo">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Poder de Poupança</span><div class="kpi-icon bg-purple-100 dark:bg-purple-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Poder de Poupança</span><div class="kpi-icon bg-purple-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="kpi-poupanca">0%</p>
 				<p class="text-[11px] mt-1" style="color: var(--text-secondary)">da receita foi retida</p>
 			</div>
 		</div>
 
+		<!-- Charts row 1 -->
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
 			<div class="ios-card p-5 flex flex-col items-center">
 				<h3 class="text-[15px] font-semibold mb-2 self-start">Saúde Financeira</h3>
@@ -228,19 +295,44 @@
 			</div>
 		</div>
 
+		<!-- Charts row 2 -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
 			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Distribuição de Gastos</h3><div class="chart-container"><canvas id="despesasChart"></canvas></div></div>
 			<div class="ios-card p-5"><h3 class="text-[15px] font-semibold mb-4">Entradas vs. Saídas</h3><div class="chart-container"><canvas id="entradasSaidasChart"></canvas></div></div>
 		</div>
 
+		<!-- Metas por Categoria -->
 		<div class="ios-card mb-6">
-			<div class="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="border-color: var(--border-color)">
-				<h3 class="text-[17px] font-bold tracking-tight">Maiores Movimentações</h3>
-				<select id="filtroTipoMovimentacoes" class="text-[13px] font-medium px-3 py-2 rounded-xl outline-none cursor-pointer" style="background: rgba(118,118,128,0.1); color: var(--text-primary); border: none;" onchange="renderizarMaioresMovimentacoes()">
-					<option value="saidas">Apenas Saídas</option>
-					<option value="entradas">Apenas Entradas</option>
-					<option value="todos">Todos</option>
-				</select>
+			<div class="p-5 border-b flex items-center justify-between" style="border-color: var(--border-color)">
+				<div>
+					<h3 class="text-[17px] font-bold tracking-tight">Metas por Categoria</h3>
+					<p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">Clique em "+ Meta" para definir um limite mensal</p>
+				</div>
+				<button id="btnToggleMetas" class="text-[13px] font-semibold text-blue-500 px-3 py-1.5 rounded-xl transition-all" style="background: rgba(0,122,255,0.08)">
+					▾ Ocultar
+				</button>
+			</div>
+			<div id="listaMetas" class="p-5">
+				<p class="text-sm text-center py-4" style="color: var(--text-secondary)">Aguardando dados…</p>
+			</div>
+		</div>
+
+		<!-- Maiores Movimentações -->
+		<div class="ios-card mb-6">
+			<div class="p-5 border-b" style="border-color: var(--border-color)">
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+					<h3 class="text-[17px] font-bold tracking-tight">Maiores Movimentações</h3>
+					<select id="filtroTipoMovimentacoes" class="text-[13px] font-medium px-3 py-2 rounded-xl outline-none cursor-pointer" style="background: rgba(118,118,128,0.1); color: var(--text-primary); border: none;" onchange="renderizarMaioresMovimentacoes()">
+						<option value="saidas">Apenas Saídas</option>
+						<option value="entradas">Apenas Entradas</option>
+						<option value="todos">Todos</option>
+					</select>
+				</div>
+				<!-- Search -->
+				<div class="search-wrapper">
+					<svg class="search-icon h-4 w-4" style="color: var(--text-secondary)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+					<input type="text" id="buscaMovimentacoes" class="search-input" placeholder="Buscar por descrição ou categoria…" oninput="renderizarMaioresMovimentacoes()">
+				</div>
 			</div>
 			<div class="hidden sm:block overflow-x-auto">
 				<table class="w-full text-left border-collapse">
@@ -261,6 +353,7 @@
 		</div>
 	</div>
 
+	<!-- ============ PROJEÇÃO FUTURA ============ -->
 	<div id="secaoProjetado" class="hidden animate-fade-in">
 		<div id="containerFiltrosProjecao" class="hidden mb-6 animate-fade-in">
 			<div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar" id="botoesMesesProjecao"></div>
@@ -268,11 +361,11 @@
 
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Previstas</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Previstas</span><div class="kpi-icon bg-emerald-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="kpi-proj-receitas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Previstas</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Previstas</span><div class="kpi-icon bg-red-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="kpi-proj-despesas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
@@ -287,13 +380,19 @@
 		</div>
 
 		<div class="ios-card mb-6">
-			<div class="p-5 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-3" style="border-color: var(--border-color)">
-				<h3 class="text-[17px] font-bold tracking-tight">Detalhamento da Projeção</h3>
-				<select id="filtroTipoProjecao" class="text-[13px] font-medium px-3 py-2 rounded-xl outline-none cursor-pointer" style="background: rgba(118,118,128,0.1); color: var(--text-primary); border: none;" onchange="renderizarTabelaProjecao()">
-					<option value="todas">Todas</option>
-					<option value="despesas">Apenas Despesas</option>
-					<option value="entradas">Apenas Entradas</option>
-				</select>
+			<div class="p-5 border-b" style="border-color: var(--border-color)">
+				<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+					<h3 class="text-[17px] font-bold tracking-tight">Detalhamento da Projeção</h3>
+					<select id="filtroTipoProjecao" class="text-[13px] font-medium px-3 py-2 rounded-xl outline-none cursor-pointer" style="background: rgba(118,118,128,0.1); color: var(--text-primary); border: none;" onchange="renderizarTabelaProjecao()">
+						<option value="todas">Todas</option>
+						<option value="despesas">Apenas Despesas</option>
+						<option value="entradas">Apenas Entradas</option>
+					</select>
+				</div>
+				<div class="search-wrapper">
+					<svg class="search-icon h-4 w-4" style="color: var(--text-secondary)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+					<input type="text" id="buscaProjecao" class="search-input" placeholder="Buscar na projeção…" oninput="renderizarTabelaProjecao()">
+				</div>
 			</div>
 			<div class="hidden sm:block overflow-x-auto">
 				<table class="w-full text-left border-collapse">
@@ -314,14 +413,15 @@
 		</div>
 	</div>
 
+	<!-- ============ VISÃO CONSOLIDADA ============ -->
 	<div id="secaoConsolidado" class="hidden animate-fade-in">
 		<div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Totais</span><div class="kpi-icon bg-emerald-100 dark:bg-emerald-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Receitas Totais</span><div class="kpi-icon bg-emerald-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-emerald-600" id="rConsReceitas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
-				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Totais</span><div class="kpi-icon bg-red-100 dark:bg-red-500/20"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
+				<div class="kpi-header"><span class="text-[12px] font-semibold" style="color: var(--text-secondary)">Despesas Totais</span><div class="kpi-icon bg-red-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div></div>
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-red-500" id="rConsDespesas">R$ 0,00</p>
 			</div>
 			<div class="ios-card p-5 transition-all hover:scale-[1.02]">
@@ -329,7 +429,6 @@
 				<p class="text-2xl sm:text-3xl font-display font-bold tracking-tight" id="rConsSaldo">R$ 0,00</p>
 			</div>
 		</div>
-
 		<div class="ios-card p-5 mb-6">
 			<h3 class="text-[15px] font-semibold mb-4">Receitas vs. Despesas Mês a Mês</h3>
 			<div style="position: relative; height: 320px; width: 100%;"><canvas id="receitasDespesasConsolidadoChart"></canvas></div>
@@ -337,393 +436,860 @@
 	</div>
 </main>
 
+<!-- ===================== BOTTOM NAV (mobile) ===================== -->
 <div class="no-select fixed bottom-0 left-0 right-0 z-40 apple-blur border-t border-black/5 sm:hidden bottom-nav-safe">
 	<div class="grid grid-cols-3 h-16">
-		<button id="navMobileReal" onclick="switchTab('real')" class="flex flex-col items-center justify-center gap-1 text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18M3 6h18M3 18h18"/></svg><span class="text-[10px] font-semibold">Extrato</span></button>
-		<button id="navMobileProj" onclick="switchTab('projetado')" class="flex flex-col items-center justify-center gap-1 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg><span class="text-[10px] font-semibold">Projeção</span></button>
-		<button id="navMobileCons" onclick="switchTab('consolidado')" class="flex flex-col items-center justify-center gap-1 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="text-[10px] font-semibold">Geral</span></button>
+		<button id="navMobileReal"  onclick="switchTab('real')"        class="flex flex-col items-center justify-center gap-1 text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18M3 6h18M3 18h18"/></svg><span class="text-[10px] font-semibold">Extrato</span></button>
+		<button id="navMobileProj"  onclick="switchTab('projetado')"   class="flex flex-col items-center justify-center gap-1 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg><span class="text-[10px] font-semibold">Projeção</span></button>
+		<button id="navMobileCons"  onclick="switchTab('consolidado')" class="flex flex-col items-center justify-center gap-1 text-slate-400"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="text-[10px] font-semibold">Geral</span></button>
 	</div>
 </div>
 
+<!-- ===================== BUDGET MODAL ===================== -->
+<div id="modalMeta" class="modal-overlay">
+	<div class="modal-box">
+		<h3 class="text-[17px] font-bold mb-1">Definir Meta</h3>
+		<p class="text-sm mb-5" id="modalMetaCategoria" style="color: var(--text-secondary)"></p>
+		<label class="text-[12px] font-semibold block mb-1" style="color: var(--text-secondary)">VALOR MENSAL (R$)</label>
+		<input id="modalMetaInput" type="number" min="0" step="0.01" placeholder="Ex: 1500"
+			class="w-full px-4 py-3 rounded-2xl text-xl font-bold outline-none mb-1 transition-all"
+			style="background: rgba(118,118,128,0.12); color: var(--text-primary); border: 2px solid transparent;"
+			onfocus="this.style.borderColor='#007AFF'" onblur="this.style.borderColor='transparent'">
+		<p class="text-[11px] mb-5" style="color: var(--text-secondary)">Digite 0 para remover a meta desta categoria.</p>
+		<div class="flex gap-3">
+			<button id="modalMetaCancelar" class="flex-1 py-3 rounded-2xl font-semibold text-sm transition-all" style="background: rgba(118,118,128,0.12); color: var(--text-primary)">Cancelar</button>
+			<button id="modalMetaConfirmar" class="flex-1 py-3 rounded-2xl font-semibold text-sm bg-blue-500 hover:bg-blue-600 text-white transition-all">Salvar</button>
+		</div>
+	</div>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
 <script>
+// ─── Chart defaults ──────────────────────────────────────────────────────────
 Chart.defaults.font.family = "-apple-system, 'SF Pro Text', sans-serif";
 Chart.defaults.color = '#8A8A8E';
 
+// ─── State ───────────────────────────────────────────────────────────────────
 let saldoChartInstance = null, despesasChartInstance = null, entradasSaidasChartInstance = null;
-let saldoProjecaoChartInstance = null, despesasProjecaoChartInstance = null, receitasDespesasConsolidadoChartInstance = null;
-let gaugeSaudeChartInstance = null;
+let saldoProjecaoChartInstance = null, despesasProjecaoChartInstance = null;
+let receitasDespesasConsolidadoChartInstance = null, gaugeSaudeChartInstance = null;
 
 let transacoesGlobais = [], transacoesProjetadas = [];
 let mesAtualFiltro = 'Todos', mesProjecaoFiltro = 'Todos';
 let abaAtual = 'real';
+let metasCategoriaAtual = null; // which category the modal is editing
+let metasVisiveis = true;
+let orcamentos = {};
 
+// ─── Category config (editable) ──────────────────────────────────────────────
+const CATEGORIAS = [
+	{ nome: 'Moradia & Contas',         keywords: ['CEMIG','VIVO FIBRA','COPASA','CONDOMINIO','ALUGUEL','ENERGIA','AGUA','LUZ','INTERNET'], cor: '#3b82f6' },
+	{ nome: 'Alimentação & Lazer',      keywords: ['PADARIA','IFOOD','SUPERMERCADO','RESTAURANTE','PAO DE CASA','PIZZA','CERVEJA','MERCADO','LANCHE','ALIMENT'], cor: '#10b981' },
+	{ nome: 'Transporte & Veículo',     keywords: ['BH TRANS','POSTO','UBER','99','JEEP','TAOS','ESTACIONAMENTO','MULTA','PEDAGIO','COMBUST'], cor: '#f59e0b' },
+	{ nome: 'Filhos, Babá & Educação',  keywords: ['CRUZEIRO DO SUL','ESCOLA','COLEGIO','JOAQUIM','JOACAO','JESUINA','MARIA VITORIA','FACULDADE','BABA'], cor: '#8b5cf6' },
+	{ nome: 'Compras & Assinaturas',    keywords: ['AMAZON','MERCADO LIVRE','SHOPEE','NETFLIX','SPOTIFY','COMPRA','ASSINAT'], cor: '#ec4899' },
+	{ nome: 'Financeiro & Cartões',     keywords: ['NU PAGAMENTOS','FATURA','TRIBUTO','JUROS','IOF','EMPRESTIMO','TARIFA','CARTAO','CARTÃO'], cor: '#ef4444' },
+	{ nome: 'Outros PIX & Transf.',     keywords: ['PIX ENVIADO','TED','DOC','TRANSF','PIX'], cor: '#14b8a6' },
+];
+
+const coresCategorias = Object.fromEntries([
+	...CATEGORIAS.map(c => [c.nome, c.cor]),
+	['Entrada/Rendimento', '#10b981'],
+	['Outros Gastos', '#64748b'],
+]);
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const nomesMeses = {"01":"Jan","02":"Fev","03":"Mar","04":"Abr","05":"Mai","06":"Jun","07":"Jul","08":"Ago","09":"Set","10":"Out","11":"Nov","12":"Dez"};
-const conversorMesGlobal = {"janeiro":"01","fevereiro":"02","marco":"03","março":"03","abril":"04","maio":"05","junho":"06","julho":"07","agosto":"08","setembro":"09","outubro":"10","novembro":"11","dezembro":"12","jan":"01","fev":"02","mar":"03","abr":"04","mai":"05","jun":"06","jul":"07","ago":"08","set":"09","out":"10","nov":"11","dez":"12"};
-const coresCategorias = {'Moradia & Contas':'#3b82f6','Alimentação & Lazer':'#10b981','Transporte & Veículo':'#f59e0b','Filhos, Babá & Educação':'#8b5cf6','Compras & Assinaturas':'#ec4899','Financeiro & Cartões':'#ef4444','Outros PIX & Transf.':'#14b8a6','Outros Gastos':'#64748b','Entrada/Rendimento':'#10b981'};
+const conversorMes = {"janeiro":"01","fevereiro":"02","marco":"03","março":"03","abril":"04","maio":"05","junho":"06","julho":"07","agosto":"08","setembro":"09","outubro":"10","novembro":"11","dezembro":"12","jan":"01","fev":"02","mar":"03","abr":"04","mai":"05","jun":"06","jul":"07","ago":"08","set":"09","out":"10","nov":"11","dez":"12"};
 
-const LINK_EXTRATO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=0&single=true&output=csv';
-const LINK_PROJETADO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=489511638&single=true&output=csv';
-
-async function sincronizarComNuvem() {
-    mostrarStatus("Sincronizando...", "info");
-    try {
-        const t = new Date().getTime(); 
-        const resExt = await fetch(`${LINK_EXTRATO}&t=${t}`);
-        if (!resExt.ok) throw new Error("Erro Extrato");
-        Papa.parse(await resExt.text(), { complete: async (r) => {
-            processarMatriz(r.data);
-            try {
-                const resProj = await fetch(`${LINK_PROJETADO}&t=${t}`);
-                if (!resProj.ok) throw new Error("Erro Proj");
-                Papa.parse(await resProj.text(), { complete: (rp) => {
-                    try {
-                        processarProjecoes(rp.data);
-                        mostrarStatus("Atualizado com sucesso!", "sucesso");
-                    } catch(errProjParse) {
-                        console.error(errProjParse);
-                        mostrarStatus("Extrato OK. Erro ao ler Projeção.", "erro");
-                    }
-                }, skipEmptyLines: true });
-            } catch(e) { mostrarStatus("Extrato OK. Projeção indisponível.", "info"); }
-        }, skipEmptyLines: true });
-    } catch (e) { mostrarStatus("Erro de conexão.", "erro"); }
+function escapeHtml(str) {
+	return String(str)
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('darkMode') === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('iconSun').classList.add('hidden');
-        document.getElementById('iconMoon').classList.remove('hidden');
-    }
-    sincronizarComNuvem();
-});
-
-document.getElementById('btnToggleDarkMode').addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark);
-    document.getElementById('iconSun').classList.toggle('hidden', isDark);
-    document.getElementById('iconMoon').classList.toggle('hidden', !isDark);
-    if (gaugeSaudeChartInstance) {
-        const pctStr = document.getElementById('kpi-poupanca').textContent.replace('%','');
-        const retido = parseFloat(pctStr) || 0;
-        renderizarGaugeSaude(retido > 0 ? 100 - retido : 100);
-    }
-});
-
-let statusTimer = null;
-function mostrarStatus(msg, tipo) {
-    const el = document.getElementById('statusMessage');
-    el.classList.remove('hidden');
-    el.className = 'mb-4 p-3 rounded-2xl text-sm font-medium animate-fade-in text-center ' + (tipo === 'sucesso' ? 'bg-emerald-50 text-emerald-700' : (tipo === 'erro' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'));
-    el.innerText = msg;
-    if (statusTimer) clearTimeout(statusTimer);
-    if (tipo === 'sucesso') statusTimer = setTimeout(() => el.classList.add('hidden'), 4000);
+function formatarMoeda(v) {
+	return 'R$ ' + (v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
-function formatarMoeda(v) { return 'R$ ' + (v || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
 
 function converterNumero(val) {
-    if (typeof val === 'number') return val || 0;
-    let str = String(val).trim().replace(/[R$\s]/g, '');
-    if (!str) return 0;
-    if (str.includes(',') && str.includes('.')) {
-        if (str.lastIndexOf(',') > str.lastIndexOf('.')) {
-            str = str.split('.').join('').replace(',', '.');
-        } else {
-            str = str.split(',').join('');
-        }
-    } else if (str.includes(',')) {
-        str = str.replace(',', '.');
-    }
-    return parseFloat(str) || 0;
+	if (typeof val === 'number') return val || 0;
+	let str = String(val).trim().replace(/[R$\s]/g, '');
+	if (!str) return 0;
+	if (str.includes(',') && str.includes('.')) {
+		str = str.lastIndexOf(',') > str.lastIndexOf('.')
+			? str.split('.').join('').replace(',', '.')
+			: str.split(',').join('');
+	} else if (str.includes(',')) {
+		str = str.replace(',', '.');
+	}
+	return parseFloat(str) || 0;
 }
 
 function formatarDataCompleta(val) {
-    if (!val) return null; let strVal = String(val).trim();
-    if (/^\d{5}$/.test(strVal) || /^\d{5}\.\d+$/.test(strVal)) { 
-        let d = new Date((parseInt(strVal) - 25569) * 86400 * 1000); 
-        d = new Date(d.getTime() + d.getTimezoneOffset() * 60000); 
-        return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; 
-    }
-    let mISO = strVal.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/); if (mISO) return `${mISO[3]}/${mISO[2]}/${mISO[1]}`;
-    let mBR = strVal.match(/^(\d{2})[-/](\d{2})[-/](\d{4})/); if (mBR) return `${mBR[1]}/${mBR[2]}/${mBR[3]}`;
-    let mLong = strVal.match(/(\d{1,2})\s+([a-zA-ZçÇ]+)\s+(\d{4})/); if (mLong) { const mN = conversorMesGlobal[mLong[2].toLowerCase()]; if (mN) return `${mLong[1].padStart(2,'0')}/${mN}/${mLong[3]}`; }
-    if (strVal.includes('/')) return strVal.substring(0, 10);
-    return null;
+	if (!val) return null;
+	let s = String(val).trim();
+	if (/^\d{5}(\.\d+)?$/.test(s)) {
+		let d = new Date((parseInt(s) - 25569) * 86400 * 1000);
+		d = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+		return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+	}
+	let m = s.match(/^(\d{4})[-/](\d{2})[-/](\d{2})/);
+	if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+	m = s.match(/^(\d{2})[-/](\d{2})[-/](\d{4})/);
+	if (m) return `${m[1]}/${m[2]}/${m[3]}`;
+	m = s.match(/(\d{1,2})\s+([a-zA-ZçÇ]+)\s+(\d{4})/);
+	if (m) { const mn = conversorMes[m[2].toLowerCase()]; if (mn) return `${m[1].padStart(2,'0')}/${mn}/${m[3]}`; }
+	if (s.includes('/')) return s.substring(0, 10);
+	return null;
 }
 
 function categorizarTransacao(desc, ehSaida) {
-    if (!ehSaida) return 'Entrada/Rendimento';
-    const d = String(desc).toUpperCase();
-    if (d.includes("CEMIG") || d.includes("VIVO FIBRA") || d.includes("COPASA") || d.includes("CONDOMINIO") || d.includes("ALUGUEL") || d.includes("ENERGIA") || d.includes("AGUA") || d.includes("LUZ") || d.includes("INTERNET")) return 'Moradia & Contas';
-    if (d.includes("PADARIA") || d.includes("IFOOD") || d.includes("SUPERMERCADO") || d.includes("RESTAURANTE") || d.includes("PAO DE CASA") || d.includes("PIZZA") || d.includes("CERVEJA") || d.includes("MERCADO") || d.includes("LANCHE") || d.includes("ALIMENT")) return 'Alimentação & Lazer';
-    if (d.includes("BH TRANS") || d.includes("POSTO") || d.includes("UBER") || d.includes("99") || d.includes("JEEP") || d.includes("TAOS") || d.includes("ESTACIONAMENTO") || d.includes("MULTA") || d.includes("PEDAGIO") || d.includes("COMBUST")) return 'Transporte & Veículo';
-    if (d.includes("CRUZEIRO DO SUL") || d.includes("ESCOLA") || d.includes("COLEGIO") || d.includes("JOAQUIM") || d.includes("JOACAO") || d.includes("JESUINA") || d.includes("MARIA VITORIA") || d.includes("FACULDADE") || d.includes("BABA")) return 'Filhos, Babá & Educação';
-    if (d.includes("AMAZON") || d.includes("MERCADO LIVRE") || d.includes("SHOPEE") || d.includes("NETFLIX") || d.includes("SPOTIFY") || d.includes("COMPRA") || d.includes("ASSINAT")) return 'Compras & Assinaturas';
-    if (d.includes("NU PAGAMENTOS") || d.includes("FATURA") || d.includes("TRIBUTO") || d.includes("JUROS") || d.includes("IOF") || d.includes("EMPRESTIMO") || d.includes("TARIFA") || d.includes("CARTAO") || d.includes("CARTÃO")) return 'Financeiro & Cartões';
-    if (d.includes("PIX ENVIADO") || d.includes("TED") || d.includes("DOC") || d.includes("TRANSF") || d.includes("PIX")) return 'Outros PIX & Transf.';
-    return 'Outros Gastos';
+	if (!ehSaida) return 'Entrada/Rendimento';
+	const d = String(desc).toUpperCase();
+	for (const cat of CATEGORIAS) {
+		if (cat.keywords.some(kw => d.includes(kw))) return cat.nome;
+	}
+	return 'Outros Gastos';
 }
 
+// ─── Status message ───────────────────────────────────────────────────────────
+let statusTimer = null;
+function mostrarStatus(msg, tipo) {
+	const el = document.getElementById('statusMessage');
+	el.classList.remove('hidden');
+	el.className = 'mb-4 p-3 rounded-2xl text-sm font-medium animate-fade-in text-center ' +
+		(tipo === 'sucesso' ? 'bg-emerald-50 text-emerald-700' :
+		 tipo === 'erro'    ? 'bg-red-50 text-red-700' :
+		                      'bg-blue-50 text-blue-700');
+	el.innerText = msg;
+	if (statusTimer) clearTimeout(statusTimer);
+	if (tipo === 'sucesso') statusTimer = setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+// ─── localStorage cache ───────────────────────────────────────────────────────
+const CACHE_EXTRATO  = 'ff_extrato_v2';
+const CACHE_PROJECAO = 'ff_projecao_v2';
+const CACHE_ORCAMENTOS = 'ff_orcamentos_v1';
+
+function salvarCache() {
+	try {
+		localStorage.setItem(CACHE_EXTRATO,  JSON.stringify(transacoesGlobais));
+		localStorage.setItem(CACHE_PROJECAO, JSON.stringify(transacoesProjetadas));
+	} catch (_) {}
+}
+
+function carregarCache() {
+	try {
+		const ext  = localStorage.getItem(CACHE_EXTRATO);
+		const proj = localStorage.getItem(CACHE_PROJECAO);
+		if (ext)  { transacoesGlobais    = JSON.parse(ext);  montarFiltrosDeMeses();       atualizarDashboard('Todos'); }
+		if (proj) { transacoesProjetadas = JSON.parse(proj); montarFiltrosDeMesesProjecao(); atualizarDashboardProjecao('Todos'); }
+		return !!(ext || proj);
+	} catch (_) { return false; }
+}
+
+function carregarOrcamentos() {
+	try { orcamentos = JSON.parse(localStorage.getItem(CACHE_ORCAMENTOS) || '{}'); }
+	catch (_) { orcamentos = {}; }
+}
+
+function salvarOrcamentos() {
+	localStorage.setItem(CACHE_ORCAMENTOS, JSON.stringify(orcamentos));
+}
+
+// ─── Sync ─────────────────────────────────────────────────────────────────────
+const LINK_EXTRATO   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=0&single=true&output=csv';
+const LINK_PROJETADO = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS3A1lZMpp1iTkGF5S0lwc9iH5jPprO24nfCnJJolCqonFSrmTVanZww3RBOwuU4UESLDYtFM8_q14K/pub?gid=489511638&single=true&output=csv';
+
+function atualizarHoraSinc() {
+	const el = document.getElementById('txtSyncTime');
+	if (el) { el.classList.remove('hidden'); el.textContent = 'Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); }
+}
+
+async function sincronizarComNuvem() {
+	const btn = document.getElementById('btnRefresh');
+	btn.classList.add('syncing');
+	mostrarStatus('Sincronizando…', 'info');
+	try {
+		const t = Date.now();
+		const resExt = await fetch(`${LINK_EXTRATO}&t=${t}`);
+		if (!resExt.ok) throw new Error('Erro Extrato');
+		Papa.parse(await resExt.text(), {
+			complete: async (r) => {
+				processarMatriz(r.data);
+				try {
+					const resProj = await fetch(`${LINK_PROJETADO}&t=${t}`);
+					if (!resProj.ok) throw new Error('Erro Proj');
+					Papa.parse(await resProj.text(), {
+						complete: (rp) => {
+							try {
+								processarProjecoes(rp.data);
+								salvarCache();
+								atualizarHoraSinc();
+								mostrarStatus('Atualizado com sucesso!', 'sucesso');
+							} catch (e) {
+								console.error(e);
+								mostrarStatus('Extrato OK. Erro ao ler Projeção.', 'erro');
+							}
+						},
+						skipEmptyLines: true,
+					});
+				} catch (_) {
+					salvarCache();
+					atualizarHoraSinc();
+					mostrarStatus('Extrato OK. Projeção indisponível.', 'info');
+				}
+			},
+			skipEmptyLines: true,
+		});
+	} catch (_) {
+		mostrarStatus('Erro de conexão. Usando dados em cache.', 'erro');
+	} finally {
+		btn.classList.remove('syncing');
+	}
+}
+
+// ─── File import ──────────────────────────────────────────────────────────────
+document.getElementById('arquivoInput').addEventListener('change', function (e) {
+	const file = e.target.files[0];
+	if (!file) return;
+	const ext = file.name.split('.').pop().toLowerCase();
+	mostrarStatus('Processando arquivo…', 'info');
+
+	if (ext === 'csv') {
+		Papa.parse(file, {
+			complete: (r) => { processarMatriz(r.data); salvarCache(); mostrarStatus('Arquivo importado com sucesso!', 'sucesso'); },
+			skipEmptyLines: true,
+			error: () => mostrarStatus('Erro ao ler o CSV.', 'erro'),
+		});
+	} else if (ext === 'xls' || ext === 'xlsx') {
+		const reader = new FileReader();
+		reader.onload = (ev) => {
+			try {
+				const wb   = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+				const ws   = wb.Sheets[wb.SheetNames[0]];
+				const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+				processarMatriz(data);
+				salvarCache();
+				mostrarStatus('Arquivo importado com sucesso!', 'sucesso');
+			} catch (_) { mostrarStatus('Erro ao ler o arquivo Excel.', 'erro'); }
+		};
+		reader.onerror = () => mostrarStatus('Erro ao ler o arquivo.', 'erro');
+		reader.readAsArrayBuffer(file);
+	} else {
+		mostrarStatus('Formato não suportado. Use CSV ou XLSX.', 'erro');
+	}
+	e.target.value = '';
+});
+
+// ─── PDF export ───────────────────────────────────────────────────────────────
+document.getElementById('btnExportarPDF').addEventListener('click', async () => {
+	const nomeAba = { real: 'Extrato Atual', projetado: 'Projecao Futura', consolidado: 'Visao Consolidada' };
+	const el = document.getElementById('secao' + abaAtual.charAt(0).toUpperCase() + abaAtual.slice(1));
+	mostrarStatus('Gerando PDF…', 'info');
+	try {
+		await html2pdf()
+			.set({
+				margin: [0.4, 0.4, 0.4, 0.4],
+				filename: `financeflow-${nomeAba[abaAtual]}-${new Date().toISOString().slice(0, 10)}.pdf`,
+				image: { type: 'jpeg', quality: 0.95 },
+				html2canvas: { scale: 2, useCORS: true, logging: false },
+				jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
+			})
+			.from(el)
+			.save();
+		mostrarStatus('PDF exportado!', 'sucesso');
+	} catch (_) { mostrarStatus('Erro ao gerar PDF.', 'erro'); }
+});
+
+// ─── Refresh button ───────────────────────────────────────────────────────────
+document.getElementById('btnRefresh').addEventListener('click', sincronizarComNuvem);
+
+// ─── Dark mode ────────────────────────────────────────────────────────────────
+document.getElementById('btnToggleDarkMode').addEventListener('click', () => {
+	document.body.classList.toggle('dark-mode');
+	const isDark = document.body.classList.contains('dark-mode');
+	localStorage.setItem('darkMode', isDark);
+	document.getElementById('iconSun').classList.toggle('hidden', isDark);
+	document.getElementById('iconMoon').classList.toggle('hidden', !isDark);
+	if (gaugeSaudeChartInstance) {
+		const pct = parseFloat(document.getElementById('kpi-poupanca').textContent) || 0;
+		renderizarGaugeSaude(pct > 0 ? 100 - pct : 100);
+	}
+});
+
+// ─── Metas toggle ─────────────────────────────────────────────────────────────
+document.getElementById('btnToggleMetas').addEventListener('click', () => {
+	metasVisiveis = !metasVisiveis;
+	document.getElementById('listaMetas').classList.toggle('hidden', !metasVisiveis);
+	document.getElementById('btnToggleMetas').textContent = metasVisiveis ? '▾ Ocultar' : '▸ Mostrar';
+});
+
+// ─── Budget modal ─────────────────────────────────────────────────────────────
+function abrirModalMeta(cat, valorAtual) {
+	metasCategoriaAtual = cat;
+	document.getElementById('modalMetaCategoria').textContent = cat;
+	document.getElementById('modalMetaInput').value = valorAtual > 0 ? valorAtual : '';
+	document.getElementById('modalMeta').classList.add('visible');
+	setTimeout(() => document.getElementById('modalMetaInput').focus(), 100);
+}
+
+document.getElementById('modalMetaCancelar').addEventListener('click', () => {
+	document.getElementById('modalMeta').classList.remove('visible');
+});
+
+document.getElementById('modalMeta').addEventListener('click', (e) => {
+	if (e.target === document.getElementById('modalMeta')) {
+		document.getElementById('modalMeta').classList.remove('visible');
+	}
+});
+
+document.getElementById('modalMetaConfirmar').addEventListener('click', () => {
+	const val = parseFloat(String(document.getElementById('modalMetaInput').value).replace(',', '.')) || 0;
+	if (val <= 0) delete orcamentos[metasCategoriaAtual];
+	else orcamentos[metasCategoriaAtual] = val;
+	salvarOrcamentos();
+	document.getElementById('modalMeta').classList.remove('visible');
+	// Re-render metas with current filtered transactions
+	const tx = mesAtualFiltro === 'Todos'
+		? transacoesGlobais
+		: transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === mesAtualFiltro);
+	renderizarMetas(tx);
+});
+
+document.getElementById('modalMetaInput').addEventListener('keydown', (e) => {
+	if (e.key === 'Enter') document.getElementById('modalMetaConfirmar').click();
+	if (e.key === 'Escape') document.getElementById('modalMetaCancelar').click();
+});
+
+// ─── Data processing ──────────────────────────────────────────────────────────
 function processarMatriz(linhas) {
-    let iData = -1, iDesc = -1, iCred = -1, iDeb = -1; let linhasProc = [...linhas];
-    for (let i = 0; i < Math.min(linhasProc.length, 30); i++) {
-        if (!Array.isArray(linhasProc[i])) continue;
-        for (let c = 0; c < linhasProc[i].length; c++) {
-            let v = String(linhasProc[i][c] || "").trim().toUpperCase();
-            if (v.includes("DATA") || v.includes("DATE")) iData = c;
-            else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("HISTOR")) iDesc = c;
-            else if (v.includes("CRÉDITO") || v.includes("CREDITO") || v.includes("ENTRADA") || v.includes("RECEITA")) iCred = c;
-            else if (v.includes("DÉBITO") || v.includes("DEBITO") || v.includes("SAÍDA") || v.includes("SAIDA")) iDeb = c;
-        }
-        if (iData !== -1 && iDesc !== -1 && (iCred > -1 || iDeb > -1)) { linhasProc = linhasProc.slice(i + 1); break; }
-    }
-    if (iData === -1) { iData = 0; iDesc = 1; iCred = 4; iDeb = 5; } // Fallback
-    transacoesGlobais = [];
-    for (let l of linhasProc) {
-        if (!Array.isArray(l) || !l[iData]) continue;
-        const dStr = formatarDataCompleta(l[iData]); if (!dStr) continue;
-        const desc = String(l[iDesc] || "").trim();
-        const vEnt = iCred > -1 ? Math.abs(converterNumero(l[iCred])) : 0;
-        const vSai = iDeb > -1 ? Math.abs(converterNumero(l[iDeb])) : 0;
-        if (vEnt === 0 && vSai === 0) continue;
-        transacoesGlobais.push({ data: dStr, ano: dStr.split('/')[2], mes: dStr.split('/')[1], descricao: desc, categoria: categorizarTransacao(desc, vSai > 0), valorEntrada: vEnt, valorSaida: vSai });
-    }
-    if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); }
+	let iData = -1, iDesc = -1, iCred = -1, iDeb = -1;
+	let linhasProc = [...linhas];
+	for (let i = 0; i < Math.min(linhasProc.length, 30); i++) {
+		if (!Array.isArray(linhasProc[i])) continue;
+		for (let c = 0; c < linhasProc[i].length; c++) {
+			const v = String(linhasProc[i][c] || '').trim().toUpperCase();
+			if (v.includes('DATA') || v.includes('DATE')) iData = c;
+			else if (v.includes('DESCRI') || v.includes('LANÇA') || v.includes('HISTOR')) iDesc = c;
+			else if (v.includes('CRÉDITO') || v.includes('CREDITO') || v.includes('ENTRADA') || v.includes('RECEITA')) iCred = c;
+			else if (v.includes('DÉBITO') || v.includes('DEBITO') || v.includes('SAÍDA') || v.includes('SAIDA')) iDeb = c;
+		}
+		if (iData !== -1 && iDesc !== -1 && (iCred > -1 || iDeb > -1)) { linhasProc = linhasProc.slice(i + 1); break; }
+	}
+	if (iData === -1) { iData = 0; iDesc = 1; iCred = 4; iDeb = 5; }
+	transacoesGlobais = [];
+	for (const l of linhasProc) {
+		if (!Array.isArray(l) || !l[iData]) continue;
+		const dStr = formatarDataCompleta(l[iData]);
+		if (!dStr) continue;
+		const desc = String(l[iDesc] || '').trim();
+		const vEnt = iCred > -1 ? Math.abs(converterNumero(l[iCred])) : 0;
+		const vSai = iDeb  > -1 ? Math.abs(converterNumero(l[iDeb]))  : 0;
+		if (vEnt === 0 && vSai === 0) continue;
+		transacoesGlobais.push({
+			data: dStr,
+			ano: dStr.split('/')[2],
+			mes: dStr.split('/')[1],
+			descricao: desc,
+			categoria: categorizarTransacao(desc, vSai > 0),
+			valorEntrada: vEnt,
+			valorSaida: vSai,
+		});
+	}
+	if (transacoesGlobais.length > 0) { montarFiltrosDeMeses(); atualizarDashboard('Todos'); }
 }
 
 function processarProjecoes(linhas) {
-    let idxData = -1, idxTipo = -1, idxCat = -1, idxDesc = -1, idxValor = -1;
-    let startRow = 1;
+	let idxData = -1, idxTipo = -1, idxCat = -1, idxDesc = -1, idxValor = -1;
+	let startRow = 1;
+	for (let i = 0; i < Math.min(linhas.length, 15); i++) {
+		if (!Array.isArray(linhas[i])) continue;
+		for (let c = 0; c < linhas[i].length; c++) {
+			const v = String(linhas[i][c] || '').trim().toUpperCase();
+			if (v.includes('DATA') || v.includes('VENCIMENTO')) idxData = c;
+			else if (v.includes('TIPO') || v.includes('NATUREZA') || v === 'C/D') idxTipo = c;
+			else if (v.includes('CATEGORIA') || v.includes('GRUPO')) idxCat = c;
+			else if (v.includes('DESCRI') || v.includes('LANÇA') || v.includes('NOME') || v.includes('PROJETO')) idxDesc = c;
+			else if (v.includes('VALOR') || v.includes('QUANTIA') || v.includes('PREVISTO') || v.includes('R$')) idxValor = c;
+		}
+		if (idxData !== -1 && idxValor !== -1) { startRow = i + 1; break; }
+	}
+	if (idxData  === -1) idxData  = 0;
+	if (idxDesc  === -1) idxDesc  = 1;
+	if (idxValor === -1) idxValor = linhas[startRow] && converterNumero(linhas[startRow][8]) !== 0 ? 8 : 2;
+	if (idxTipo  === -1) idxTipo  = 4;
+	if (idxCat   === -1) idxCat   = 5;
 
-    for (let i = 0; i < Math.min(linhas.length, 15); i++) {
-        if (!Array.isArray(linhas[i])) continue;
-        for (let c = 0; c < linhas[i].length; c++) {
-            let v = String(linhas[i][c] || "").trim().toUpperCase();
-            if (v.includes("DATA") || v.includes("VENCIMENTO")) idxData = c;
-            else if (v.includes("TIPO") || v.includes("NATUREZA") || v === "C/D") idxTipo = c;
-            else if (v.includes("CATEGORIA") && !v.includes("RECEITA")) idxCat = c;
-            else if (v.includes("GRUPO")) idxCat = c;
-            else if (v.includes("DESCRI") || v.includes("LANÇA") || v.includes("NOME") || v.includes("PROJETO")) idxDesc = c;
-            else if (v.includes("VALOR") || v.includes("QUANTIA") || v.includes("PREVISTO") || v.includes("R$")) idxValor = c;
-        }
-        if (idxData !== -1 && idxValor !== -1) { startRow = i + 1; break; }
-    }
-
-    if (idxData === -1) idxData = 0; 
-    if (idxDesc === -1) idxDesc = 1;
-    if (idxValor === -1) {
-        if (linhas[startRow] && linhas[startRow].length > 8 && converterNumero(linhas[startRow][8]) !== 0) idxValor = 8;
-        else idxValor = 2;
-    }
-    if (idxTipo === -1) idxTipo = 4; 
-    if (idxCat === -1) idxCat = 5;
-
-    transacoesProjetadas = [];
-
-    for (let i = startRow; i < linhas.length; i++) {
-        let l = linhas[i];
-        if (!Array.isArray(l) || l.length < 2) continue;
-
-        let dataRaw = String(l[idxData] || "").trim();
-        let dForm = formatarDataCompleta(dataRaw);
-        if (!dForm) continue;
-
-        let valRaw = converterNumero(l[idxValor]);
-        if (valRaw === 0) continue; 
-
-        let tipoStr = idxTipo !== -1 ? String(l[idxTipo] || "").toUpperCase() : "";
-        let isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || /^C\b/.test(tipoStr) || tipoStr === 'C';
-        let isDes = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DÉBITO') || tipoStr.includes('DEBITO') || /^D\b/.test(tipoStr) || tipoStr === 'D';
-        if (!isRec && !isDes) isDes = true;
-
-        let descr = idxDesc !== -1 && l[idxDesc] ? String(l[idxDesc]).trim() : "Projeção";
-        let cat = idxCat !== -1 && l[idxCat] ? String(l[idxCat]).trim() : categorizarTransacao(descr, isDes);
-
-        let a = dForm.split('/')[2];
-        let m = dForm.split('/')[1];
-
-        transacoesProjetadas.push({ 
-            data: dForm, ano: a, mes: m, 
-            descricao: descr, categoria: cat, 
-            valorEntrada: isRec ? Math.abs(valRaw) : 0, 
-            valorSaida: isDes ? Math.abs(valRaw) : 0, 
-            isReceita: isRec, isDespesa: isDes 
-        });
-    }
-
-    if (transacoesProjetadas.length === 0) throw new Error("Sem transacoes numericas");
-
-    montarFiltrosDeMesesProjecao();
-    atualizarDashboardProjecao('Todos');
+	transacoesProjetadas = [];
+	for (let i = startRow; i < linhas.length; i++) {
+		const l = linhas[i];
+		if (!Array.isArray(l) || l.length < 2) continue;
+		const dForm = formatarDataCompleta(String(l[idxData] || '').trim());
+		if (!dForm) continue;
+		const valRaw = converterNumero(l[idxValor]);
+		if (valRaw === 0) continue;
+		const tipoStr = String(l[idxTipo] || '').toUpperCase();
+		const isRec = tipoStr.includes('RECEITA') || tipoStr.includes('ENTRADA') || /^C\b/.test(tipoStr);
+		let isDes   = tipoStr.includes('DESPESA') || tipoStr.includes('SAÍDA') || tipoStr.includes('SAIDA') || tipoStr.includes('DÉBITO') || /^D\b/.test(tipoStr);
+		if (!isRec && !isDes) isDes = true;
+		const descr = l[idxDesc] ? String(l[idxDesc]).trim() : 'Projeção';
+		const cat   = l[idxCat]  ? String(l[idxCat]).trim()  : categorizarTransacao(descr, isDes);
+		transacoesProjetadas.push({
+			data: dForm,
+			ano: dForm.split('/')[2],
+			mes: dForm.split('/')[1],
+			descricao: descr,
+			categoria: cat,
+			valorEntrada: isRec ? Math.abs(valRaw) : 0,
+			valorSaida:   isDes ? Math.abs(valRaw) : 0,
+		});
+	}
+	if (transacoesProjetadas.length === 0) throw new Error('Sem transações numéricas na projeção');
+	montarFiltrosDeMesesProjecao();
+	atualizarDashboardProjecao('Todos');
 }
 
+// ─── Month filter buttons ─────────────────────────────────────────────────────
 function montarFiltrosDeMeses() {
-    const mUnicos = [...new Set(transacoesGlobais.map(t => `${t.mes}/${t.ano}`))].sort((a, b) => { const [ma, aa] = a.split('/'); const [mb, ab] = b.split('/'); return (aa + ma).localeCompare(ab + mb); });
-    const cont = document.getElementById('botoesMeses'); cont.innerHTML = '';
-    document.getElementById('containerFiltros').classList.remove('hidden');
-    ['Todos', ...mUnicos].forEach(m => {
-        const btn = document.createElement('button');
-        btn.textContent = m === 'Todos' ? 'Visão Geral' : `${nomesMeses[m.split('/')[0]] || m.split('/')[0]}/${m.split('/')[1]?.slice(2)}`;
-        btn.className = `tab-button ${m === mesAtualFiltro ? 'active' : 'inactive'} whitespace-nowrap text-sm`;
-        btn.onclick = () => {
-            mesAtualFiltro = m;
-            cont.querySelectorAll('button').forEach(b => b.className = 'tab-button inactive whitespace-nowrap text-sm');
-            btn.className = 'tab-button active whitespace-nowrap text-sm';
-            atualizarDashboard(m);
-        };
-        cont.appendChild(btn);
-    });
+	const mUnicos = [...new Set(transacoesGlobais.map(t => `${t.mes}/${t.ano}`))].sort((a, b) => {
+		const [ma, aa] = a.split('/'); const [mb, ab] = b.split('/');
+		return (aa + ma).localeCompare(ab + mb);
+	});
+	const cont = document.getElementById('botoesMeses');
+	cont.innerHTML = '';
+	document.getElementById('containerFiltros').classList.remove('hidden');
+	['Todos', ...mUnicos].forEach(m => {
+		const btn = document.createElement('button');
+		const label = m === 'Todos' ? 'Visão Geral' : `${nomesMeses[m.split('/')[0]] || m.split('/')[0]}/${m.split('/')[1].slice(2)}`;
+		btn.textContent = label;
+		btn.className = `tab-button ${m === mesAtualFiltro ? 'active' : 'inactive'} whitespace-nowrap text-sm`;
+		btn.onclick = () => {
+			mesAtualFiltro = m;
+			cont.querySelectorAll('button').forEach(b => b.className = 'tab-button inactive whitespace-nowrap text-sm');
+			btn.className = 'tab-button active whitespace-nowrap text-sm';
+			atualizarDashboard(m);
+		};
+		cont.appendChild(btn);
+	});
 }
 
 function montarFiltrosDeMesesProjecao() {
-    const mUnicos = [...new Set(transacoesProjetadas.map(t => `${t.mes}/${t.ano}`))].sort((a, b) => { const [ma, aa] = a.split('/'); const [mb, ab] = b.split('/'); return (aa + ma).localeCompare(ab + mb); });
-    const cont = document.getElementById('botoesMesesProjecao'); cont.innerHTML = '';
-    document.getElementById('containerFiltrosProjecao').classList.remove('hidden');
-    ['Todos', ...mUnicos].forEach(m => {
-        const btn = document.createElement('button');
-        btn.textContent = m === 'Todos' ? 'Visão Geral' : `${nomesMeses[m.split('/')[0]] || m.split('/')[0]}/${m.split('/')[1]?.slice(2)}`;
-        btn.className = `tab-button ${m === mesProjecaoFiltro ? 'active' : 'inactive'} whitespace-nowrap text-sm`;
-        btn.onclick = () => {
-            mesProjecaoFiltro = m;
-            cont.querySelectorAll('button').forEach(b => b.className = 'tab-button inactive whitespace-nowrap text-sm');
-            btn.className = 'tab-button active whitespace-nowrap text-sm';
-            atualizarDashboardProjecao(m);
-        };
-        cont.appendChild(btn);
-    });
+	const mUnicos = [...new Set(transacoesProjetadas.map(t => `${t.mes}/${t.ano}`))].sort((a, b) => {
+		const [ma, aa] = a.split('/'); const [mb, ab] = b.split('/');
+		return (aa + ma).localeCompare(ab + mb);
+	});
+	const cont = document.getElementById('botoesMesesProjecao');
+	cont.innerHTML = '';
+	document.getElementById('containerFiltrosProjecao').classList.remove('hidden');
+	['Todos', ...mUnicos].forEach(m => {
+		const btn = document.createElement('button');
+		const label = m === 'Todos' ? 'Visão Geral' : `${nomesMeses[m.split('/')[0]] || m.split('/')[0]}/${m.split('/')[1].slice(2)}`;
+		btn.textContent = label;
+		btn.className = `tab-button ${m === mesProjecaoFiltro ? 'active' : 'inactive'} whitespace-nowrap text-sm`;
+		btn.onclick = () => {
+			mesProjecaoFiltro = m;
+			cont.querySelectorAll('button').forEach(b => b.className = 'tab-button inactive whitespace-nowrap text-sm');
+			btn.className = 'tab-button active whitespace-nowrap text-sm';
+			atualizarDashboardProjecao(m);
+		};
+		cont.appendChild(btn);
+	});
 }
 
+// ─── Dashboard updates ────────────────────────────────────────────────────────
 function atualizarDashboard(filtro) {
-    const tx = filtro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === filtro);
-    const ent = tx.reduce((s, t) => s + t.valorEntrada, 0), sai = tx.reduce((s, t) => s + t.valorSaida, 0), sal = ent - sai;
-    
-    document.getElementById('kpi-entradas').innerText = formatarMoeda(ent);
-    document.getElementById('kpi-saidas').innerText = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('kpi-saldo'); 
-    sEl.innerText = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
-    const poupPct = ent > 0 ? ((sal / ent) * 100) : 0;
-    const pEl = document.getElementById('kpi-poupanca'); 
-    pEl.innerText = poupPct.toFixed(1) + '%'; 
-    pEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (poupPct >= 20 ? 'text-emerald-600' : poupPct > 0 ? 'text-blue-500' : 'text-red-500');
+	mesAtualFiltro = filtro;
+	const tx = filtro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === filtro);
+	const ent = tx.reduce((s, t) => s + t.valorEntrada, 0);
+	const sai = tx.reduce((s, t) => s + t.valorSaida, 0);
+	const sal = ent - sai;
+	const poupPct = ent > 0 ? (sal / ent) * 100 : 0;
 
-    renderizarGaugeSaude(ent > 0 ? (sai/ent)*100 : 0);
-    renderizarGraficoSaldo(tx); renderizarGraficoDespesas(tx); renderizarGraficoEntradasSaidas(tx); renderizarMaioresMovimentacoes(tx);
+	document.getElementById('kpi-entradas').innerText = formatarMoeda(ent);
+	document.getElementById('kpi-saidas').innerText   = formatarMoeda(sai);
+
+	const sEl = document.getElementById('kpi-saldo');
+	sEl.innerText   = formatarMoeda(sal);
+	sEl.className   = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
+
+	const pEl = document.getElementById('kpi-poupanca');
+	pEl.innerText = poupPct.toFixed(1) + '%';
+	pEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (poupPct >= 20 ? 'text-emerald-600' : poupPct > 0 ? 'text-blue-500' : 'text-red-500');
+
+	renderizarGaugeSaude(ent > 0 ? (sai / ent) * 100 : 0);
+	renderizarGraficoSaldo(tx);
+	renderizarGraficoDespesas(tx);
+	renderizarGraficoEntradasSaidas(tx);
+	renderizarMetas(tx);
+	renderizarMaioresMovimentacoes();
 }
 
-function atualizarDashboardProjecao(filtroParam) {
-    const filtro = filtroParam || mesProjecaoFiltro;
-    const tx = filtro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === filtro);
-    const ent = tx.reduce((s, t) => s + t.valorEntrada, 0), sai = tx.reduce((s, t) => s + t.valorSaida, 0), sal = ent - sai;
-    
-    document.getElementById('kpi-proj-receitas').innerText = formatarMoeda(ent);
-    document.getElementById('kpi-proj-despesas').innerText = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('kpi-proj-saldo'); 
-    sEl.innerText = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
-    renderizarGraficoProjecao(tx); renderizarGraficoDespesasProjecao(tx); renderizarTabelaProjecao(tx);
+function atualizarDashboardProjecao(filtro) {
+	mesProjecaoFiltro = filtro;
+	const tx = filtro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === filtro);
+	const ent = tx.reduce((s, t) => s + t.valorEntrada, 0);
+	const sai = tx.reduce((s, t) => s + t.valorSaida, 0);
+	const sal = ent - sai;
+
+	document.getElementById('kpi-proj-receitas').innerText = formatarMoeda(ent);
+	document.getElementById('kpi-proj-despesas').innerText = formatarMoeda(sai);
+
+	const sEl = document.getElementById('kpi-proj-saldo');
+	sEl.innerText = formatarMoeda(sal);
+	sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
+
+	renderizarGraficoProjecao(tx);
+	renderizarGraficoDespesasProjecao(tx);
+	renderizarTabelaProjecao();
 }
 
 function atualizarDashboardConsolidado() {
-    const ent = transacoesGlobais.reduce((s, t) => s + t.valorEntrada, 0) + transacoesProjetadas.reduce((s, t) => s + t.valorEntrada, 0);
-    const sai = transacoesGlobais.reduce((s, t) => s + t.valorSaida, 0) + transacoesProjetadas.reduce((s, t) => s + t.valorSaida, 0);
-    const sal = ent - sai;
-    document.getElementById('rConsReceitas').textContent = formatarMoeda(ent); 
-    document.getElementById('rConsDespesas').textContent = formatarMoeda(sai);
-    
-    const sEl = document.getElementById('rConsSaldo'); 
-    sEl.textContent = formatarMoeda(sal); 
-    sEl.className = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
-    
-    renderizarGraficoConsolidado();
+	const ent = [...transacoesGlobais, ...transacoesProjetadas].reduce((s, t) => s + t.valorEntrada, 0);
+	const sai = [...transacoesGlobais, ...transacoesProjetadas].reduce((s, t) => s + t.valorSaida, 0);
+	const sal = ent - sai;
+	document.getElementById('rConsReceitas').textContent = formatarMoeda(ent);
+	document.getElementById('rConsDespesas').textContent = formatarMoeda(sai);
+	const sEl = document.getElementById('rConsSaldo');
+	sEl.textContent = formatarMoeda(sal);
+	sEl.className   = 'text-2xl sm:text-3xl font-display font-bold tracking-tight ' + (sal >= 0 ? 'text-emerald-600' : 'text-red-500');
+	renderizarGraficoConsolidado();
 }
 
+// ─── Tab switching ────────────────────────────────────────────────────────────
 function switchTab(tab) {
-    abaAtual = tab;
-    ['real', 'projetado', 'consolidado'].forEach(t => {
-        const b = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)); if(b) b.className = 'tab-button ' + (t === tab ? 'active' : 'inactive') + ' whitespace-nowrap text-sm';
-        const s = document.getElementById('secao' + t.charAt(0).toUpperCase() + t.slice(1)); if(s) s.classList.toggle('hidden', t !== tab);
-    });
-    ['Real','Proj','Cons'].forEach((s, i) => {
-        const el = document.getElementById('navMobile' + s);
-        if(el) el.className = 'flex flex-col items-center justify-center gap-1 transition-colors ' + (tab === ['real','projetado','consolidado'][i] ? 'text-blue-500' : 'text-slate-400');
-    });
-    if (tab === 'consolidado') atualizarDashboardConsolidado();
+	abaAtual = tab;
+	['real', 'projetado', 'consolidado'].forEach(t => {
+		const id = t.charAt(0).toUpperCase() + t.slice(1);
+		const btn = document.getElementById('tab' + id);
+		const sec = document.getElementById('secao' + id);
+		if (btn) btn.className = 'tab-button ' + (t === tab ? 'active' : 'inactive') + ' whitespace-nowrap';
+		if (sec) sec.classList.toggle('hidden', t !== tab);
+	});
+	['Real','Proj','Cons'].forEach((s, i) => {
+		const el = document.getElementById('navMobile' + s);
+		if (el) el.className = 'flex flex-col items-center justify-center gap-1 transition-colors ' +
+			(tab === ['real','projetado','consolidado'][i] ? 'text-blue-500' : 'text-slate-400');
+	});
+	if (tab === 'consolidado') atualizarDashboardConsolidado();
 }
 
+// ─── Gauge ────────────────────────────────────────────────────────────────────
 function renderizarGaugeSaude(pct) {
-    const canvas = document.getElementById('gaugeSaudeChart'); if (!canvas) return; const ctx = canvas.getContext('2d'); if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
-    let cor = '#34C759', status = 'Tranquilo (Saudável)';
-    if (pct > 50 && pct <= 80) { cor = '#FF9500'; status = 'Atenção (Moderado)'; } else if (pct > 80) { cor = '#FF3B30'; status = 'Alerta (Gasto Alto)'; } if (pct === 0) status = 'Sem dados';
-    const sEl = document.getElementById('txt-saude-status'); if (sEl) sEl.innerText = status;
-    const isD = document.body.classList.contains('dark-mode'); const val = Math.min(Math.max(pct, 0), 100);
-    gaugeSaudeChartInstance = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [val, Math.max(100 - val, 0)], backgroundColor: [cor, isD ? '#2C2C2E' : '#E5E5EA'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '78%', circumference: 180, rotation: -90, plugins: { tooltip: { enabled: false }, legend: { display: false } } }, plugins: [{ id: 'centerText', afterDraw(c) { const { ctx, chartArea: { width, height, top } } = c; ctx.save(); ctx.font = `bold ${Math.min(width/6, 36)}px -apple-system, sans-serif`; ctx.fillStyle = isD ? '#FFFFFF' : '#000000'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(val.toFixed(0) + '%', width / 2, top + height - 30); ctx.restore(); } }] });
+	const canvas = document.getElementById('gaugeSaudeChart');
+	if (!canvas) return;
+	if (gaugeSaudeChartInstance) gaugeSaudeChartInstance.destroy();
+	let cor = '#34C759', status = 'Tranquilo (Saudável)';
+	if (pct > 50 && pct <= 80) { cor = '#FF9500'; status = 'Atenção (Moderado)'; }
+	else if (pct > 80)         { cor = '#FF3B30'; status = 'Alerta (Gasto Alto)'; }
+	if (pct === 0) status = 'Sem dados';
+	const sEl = document.getElementById('txt-saude-status');
+	if (sEl) sEl.innerText = status;
+	const isD = document.body.classList.contains('dark-mode');
+	const val = Math.min(Math.max(pct, 0), 100);
+	gaugeSaudeChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'doughnut',
+		data: { datasets: [{ data: [val, Math.max(100 - val, 0)], backgroundColor: [cor, isD ? '#2C2C2E' : '#E5E5EA'], borderWidth: 0 }] },
+		options: { responsive: true, maintainAspectRatio: false, cutout: '78%', circumference: 180, rotation: -90, plugins: { tooltip: { enabled: false }, legend: { display: false } } },
+		plugins: [{
+			id: 'centerText',
+			afterDraw(c) {
+				const { ctx, chartArea: { width, height, top } } = c;
+				ctx.save();
+				ctx.font = `bold ${Math.min(width / 6, 36)}px -apple-system, sans-serif`;
+				ctx.fillStyle = isD ? '#FFFFFF' : '#000000';
+				ctx.textAlign = 'center';
+				ctx.textBaseline = 'bottom';
+				ctx.fillText(val.toFixed(0) + '%', width / 2, top + height - 30);
+				ctx.restore();
+			},
+		}],
+	});
 }
 
+// ─── Chart: historical balance ────────────────────────────────────────────────
 function renderizarGraficoSaldo(tx) {
-    const ctx = document.getElementById('saldoChart').getContext('2d'); if (saldoChartInstance) saldoChartInstance.destroy(); if (!tx || tx.length === 0) return;
-    let ac = 0; const data = tx.map(t => { ac += (t.valorEntrada - t.valorSaida); return ac; });
-    saldoChartInstance = new Chart(ctx, { type: 'line', data: { labels: tx.map(t => t.data.substring(0,5)), datasets: [{ data, borderColor: '#007AFF', fill: true, backgroundColor: 'rgba(0,122,255,0.1)', tension: 0.4 }] }, options: { plugins: { legend: { display: false } } } });
+	const canvas = document.getElementById('saldoChart');
+	if (saldoChartInstance) saldoChartInstance.destroy();
+	if (!tx || tx.length === 0) return;
+	let ac = 0;
+	const data = tx.map(t => { ac += (t.valorEntrada - t.valorSaida); return ac; });
+	saldoChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'line',
+		data: { labels: tx.map(t => t.data.substring(0, 5)), datasets: [{ data, borderColor: '#007AFF', fill: true, backgroundColor: 'rgba(0,122,255,0.1)', tension: 0.4, pointRadius: 0 }] },
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxTicksLimit: 8 } } } },
+	});
 }
 
+// ─── Chart: spending donut ────────────────────────────────────────────────────
 function renderizarGraficoDespesas(tx) {
-    const ctx = document.getElementById('despesasChart').getContext('2d'); if (despesasChartInstance) despesasChartInstance.destroy(); if (!tx || tx.length === 0) return;
-    const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+	const canvas = document.getElementById('despesasChart');
+	if (despesasChartInstance) despesasChartInstance.destroy();
+	if (!tx || tx.length === 0) return;
+	const m = {};
+	tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
+	if (Object.keys(m).length === 0) return;
+	despesasChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'doughnut',
+		data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] },
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } },
+	});
 }
 
+// ─── Chart: inflow vs outflow bars ───────────────────────────────────────────
 function renderizarGraficoEntradasSaidas(tx) {
-    const ctx = document.getElementById('entradasSaidasChart').getContext('2d'); if (entradasSaidasChartInstance) entradasSaidasChartInstance.destroy(); if (!tx || tx.length === 0) return;
-    const m = {}; tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
-    const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
-    entradasSaidasChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Entradas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Saídas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] } });
+	const canvas = document.getElementById('entradasSaidasChart');
+	if (entradasSaidasChartInstance) entradasSaidasChartInstance.destroy();
+	if (!tx || tx.length === 0) return;
+	const m = {};
+	tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
+	const ord = Object.keys(m).sort((a, b) => (a.split('/')[1] + a.split('/')[0]).localeCompare(b.split('/')[1] + b.split('/')[0]));
+	entradasSaidasChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'bar',
+		data: {
+			labels: ord.map(k => `${nomesMeses[k.split('/')[0]] || k.split('/')[0]}/${k.split('/')[1].slice(2)}`),
+			datasets: [
+				{ label: 'Entradas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 },
+				{ label: 'Saídas',   data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 },
+			],
+		},
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
+	});
 }
 
-function renderizarMaioresMovimentacoes(txOverride) {
-    const tp = document.getElementById('filtroTipoMovimentacoes').value;
-    let tx = txOverride || (mesAtualFiltro === 'Todos' ? transacoesGlobais : transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === mesAtualFiltro));
-    if (tp === 'saidas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => Math.max(b.valorEntrada,b.valorSaida) - Math.max(a.valorEntrada,a.valorSaida));
-    const flt = tx.slice(0, 15);
-    document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem transações.</td></tr>' : flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
-    document.getElementById('tabelaMovimentacoesMobile').innerHTML = flt.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<div class="mobile-tx-card flex items-center justify-between gap-3"><div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${t.descricao}</p><p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${t.data} · <span style="color: ${c}">${t.categoria}</span></p></div><span class="text-sm font-bold ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '-' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span></div>`; }).join('');
+// ─── Metas por categoria ──────────────────────────────────────────────────────
+function renderizarMetas(tx) {
+	const listaMetas = document.getElementById('listaMetas');
+	const gastosPorCat = {};
+	tx.filter(t => t.valorSaida > 0).forEach(t => {
+		gastosPorCat[t.categoria] = (gastosPorCat[t.categoria] || 0) + t.valorSaida;
+	});
+	const cats = Object.entries(gastosPorCat).sort((a, b) => b[1] - a[1]);
+	if (cats.length === 0) {
+		listaMetas.innerHTML = '<p class="text-sm text-center py-4" style="color: var(--text-secondary)">Nenhum gasto no período selecionado.</p>';
+		return;
+	}
+	listaMetas.innerHTML = cats.map(([cat, gasto]) => {
+		const meta = orcamentos[cat] || 0;
+		const cor  = coresCategorias[cat] || '#64748b';
+		const pct  = meta > 0 ? Math.min((gasto / meta) * 100, 100) : 0;
+		const over = meta > 0 && gasto > meta;
+		const barCor = over ? '#ef4444' : cor;
+		return `
+		<div class="budget-row">
+			<div class="flex items-center justify-between">
+				<span class="text-sm font-semibold" style="color: ${cor}">${escapeHtml(cat)}</span>
+				<div class="flex items-center gap-2 flex-wrap justify-end">
+					<span class="text-sm font-medium" style="color: var(--text-primary)">${formatarMoeda(gasto)}</span>
+					${meta > 0 ? `<span class="text-xs font-bold ${over ? 'text-red-500' : 'text-emerald-600'}">/ ${formatarMoeda(meta)}</span>` : ''}
+					<button class="btn-meta text-[11px] px-2 py-0.5 rounded-lg transition-all hover:opacity-80"
+					style="background: rgba(118,118,128,0.12); color: var(--text-secondary)"
+					data-cat="${escapeHtml(cat)}" data-valor="${meta}">
+					${meta > 0 ? 'Editar' : '+ Meta'}
+					</button>
+				</div>
+			</div>
+			${meta > 0 ? `
+			<div class="budget-bar-track mt-2">
+				<div class="budget-bar-fill" style="width: ${pct}%; background: ${barCor}"></div>
+			</div>
+			<div class="flex justify-between mt-1">
+				<span class="text-[10px]" style="color: var(--text-secondary)">${pct.toFixed(0)}% utilizado</span>
+				${over ? '<span class="text-[10px] font-bold text-red-500">Acima do limite!</span>' : `<span class="text-[10px]" style="color: var(--text-secondary)">Restam ${formatarMoeda(meta - gasto)}</span>`}
+			</div>` : ''}
+		</div>`;
+	}).join('');
+
+	listaMetas.querySelectorAll('.btn-meta').forEach(btn => {
+		btn.addEventListener('click', () => {
+			abrirModalMeta(btn.dataset.cat, parseFloat(btn.dataset.valor) || 0);
+		});
+	});
 }
 
+// ─── Table: top transactions (no txOverride – reads from global state) ────────
+function renderizarMaioresMovimentacoes() {
+	const tp    = document.getElementById('filtroTipoMovimentacoes').value;
+	const busca = (document.getElementById('buscaMovimentacoes').value || '').toLowerCase().trim();
+
+	let tx = mesAtualFiltro === 'Todos'
+		? transacoesGlobais
+		: transacoesGlobais.filter(t => `${t.mes}/${t.ano}` === mesAtualFiltro);
+
+	if (tp === 'saidas')   tx = tx.filter(t => t.valorSaida   > 0);
+	else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0);
+
+	if (busca) {
+		tx = tx.filter(t =>
+			t.descricao.toLowerCase().includes(busca) ||
+			t.categoria.toLowerCase().includes(busca)
+		);
+	}
+
+	const sorted = tp === 'entradas'
+		? [...tx].sort((a, b) => b.valorEntrada - a.valorEntrada)
+		: tp === 'saidas'
+		? [...tx].sort((a, b) => b.valorSaida - a.valorSaida)
+		: [...tx].sort((a, b) => Math.max(b.valorEntrada, b.valorSaida) - Math.max(a.valorEntrada, a.valorSaida));
+
+	const flt = sorted.slice(0, 20);
+	const vazio = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Nenhuma transação encontrada.</td></tr>';
+
+	document.getElementById('tabelaMovimentacoesBody').innerHTML = flt.length === 0 ? vazio : flt.map(t => {
+		const isS = t.valorSaida > 0;
+		const c   = coresCategorias[t.categoria] || '#64748b';
+		return `<tr>
+			<td class="px-6 py-4 text-sm whitespace-nowrap" style="color: var(--text-secondary)">${escapeHtml(t.data)}</td>
+			<td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(t.descricao)}</td>
+			<td class="px-6 py-4"><span class="cat-badge" style="background:${c}22; color:${c}">${escapeHtml(t.categoria)}</span></td>
+			<td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '− ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td>
+		</tr>`;
+	}).join('');
+
+	document.getElementById('tabelaMovimentacoesMobile').innerHTML = flt.length === 0 ? '' : flt.map(t => {
+		const isS = t.valorSaida > 0;
+		const c   = coresCategorias[t.categoria] || '#64748b';
+		return `<div class="mobile-tx-card flex items-center justify-between gap-3">
+			<div class="flex-1 min-w-0">
+				<p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${escapeHtml(t.descricao)}</p>
+				<p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${escapeHtml(t.data)} · <span style="color:${c}">${escapeHtml(t.categoria)}</span></p>
+			</div>
+			<span class="text-sm font-bold flex-shrink-0 ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '−' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span>
+		</div>`;
+	}).join('');
+}
+
+// ─── Chart: projected balance bars ───────────────────────────────────────────
 function renderizarGraficoProjecao(tx) {
-    const ctx = document.getElementById('saldoProjecaoChart').getContext('2d'); if (saldoProjecaoChartInstance) saldoProjecaoChartInstance.destroy(); if (!tx || tx.length === 0) return;
-    const m = {}; tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
-    const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
-    const s = ord.map(k => m[k].e - m[k].s);
-    saldoProjecaoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Saldo', data: s, backgroundColor: s.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }] }, options: { plugins: { legend: { display: false } } } });
+	const canvas = document.getElementById('saldoProjecaoChart');
+	if (saldoProjecaoChartInstance) saldoProjecaoChartInstance.destroy();
+	if (!tx || tx.length === 0) return;
+	const m = {};
+	tx.forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
+	const ord = Object.keys(m).sort((a, b) => (a.split('/')[1] + a.split('/')[0]).localeCompare(b.split('/')[1] + b.split('/')[0]));
+	const saldos = ord.map(k => m[k].e - m[k].s);
+	saldoProjecaoChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'bar',
+		data: {
+			labels: ord.map(k => `${nomesMeses[k.split('/')[0]] || k.split('/')[0]}/${k.split('/')[1].slice(2)}`),
+			datasets: [{ label: 'Saldo', data: saldos, backgroundColor: saldos.map(v => v >= 0 ? '#34C759' : '#FF3B30'), borderRadius: 6 }],
+		},
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } },
+	});
 }
 
+// ─── Chart: projected spending donut ─────────────────────────────────────────
 function renderizarGraficoDespesasProjecao(tx) {
-    const ctx = document.getElementById('despesasProjecaoChart').getContext('2d'); if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy(); if (!tx || tx.length === 0) return;
-    const m = {}; tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
-    despesasProjecaoChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+	const canvas = document.getElementById('despesasProjecaoChart');
+	if (despesasProjecaoChartInstance) despesasProjecaoChartInstance.destroy();
+	if (!tx || tx.length === 0) return;
+	const m = {};
+	tx.filter(t => t.valorSaida > 0).forEach(t => m[t.categoria] = (m[t.categoria] || 0) + t.valorSaida);
+	if (Object.keys(m).length === 0) return;
+	despesasProjecaoChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'doughnut',
+		data: { labels: Object.keys(m), datasets: [{ data: Object.values(m), backgroundColor: Object.keys(m).map(c => coresCategorias[c] || '#ccc') }] },
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } } },
+	});
 }
 
-function renderizarTabelaProjecao(txOverride) {
-    const tp = document.getElementById('filtroTipoProjecao').value;
-    let tx = txOverride || (mesProjecaoFiltro === 'Todos' ? transacoesProjetadas : transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === mesProjecaoFiltro));
-    if (tp === 'despesas') tx = tx.filter(t => t.valorSaida > 0).sort((a,b) => b.valorSaida - a.valorSaida); else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0).sort((a,b) => b.valorEntrada - a.valorEntrada); else tx = [...tx].sort((a,b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
-    
-    document.getElementById('tabelaProjecaoBody').innerHTML = tx.length === 0 ? '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Sem projeções.</td></tr>' : tx.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<tr><td class="px-6 py-4 text-sm" style="color: var(--text-secondary)">${t.data}</td><td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary);">${t.descricao}</td><td class="px-6 py-4"><span class="cat-badge" style="background: ${c}22; color: ${c}">${t.categoria}</span></td><td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '- ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td></tr>`; }).join('');
-    document.getElementById('tabelaProjecaoMobile').innerHTML = tx.map(t => { const isS = t.valorSaida > 0, c = coresCategorias[t.categoria] || '#64748b'; return `<div class="mobile-tx-card flex items-center justify-between gap-3"><div class="flex-1 min-w-0"><p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${t.descricao}</p><p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${t.data} · <span style="color: ${c}">${t.categoria}</span></p></div><span class="text-sm font-bold ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '-' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span></div>`; }).join('');
+// ─── Table: projection detail (reads from global state) ──────────────────────
+function renderizarTabelaProjecao() {
+	const tp    = document.getElementById('filtroTipoProjecao').value;
+	const busca = (document.getElementById('buscaProjecao').value || '').toLowerCase().trim();
+
+	let tx = mesProjecaoFiltro === 'Todos'
+		? transacoesProjetadas
+		: transacoesProjetadas.filter(t => `${t.mes}/${t.ano}` === mesProjecaoFiltro);
+
+	if (tp === 'despesas') tx = tx.filter(t => t.valorSaida   > 0);
+	else if (tp === 'entradas') tx = tx.filter(t => t.valorEntrada > 0);
+
+	if (busca) {
+		tx = tx.filter(t =>
+			t.descricao.toLowerCase().includes(busca) ||
+			t.categoria.toLowerCase().includes(busca)
+		);
+	}
+
+	const sorted = tp === 'despesas'
+		? [...tx].sort((a, b) => b.valorSaida - a.valorSaida)
+		: tp === 'entradas'
+		? [...tx].sort((a, b) => b.valorEntrada - a.valorEntrada)
+		: [...tx].sort((a, b) => new Date(a.data.split('/').reverse().join('-')) - new Date(b.data.split('/').reverse().join('-')));
+
+	const vazio = '<tr><td colspan="4" class="px-6 py-12 text-center text-sm" style="color: var(--text-secondary)">Nenhuma projeção encontrada.</td></tr>';
+
+	document.getElementById('tabelaProjecaoBody').innerHTML = sorted.length === 0 ? vazio : sorted.map(t => {
+		const isS = t.valorSaida > 0;
+		const c   = coresCategorias[t.categoria] || '#64748b';
+		return `<tr>
+			<td class="px-6 py-4 text-sm whitespace-nowrap" style="color: var(--text-secondary)">${escapeHtml(t.data)}</td>
+			<td class="px-6 py-4 text-sm font-medium" style="color: var(--text-primary)">${escapeHtml(t.descricao)}</td>
+			<td class="px-6 py-4"><span class="cat-badge" style="background:${c}22; color:${c}">${escapeHtml(t.categoria)}</span></td>
+			<td class="px-6 py-4 text-sm font-bold text-right ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '− ' : '+ '}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</td>
+		</tr>`;
+	}).join('');
+
+	document.getElementById('tabelaProjecaoMobile').innerHTML = sorted.length === 0 ? '' : sorted.map(t => {
+		const isS = t.valorSaida > 0;
+		const c   = coresCategorias[t.categoria] || '#64748b';
+		return `<div class="mobile-tx-card flex items-center justify-between gap-3">
+			<div class="flex-1 min-w-0">
+				<p class="text-sm font-semibold truncate" style="color: var(--text-primary)">${escapeHtml(t.descricao)}</p>
+				<p class="text-[11px] mt-0.5" style="color: var(--text-secondary)">${escapeHtml(t.data)} · <span style="color:${c}">${escapeHtml(t.categoria)}</span></p>
+			</div>
+			<span class="text-sm font-bold flex-shrink-0 ${isS ? 'text-red-500' : 'text-emerald-600'}">${isS ? '−' : '+'}${formatarMoeda(isS ? t.valorSaida : t.valorEntrada)}</span>
+		</div>`;
+	}).join('');
 }
 
+// ─── Chart: consolidated monthly ─────────────────────────────────────────────
 function renderizarGraficoConsolidado() {
-    const ctx = document.getElementById('receitasDespesasConsolidadoChart').getContext('2d'); if(receitasDespesasConsolidadoChartInstance) receitasDespesasConsolidadoChartInstance.destroy();
-    const m = {};
-    [...transacoesGlobais, ...transacoesProjetadas].forEach(t => { const k = `${t.mes}/${t.ano}`; if (!m[k]) m[k] = { e: 0, s: 0 }; m[k].e += t.valorEntrada; m[k].s += t.valorSaida; });
-    const ord = Object.keys(m).sort((a,b) => (a.split('/')[1]+a.split('/')[0]).localeCompare(b.split('/')[1]+b.split('/')[0]));
-    receitasDespesasConsolidadoChartInstance = new Chart(ctx, { type: 'bar', data: { labels: ord.map(k => `${nomesMeses[k.split('/')[0]]||k.split('/')[0]}/${k.split('/')[1].slice(2)}`), datasets: [{ label: 'Receitas', data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 }, { label: 'Despesas', data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 }] } });
+	const canvas = document.getElementById('receitasDespesasConsolidadoChart');
+	if (receitasDespesasConsolidadoChartInstance) receitasDespesasConsolidadoChartInstance.destroy();
+	const m = {};
+	[...transacoesGlobais, ...transacoesProjetadas].forEach(t => {
+		const k = `${t.mes}/${t.ano}`;
+		if (!m[k]) m[k] = { e: 0, s: 0 };
+		m[k].e += t.valorEntrada;
+		m[k].s += t.valorSaida;
+	});
+	const ord = Object.keys(m).sort((a, b) => (a.split('/')[1] + a.split('/')[0]).localeCompare(b.split('/')[1] + b.split('/')[0]));
+	receitasDespesasConsolidadoChartInstance = new Chart(canvas.getContext('2d'), {
+		type: 'bar',
+		data: {
+			labels: ord.map(k => `${nomesMeses[k.split('/')[0]] || k.split('/')[0]}/${k.split('/')[1].slice(2)}`),
+			datasets: [
+				{ label: 'Receitas',  data: ord.map(k => m[k].e), backgroundColor: '#34C759', borderRadius: 6 },
+				{ label: 'Despesas',  data: ord.map(k => m[k].s), backgroundColor: '#FF3B30', borderRadius: 6 },
+			],
+		},
+		options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } },
+	});
 }
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+	// Dark mode
+	if (localStorage.getItem('darkMode') === 'true') {
+		document.body.classList.add('dark-mode');
+		document.getElementById('iconSun').classList.add('hidden');
+		document.getElementById('iconMoon').classList.remove('hidden');
+	}
+	// Load budgets
+	carregarOrcamentos();
+	// Load cache first (instant render), then sync from network
+	const temCache = carregarCache();
+	if (temCache) {
+		mostrarStatus('Dados em cache carregados. Atualizando…', 'info');
+	}
+	sincronizarComNuvem();
+});
 </script>
 </body>
 </html>
